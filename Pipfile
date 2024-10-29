@@ -4,11 +4,25 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-django = "*"
-python-decouple = "*"
+blinker = "==1.8.2"
+certifi = "==2024.2.2"
+click = "==8.1.7"
+colorama = "==0.4.6"
+distlib = "==0.3.8"
+dnspython = "==2.7.0"
+filelock = "==3.13.1"
+flask = "*"
+itsdangerous = "==2.2.0"
+jinja2 = "==3.1.4"
+markupsafe = "==3.0.2"
+pipenv = "==2023.12.1"
+platformdirs = "==4.2.0"
+pymongo = "*"
+virtualenv = "==20.25.1"
+werkzeug = "*"
+pyjwt = "*"
 
 [dev-packages]
-django-debug-toolbar = "*"
 
 [requires]
 python_version = "3.10"
