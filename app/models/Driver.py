@@ -3,10 +3,10 @@ from bson import ObjectId
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.database import Database
 
-rider_collection = Database.get_db().rider
+driver_collection = Database.get_db().diver
 
 
-class Rider:
+class Driver:
     def __init__(
         self,
         username,
@@ -36,26 +36,26 @@ class Rider:
     @staticmethod
     def get_by_id(user_id):
         try:
-            user_data = rider_collection.find_one({"_id": ObjectId(user_id)})
-            return Rider.from_db(user_data) if user_data else None
+            user_data = driver_collection.find_one({"_id": ObjectId(user_id)})
+            return Driver.from_db(user_data) if user_data else None
         except Exception as e:
-            print(f"Error fetching Rider by ID: {e}")
+            print(f"Error fetching Driver by ID: {e}")
             return None
 
     @staticmethod
     def get_by_email(email: str):
         try:
-            user_data = rider_collection.find_one({"email": email})
-            return Rider.from_db(user_data) if user_data else None
+            user_data = driver_collection.find_one({"email": email})
+            return Driver.from_db(user_data) if user_data else None
         except Exception as e:
-            print(f"Error fetching Rider by Email: {e}")
+            print(f"Error fetching Driver by ID: {e}")
             return None
 
     @staticmethod
     def from_db(user_data):
         if not user_data:
             return None
-        return Rider(
+        return Driver(
             username=user_data["username"],
             email=user_data["email"],
             phone_number=user_data["phone_number"],
@@ -75,7 +75,7 @@ class Rider:
             "updated_at": datetime.now(timezone.utc),
             "phone_number": self.phone_number
         }
-        rider_collection.update_one({"_id": self._id}, {"$set": user_data}, upsert=True)
+        driver_collection.update_one({"_id": self._id}, {"$set": user_data}, upsert=True)
         return self
 
     def check_password(self, password):

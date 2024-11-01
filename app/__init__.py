@@ -4,7 +4,9 @@ from flask import Flask, current_app
 from app.database import Database
 import os
 import datetime
+from flask_jwt_extended import JWTManager
 
+blacklist = set()
 def create_app():
     app = Flask(__name__)
 
@@ -21,12 +23,16 @@ def create_app():
 
     # Initialize database
     Database.initialize(app)
+    jwt = JWTManager(app)
+
+    @jwt.token_in_blocklist_loader
+    def check_if_token_in_blacklist(jwt_header, jwt_payload):
+        jti = jwt_payload["jti"]  # "jti" (JWT ID) is a unique identifier for each token
+        return jti in blacklist
 
     # Register blueprints
     from app.routes.auth import auth_bp
-    # from app.routes.user import user_bp
 
     app.register_blueprint(auth_bp)
-    # app.register_blueprint(user_bp)
 
     return app

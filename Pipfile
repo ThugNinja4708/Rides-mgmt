@@ -21,6 +21,7 @@ pymongo = "*"
 virtualenv = "==20.25.1"
 werkzeug = "*"
 pyjwt = "*"
+flask-jwt-extended = "*"
 
 [dev-packages]
 
