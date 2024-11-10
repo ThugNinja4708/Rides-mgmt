@@ -1,6 +1,5 @@
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
-# from flask import current_app
 class Database:
     client = None
     db = None
