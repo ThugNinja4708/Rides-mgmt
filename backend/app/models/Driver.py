@@ -16,12 +16,14 @@ class Driver:
         _id=None,
         created_at=None,
         updated_at = None,
-        password_hash=None
+        password_hash=None,
+        license_number = None
     ):
         self._id = ObjectId(_id) if _id else ObjectId()
         self.username = username
         self.email = email
         self.phone_number = phone_number
+        self.license_number = license_number
 
         # Handle password and password_hash initialization
         if password and not password_hash:
@@ -73,7 +75,8 @@ class Driver:
             "password_hash": self.password_hash,
             "created_at": self.created_at,
             "updated_at": datetime.now(timezone.utc),
-            "phone_number": self.phone_number
+            "phone_number": self.phone_number,
+            "license_number" : self.license_number
         }
         driver_collection.update_one({"_id": self._id}, {"$set": user_data}, upsert=True)
         return self
@@ -89,6 +92,7 @@ class Driver:
             "username": self.username,
             "email": self.email,
             "phone_number": self.phone_number,
+            "license_number" : self.license_number,
             "created_at": self.created_at.isoformat(),
             "updated_at": self.updated_at.isoformat(),
         }

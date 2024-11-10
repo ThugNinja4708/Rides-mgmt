@@ -20,7 +20,7 @@ def signup():
         email = data["email"]
         role = data["role"]
         phone_number = data.get("phone_number", "")
-
+        
         user = get_user_collection_by_role(role)
 
         # Check existing user
@@ -28,8 +28,10 @@ def signup():
             return Response.generate(
                 status=400, message="user with this email already exists"
             )
+        if(role == "driver"):
+            license_number = data["license_number"]
         user_obj = user(
-            username=username, email=email, password=password, phone_number=phone_number
+            username=username, email=email, password=password, phone_number=phone_number, license_number=license_number
         )
         user_obj.save()
         return Response.generate(status=201, message="User created successfully")
