@@ -17,7 +17,7 @@ def create_app():
     app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(hours=1)
     app.config['JWT_REFRESH_TOKEN_EXPIRES'] = datetime.timedelta(days=30)
     app.config["DB_NAME"] = "rides_mgmt"
-    app.config["MONGO_URI"] = "mongodb+srv://rithvikkantha3771:S3zp72v7y6noQSW0@ridesmgmt.w4tn0.mongodb.net/?retryWrites=true&w=majority&appName=ridesMgmt"
+    app.config["MONGO_URI"] = "mongodb+srv://rithvikkantha3771:<db_password>@ridesmgmt.w4tn0.mongodb.net/?retryWrites=true&w=majority&appName=ridesMgmt"
 
 
     # Initialize database
