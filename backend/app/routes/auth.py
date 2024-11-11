@@ -31,10 +31,8 @@ def signup():
             return Response.generate(
                 status=400, message="user with this email already exists"
             )
-        if(role == "driver"):
-            license_number = data["license_number"]
         user_obj = user(
-            username=username, email=email, password=password, phone_number=phone_number, license_number=license_number
+            username=username, email=email, password=password, phone_number=phone_number
         )
         user_obj.save()
         return Response.generate(status=201, message="User created successfully")
@@ -61,7 +59,7 @@ def login():
 
         user = user_obj.get_by_email(email=email)
 
-        if not user or user.username == username:
+        if not (user and user.username == username):
             return Response.generate(status=401, message="Invalid username")
 
         if not user or not user.check_password(password=password):
