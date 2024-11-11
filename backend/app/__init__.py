@@ -17,9 +17,8 @@ def create_app():
     app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(hours=1)
     app.config['JWT_REFRESH_TOKEN_EXPIRES'] = datetime.timedelta(days=30)
     app.config["DB_NAME"] = "rides_mgmt"
-    # MongoDB connection
-    app.config["MONGO_URI"] = "mongodb://localhost:27017/"
-# DB_NAME = "rides_mgmt"
+    app.config["MONGO_URI"] = "mongodb+srv://rithvikkantha3771:S3zp72v7y6noQSW0@ridesmgmt.w4tn0.mongodb.net/?retryWrites=true&w=majority&appName=ridesMgmt"
+
 
     # Initialize database
     Database.initialize(app)
@@ -32,7 +31,9 @@ def create_app():
 
     # Register blueprints
     from app.routes.auth import auth_bp
+    from app.routes.driver import driver_bp
 
     app.register_blueprint(auth_bp)
+    app.register_blueprint(driver_bp)
 
     return app

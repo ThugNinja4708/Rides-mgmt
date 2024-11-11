@@ -10,5 +10,5 @@ def get_user_collection_by_role(role: str):
             return Driver
         elif role == "rider":
             return Rider
-        else:
+        elif(role == "admin"):
             return Admin
