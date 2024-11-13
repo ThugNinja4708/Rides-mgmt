@@ -59,7 +59,7 @@ def login():
 
         user = user_obj.get_by_email(email=email)
 
-        if not user or user.username == username:
+        if not (user and user.username == username):
             return Response.generate(status=401, message="Invalid username")
 
         if not user or not user.check_password(password=password):
