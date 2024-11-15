@@ -16,6 +16,7 @@ class Rides:
         capacity,
         price_per_seat,
         start_time,
+        list_of_riders = [],
         created_at=None,
         updated_at=None,
         _id=None,
@@ -29,6 +30,7 @@ class Rides:
         self.capacity = capacity
         self.price_per_seat = price_per_seat
         self.vehicle_id = vehicle_id
+        self.list_of_riders = list_of_riders
 
         self.created_at = created_at if created_at else datetime.now(timezone.utc)
         self.updated_at = updated_at if updated_at else datetime.now(timezone.utc)
@@ -58,6 +60,7 @@ class Rides:
             vehicle_id=rides_data["vehicle_id"],
             updated_at=rides_data["updated_at"],
             created_at=rides_data["created_at"],
+            list_of_riders = rides_data["list_of_riders"]
         )
 
     def create_ride(self):
@@ -69,6 +72,7 @@ class Rides:
             "price_per_seat": self.price_per_seat,
             "start_time": self.start_time,
             "capacity": self.capacity,
+            "list_of_riders": self.list_of_riders,
             "vehicle_id": self.vehicle_id,
             "updated_at": datetime.now(timezone.utc),
             "created_at": self.created_at
