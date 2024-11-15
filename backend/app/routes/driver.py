@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt, get_jwt_identity
 from app.utils.response import Response
-from app.utils.get_roles import get_user_collection_by_role, get_jwt_identity
+from app.utils.get_roles import get_user_collection_by_role
 from app.models.Rides import Rides
 from app.utils.constants import RideStatus
 from datetime import datetime
