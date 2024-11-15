@@ -17,12 +17,14 @@ class Driver:
         created_at=None,
         updated_at = None,
         password_hash=None,
+        vehicle_info=None,
         license_number = None
     ):
         self._id = ObjectId(_id) if _id else ObjectId()
         self.username = username
         self.email = email
         self.phone_number = phone_number
+        self.vehicle_info = vehicle_info
         self.license_number = license_number
 
         # Handle password and password_hash initialization
@@ -96,6 +98,22 @@ class Driver:
             "created_at": self.created_at.isoformat(),
             "updated_at": self.updated_at.isoformat(),
         }
+    
+    @staticmethod
+    def add_vehicle_info(user_id, vehicle_info_dict):
+        filter_query = {"_id":  ObjectId(user_id)} 
+        update_value = {"$set": {"vehicle_info": vehicle_info_dict}}
+        result = driver_collection.update_one(filter_query, update_value)
+
+# Check if the document was updated
+        if result.modified_count > 0:
+            print("Document updated successfully.")
+        return vehicle_info_dict
+
+
+        
+
+
 
     def __repr__(self):
         return f"<Rider {self.username} ({self.email})>"
