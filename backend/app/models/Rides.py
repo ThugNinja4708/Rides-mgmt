@@ -69,7 +69,8 @@ class Rides:
             "driver_id": self.driver_id,
             "pickup_location": {
                 "type":"Point",
-                "coordinates": self.pickup_location
+                "coordinates": self.pickup_location,
+                # maybe add place name also to retive along with name
             },
             "drop_location":  {
                 "type": "Point",
@@ -134,7 +135,7 @@ class Rides:
                     }
                 }
             })
-            return [Rides.from_db(ride) for ride in rides_cursor]
+            return [Rides.from_db(ride).to_dict() for ride in rides_cursor]
         return []
 
     @staticmethod
