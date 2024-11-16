@@ -5,6 +5,8 @@ from app.models.Rides import Rides
 from app.models.Payment import Payment
 from app.models.Booking import Booking
 
+from backend.app.models import Refund
+
 rider_bp = Blueprint("rider", __name__, url_prefix="/api/rider")
 
 
@@ -72,3 +74,41 @@ def book_ride():
             )
     except Exception as e:
         return Response.generate(message=str(e))
+    
+@rider_bp.route("/cancelride", methods=["POST"])
+@jwt_required()
+def cancel_ride():
+    rider_id = None
+    data = request.get_json()
+    ride_info = data["ride_info"]
+    role = get_jwt()["role"]
+    ride_id = ride_info['ride_id']
+
+    if role != "rider":
+        return Response.generate(status=403, message="you can not perform this action")
+    
+    if rider_id is None:
+         rider_id = get_jwt_identity()
+    else:
+        rider_id = ride_info['rider_id']
+    result = Rides.cancel_ride_by_rider(ride_id=ride_id,rider_id=rider_id)
+    if result != 1:
+        return Response.generate(
+            status = 500,
+            message = 'No Ride Found'
+        )
+    booking = Booking.get_booking_by_rider_for_ride(rider_id=rider_id,ride_id=ride_id)
+    refund = Refund(
+            booking_id=booking._id,
+            rider_id=booking.rider_id,
+            amount_refunded=(booking.admin_commission + booking.driver_earning),
+            payment_id=booking.payment_id,
+            refund_status="DONE",
+        )
+    refund.save()
+    booking.admin_commission = 0
+    booking.driver_earning = 0
+    booking.save()
+    return Response.generate(status=200, message="cancelled ride successfully!!")
+        
+        

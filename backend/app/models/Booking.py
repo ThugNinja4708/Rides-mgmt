@@ -72,3 +72,46 @@ class Booking:
         )
         bookings = [Booking.from_dict(booking) for booking in bookings_cursor]
         return bookings
+    
+    @staticmethod
+    def get_booking_by_rider_for_ride(rider_id,ride_id):
+        condition1 = {'ride_id':ObjectId(ride_id)}
+        condition2 = {'rider_id':ObjectId(rider_id)}
+        booking_cursor = booking_collection.find_one({'$and':[condition1,condition2]})
+        booking = Booking.from_dict(booking_cursor)
+        return booking
+    
+    
+    
+    def calculate_driver_earnings(driver_id, ride_id=None):
+        match_stage = {"driverid": ObjectId(driver_id)}  # Match by driver ID
+    
+    # Add ride ID to the match stage if provided
+        if ride_id:
+            match_stage["rideid"] = ObjectId(ride_id)
+
+    # Aggregation pipeline
+        pipeline = [{"$match": match_stage},  # Filter documents
+        {"$group": {
+            "_id": None,  # Group all matching documents
+            "total_earnings": {"$sum": "$driver_earnings"}  # Sum driver earnings
+        }}
+    ]
+
+        result = booking_collection.aggregate(pipeline)
+        total = next(result, {"total_earnings": 0})["total_earnings"]  # Get sum or default to 0
+        return total
+    
+    
+    def calculate_admin_earnings():
+        result = booking_collection.aggregate([
+        {
+            "$group": {
+                "_id": None,  # Group all documents
+                "total": {"$sum": 'admin_commission'}  # Sum the specified field
+            }
+        }
+    ])
+        total = next(result, {"total": 0})["total"]  # Get the sum or default to 0
+        return total
+        
