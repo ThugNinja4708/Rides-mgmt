@@ -3,7 +3,7 @@ from bson import ObjectId
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.database import Database
 
-driver_collection = Database.get_db().diver
+driver_collection = Database.get_db().driver
 
 
 class Driver:
