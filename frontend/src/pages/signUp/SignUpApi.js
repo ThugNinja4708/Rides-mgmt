@@ -1,6 +1,6 @@
-import axios from "axios";
+import {axios} from "../../lib/axios";
 export const signUpAPI = async (data) => {
-    const response = await axios.post("/signup", {
+    const response = await axios.post("/auth/signup", {
         "username": data.username,
         "email": data.email,
         "password": data.password,

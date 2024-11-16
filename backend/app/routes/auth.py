@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, make_response
 from datetime import timedelta
 from app.utils.response import Response
 from app.utils.get_roles import get_user_collection_by_role
@@ -73,14 +73,15 @@ def login():
             expires_delta=timedelta(hours=1),
         )
 
-        return Response.generate(
-            data={
+        response = make_response(
+            {
                 "message": "Login successful",
-                "access_token": access_token,
                 "user": user.to_dict(),
             },
-            status=200,
+            200,
         )
+        response.set_cookie("access_token", access_token, httponly=True, secure=True, samesite = "Lax")
+        return response
 
     except KeyError as e:
         return Response.generate(

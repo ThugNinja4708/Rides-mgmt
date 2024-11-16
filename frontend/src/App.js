@@ -1,8 +1,10 @@
 import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
 import {SignUp} from "./pages/signUp/SignUp.jsx";
 import { Login } from "./pages/login/Login.jsx";
+import { UserProvider } from "./context/userContext/userContextProvider.js";
 function App() {
   return (
+    <UserProvider>
     <div className="App">
       <Router>
         <Routes>
@@ -19,6 +21,7 @@ function App() {
         </Routes>
       </Router>
     </div>
+    </UserProvider>
   );
 }
 

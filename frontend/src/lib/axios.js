@@ -1,18 +1,24 @@
-import axios from "axios";
-import useAuth from "../hooks/useAuth";
-const axios = axios.create({
-    baseURL: "http://localhost:3000",
+import Axios from "axios";
+import { Cookies } from "react-cookie";
+
+const cookie = new Cookies();
+export const axios = Axios.create({
+    baseURL: "http://localhost:5000/api",
+    withCredentials:true
 })
 
 axios.interceptors.request.use(
     (config) => {
-        const {user} = useAuth();
         const excludedPaths = ["/login", "/signUp"];
         const isExcludedPath = excludedPaths.some((path) => config.url.includes(path));
-        if (user && !isExcludedPath) {
-            config.headers["Authorization"] = `Bearer ${user.token}`;
+        if (!isExcludedPath) {
+            config.headers["Authorization"] = `Bearer ${cookie.get("access_token")}`;
         }
+
         return config;
+    },
+    (error) => {
+        return Promise.reject(error);
     }
 );
 

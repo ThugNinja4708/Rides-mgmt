@@ -1,17 +1,21 @@
 import { LoginTemplate } from "../../common-components/LoginTemplate";
+import {loginAPI} from "./LoginAPI"
+import useAuth from "../../hooks/useAuth";
 export const Login = () => {
+    const {user, isLoggedIn} = useAuth();
     const inputs = [
         {type: "text", name: "username", placeholder: "Username", required: true},
         {type: "text", name: "email", placeholder: "Email", required: true},
         {type: "password", name: "password", placeholder: "Password", required: true},
         {type: "dropdown", name: "role", placeholder: "Select a role", required: true, options: [
             {label: "Driver", value: "driver"},
-            {label: "Passenger", value: "passenger"}
+            {label: "Rider", value: "rider"}
         ]}
     ]
 
     const handleSubmit = async (inputData) => {
-        console.log(inputData);
+        const response = await loginAPI(inputData)
+        console.log(response);
 }
     return (
         <LoginTemplate

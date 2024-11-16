@@ -23,6 +23,7 @@ werkzeug = "*"
 pyjwt = "*"
 flask-jwt-extended = "*"
 requests = "*"
+flask-cors = "*"
 
 [dev-packages]
 

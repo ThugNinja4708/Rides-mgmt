@@ -8,7 +8,7 @@ export const SignUp = () => {
         {type: "text", name: "phone", placeholder: "Phone Number", required: false},
         {type: "dropdown", name: "role", placeholder: "Select a role", required: true, options: [
             {label: "Driver", value: "driver"},
-            {label: "Passenger", value: "passenger"}
+            {label: "Rider", value: "rider"}
         ]}
     ]
 

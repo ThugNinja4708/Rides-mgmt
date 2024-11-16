@@ -5,7 +5,7 @@ from app.models.Rides import Rides
 from app.models.Payment import Payment
 from app.models.Booking import Booking
 
-from backend.app.models import Refund
+from app.models import Refund
 
 rider_bp = Blueprint("rider", __name__, url_prefix="/api/rider")
 
