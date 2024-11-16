@@ -17,7 +17,8 @@ def create_app():
     app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(hours=1)
     app.config['JWT_REFRESH_TOKEN_EXPIRES'] = datetime.timedelta(days=30)
     app.config["DB_NAME"] = "rides_mgmt"
-    app.config["MONGO_URI"] = "mongodb+srv://rithvikkantha3771:<db_password>@ridesmgmt.w4tn0.mongodb.net/?retryWrites=true&w=majority&appName=ridesMgmt"
+    app.config["MONGO_URI"] = "mongodb+srv://rithvikkantha3771:S3zp72v7y6noQSW0@ridesmgmt.w4tn0.mongodb.net/?retryWrites=true&w=majority&appName=ridesMgmt"
+    app.config["GOOGLE_API_KEY"] = "AIzaSyDJ6xZxVNPiNVWIGsE82M1tOGeqHfGX7dI"
 
 
     # Initialize database
@@ -31,9 +32,13 @@ def create_app():
 
     # Register blueprints
     from app.routes.auth import auth_bp
-    from app.routes.driver import driver_bp
+    from app.routes.driver_actions import driver_bp
+    from app.routes.rider_actions import rider_bp
+    from app.routes.cordinates import coordinates_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(driver_bp)
+    app.register_blueprint(rider_bp)
+    app.register_blueprint(coordinates_bp)
 
     return app
