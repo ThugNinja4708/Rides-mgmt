@@ -17,7 +17,7 @@ def create_app():
     app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(hours=1)
     app.config['JWT_REFRESH_TOKEN_EXPIRES'] = datetime.timedelta(days=30)
     app.config["DB_NAME"] = "rides_mgmt"
-    app.config["MONGO_URI"] = "mongodb+srv://rithvikkantha3771:S3zp72v7y6noQSW0@ridesmgmt.w4tn0.mongodb.net/?retryWrites=true&w=majority&appName=ridesMgmt"
+    app.config["MONGO_URI"] = "mongodb://rithvikkantha3771:S3zp72v7y6noQSW0@ridesmgmt.w4tn0.mongodb.net/?retryWrites=true&w=majority&appName=ridesMgmt"
     app.config["GOOGLE_API_KEY"] = "AIzaSyDJ6xZxVNPiNVWIGsE82M1tOGeqHfGX7dI"
 
 

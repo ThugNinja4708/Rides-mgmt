@@ -8,6 +8,7 @@ from datetime import datetime
 from app.models.Driver import Driver
 from app.models.Booking import Booking
 from app.models.Refund import Refund
+import requests
 
 driver_bp = Blueprint("driver", __name__, url_prefix="/api/driver")
 
@@ -162,5 +163,20 @@ def cancel_ride():
         booking.driver_earning = 0
         booking.save()
     return Response.generate(status=200, message="cancelled ride successfully!!")
+
+
+@driver_bp.route("/driver_earning", methods=["POST"])
+@jwt_required()
+def get_my_earning():
+     ride_id = request.args.get("ride_id")
+     driver_id = get_jwt_identity()
+     result = Booking.calculate_driver_earnings(driver_id=driver_id,ride_id=ride_id)
+     return Response.generate(
+         status= 200,
+         result = result,
+         message='driver earnings fetched successfully'
+     )
+     
+     
 
 

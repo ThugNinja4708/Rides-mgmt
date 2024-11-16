@@ -161,3 +161,11 @@ class Rides:
             {"$set": {"status": RideStatus.CANCELLED.value}}
         )
         return result.modified_count
+    
+    def cancel_ride_by_rider(ride_id,rider_id):
+         result = rides_collection.update_one(
+        {"_id": ride_id},  # Match the ride by its ID
+        {"$pull": {"list_of_riders": rider_id}}  # Remove the rider from the array
+    )
+         return result .modified_count
+        
