@@ -20,7 +20,7 @@ def signup():
 
         if(role == "admin"):
             return Response.generate(
-                status=401, message="You can Register for this role"
+                status=401, message="You can't Register for this role"
             )
 
         user = get_user_collection_by_role(role)
