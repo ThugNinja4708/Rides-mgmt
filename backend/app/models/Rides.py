@@ -16,7 +16,7 @@ class Rides:
         status,
         capacity,
         price_per_seat,
-        start_time,
+        start_time: datetime,
         list_of_riders = [],
         created_at=None,
         updated_at=None,
@@ -130,7 +130,7 @@ class Rides:
                             "type": "Point",
                             "coordinates": current_location  # [longitude, latitude]
                         },
-                        "$maxDistance": 5000  # Distance in meters
+                        "$maxDistance": 5*1000  # Distance in meters
                     }
                 }
             })
