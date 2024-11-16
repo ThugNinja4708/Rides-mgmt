@@ -115,11 +115,11 @@ class Rides:
         condition1 = {"driver_id": ObjectId(filter["driver_id"])}
         if filter.get("status") is not None:
             condition2 = {"status": filter["status"]}
-            rides = rides_collection.find({"$and": [condition1, condition2]})
+            rides_cursor = rides_collection.find({"$and": [condition1, condition2]})
         else:
-            rides = rides_collection.find({"driver_id": ObjectId(filter["driver_id"])})
+            rides_cursor = rides_collection.find({"driver_id": ObjectId(filter["driver_id"])})
 
-        return rides
+        return [Rides.from_db(ride).to_dict() for ride in rides_cursor]
 
     @staticmethod
     def get_all_rides_rider(current_location=None):
@@ -139,11 +139,11 @@ class Rides:
         return []
 
     @staticmethod
-    def get_all_rides_status(rider_id, status="scheduled"):
+    def get_all_rides_status(rider_id, status=RideStatus.SCHEDULED.value):
         condition1 = {"list_of_riders": ObjectId(rider_id)}
         condition2 = {"status": status}
         rides_cursor = rides_collection.find({"$and": [condition1, condition2]})
-        rides = [Rides.from_db(ride) for ride in rides_cursor]
+        rides = [Rides.from_db(ride).to_dict() for ride in rides_cursor]
         return rides
 
     @staticmethod

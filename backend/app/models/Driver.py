@@ -101,7 +101,7 @@ class Driver:
     
     @staticmethod
     def add_vehicle_info(user_id, vehicle_info_dict):
-        filter_query = {"_id":  ObjectId(user_id)} 
+        filter_query = {"_id":  ObjectId(user_id)}
         update_value = {"$set": {"vehicle_info": vehicle_info_dict}}
         result = driver_collection.update_one(filter_query, update_value)
 
@@ -109,10 +109,6 @@ class Driver:
         if result.modified_count > 0:
             print("Document updated successfully.")
         return vehicle_info_dict
-
-
-        
-
 
 
     def __repr__(self):

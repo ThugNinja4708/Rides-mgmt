@@ -2,10 +2,8 @@ from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity
 from app.utils.response import Response
 from app.models.Rides import Rides
-from app.models.Driver import Driver
 from app.models.Payment import Payment
 from app.models.Booking import Booking
-from bson import ObjectId
 
 rider_bp = Blueprint("rider", __name__, url_prefix="/api/rider")
 
@@ -24,10 +22,9 @@ def get_all_rides_based_on_location():
 @jwt_required()
 def get_all_rides_by_status():
     try:
-        rider_id = None
-        status = "scheduled"
-        if rider_id is None:
-            rider_id = get_jwt_identity()
+        data = request.get_json()
+        status = data["status"]
+        rider_id = get_jwt_identity()
         result = Rides.get_all_rides_status(rider_id, status)
         return Response.generate(
             status=200,
@@ -42,17 +39,15 @@ def get_all_rides_by_status():
 @jwt_required()
 def book_ride():
     try:
-        rider_id = None
         data = request.get_json()
         ride_info = data["ride_info"]
         payment_info = data["payment_info"]
         role = get_jwt()["role"]
+        rider_id = get_jwt_identity()
 
         if role != "rider":
             return Response.generate(status=403, message="you can not perform this action")
 
-        if rider_id is None:
-            rider_id = get_jwt_identity()
         modified_count = Rides.add_rider_to_ride(ride_info["ride_id"], rider_id)
         if modified_count != 1:
             return Response.generate(

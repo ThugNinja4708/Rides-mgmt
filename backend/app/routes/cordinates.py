@@ -6,12 +6,13 @@ from app.utils.response import Response
 coordinates_bp = Blueprint("coordinates", __name__, url_prefix="/api/coordinates")
 
 
-@coordinates_bp.route("/get_places", methods=["GET"])
+@coordinates_bp.route("/get_places", methods=["POST"])
 @jwt_required()
 def get_places():
     try:
-        latitude = request.args.get("lat")
-        longitude = request.args.get("lng")
+        data = request.get_json()
+        latitude = data["lat"]
+        longitude = data["lng"]
         radius = 1000  # in meters
         GOOGLE_API_KEY = current_app.config["GOOGLE_API_KEY"]
         headers = {
