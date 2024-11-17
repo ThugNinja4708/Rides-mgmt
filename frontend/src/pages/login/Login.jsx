@@ -1,22 +1,27 @@
 import { LoginTemplate } from "../../common-components/LoginTemplate";
 import {loginAPI} from "./LoginAPI"
 import useAuth from "../../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 export const Login = () => {
-    const {user, isLoggedIn, setIsLoggedIn} = useAuth();
+    const {setUser, setIsLoggedIn} = useAuth();
+    const navigate = useNavigate();
     const inputs = [
         {type: "text", name: "username", placeholder: "Username", required: true},
         {type: "text", name: "email", placeholder: "Email", required: true},
         {type: "password", name: "password", placeholder: "Password", required: true},
         {type: "dropdown", name: "role", placeholder: "Select a role", required: true, options: [
             {label: "Driver", value: "driver"},
-            {label: "Rider", value: "rider"}
+            {label: "Rider", value: "rider"},
+            {label: "Admin", value: "admin"}
         ]}
     ]
 
     const handleSubmit = async (inputData) => {
         const response = await loginAPI(inputData)
         if (response.status === 200) {
-            setIsLoggedIn(true)
+            setIsLoggedIn(true);
+            setUser(response?.data?.user);
+            navigate("/");
         }
 }
     return (

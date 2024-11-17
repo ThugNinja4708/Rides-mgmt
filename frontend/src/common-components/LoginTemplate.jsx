@@ -20,6 +20,10 @@ export const LoginTemplate = ({title, inputs, buttonLabel, loginPrompt, linkText
         setIsFormValid(allFilled);
     }, [inputData, inputs]);
 
+    useEffect(()=> {
+        setInputData({});
+    },[linkHref]);
+
     const handleInputChange = (e) => {
         setInputData({...inputData, [e.target.name]: e.target.value});
     }
