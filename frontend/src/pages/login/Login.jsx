@@ -2,7 +2,7 @@ import { LoginTemplate } from "../../common-components/LoginTemplate";
 import {loginAPI} from "./LoginAPI"
 import useAuth from "../../hooks/useAuth";
 export const Login = () => {
-    const {user, isLoggedIn} = useAuth();
+    const {user, isLoggedIn, setIsLoggedIn} = useAuth();
     const inputs = [
         {type: "text", name: "username", placeholder: "Username", required: true},
         {type: "text", name: "email", placeholder: "Email", required: true},
@@ -15,7 +15,9 @@ export const Login = () => {
 
     const handleSubmit = async (inputData) => {
         const response = await loginAPI(inputData)
-        console.log(response);
+        if (response.status === 200) {
+            setIsLoggedIn(true)
+        }
 }
     return (
         <LoginTemplate

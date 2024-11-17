@@ -2,6 +2,7 @@ import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
 import {SignUp} from "./pages/signUp/SignUp.jsx";
 import { Login } from "./pages/login/Login.jsx";
 import { UserProvider } from "./context/userContext/userContextProvider.js";
+import "./global.css"
 function App() {
   return (
     <UserProvider>
