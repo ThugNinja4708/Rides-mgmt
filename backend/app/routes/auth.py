@@ -72,11 +72,13 @@ def login():
             additional_claims=additional_claims,
             expires_delta=timedelta(hours=1),
         )
+        user_data = user.to_dict()
+        user_data["role"] = role
 
         response = make_response(
             {
                 "message": "Login successful",
-                "user": user.to_dict(),
+                "user": user_data,
             },
             200,
         )

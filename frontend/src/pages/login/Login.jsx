@@ -18,12 +18,10 @@ export const Login = () => {
 
     const handleSubmit = async (inputData) => {
         const response = await loginAPI(inputData)
-        if (response.status === 200) {
             setIsLoggedIn(true);
-            setUser(response?.data?.user);
+            setUser(response?.user);
             navigate("/");
-        }
-}
+    }
     return (
         <LoginTemplate
             title="Log In"

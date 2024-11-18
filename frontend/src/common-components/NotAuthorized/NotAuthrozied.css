@@ -1,0 +1,9 @@
+.not-authorized-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+    gap: 40px;
+    padding-top: 30px;
+}
