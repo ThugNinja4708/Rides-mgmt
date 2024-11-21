@@ -3,7 +3,7 @@ import {loginAPI} from "./LoginAPI"
 import useAuth from "../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 export const Login = () => {
-    const {setUser, setIsLoggedIn} = useAuth();
+    const {user, setIsLoggedIn} = useAuth();
     const navigate = useNavigate();
     const inputs = [
         {type: "text", name: "username", placeholder: "Username", required: true},
@@ -19,7 +19,8 @@ export const Login = () => {
     const handleSubmit = async (inputData) => {
         const response = await loginAPI(inputData)
             setIsLoggedIn(true);
-            setUser(response?.user);
+            user.current = response?.user
+            // setUser(response?.user);
             navigate("/");
     }
     return (

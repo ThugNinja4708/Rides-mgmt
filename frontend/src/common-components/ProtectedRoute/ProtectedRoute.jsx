@@ -5,11 +5,11 @@ import useAuth from "../../hooks/useAuth";
 const ProtectedRoute = ({ requiredRole }) => {
     const {user, isLoggedIn}  = useAuth();
 
-    if (!(isLoggedIn && user)) {
+    if (!(isLoggedIn && user.current)) {
         return <Navigate to="/login" />;
     }
 
-    if (requiredRole && user.role !== requiredRole) {
+    if (requiredRole && user.current.role !== requiredRole) {
         // {navigate to authorized page}
         return <Navigate to="/notAuthorized" />;
     }

@@ -20,7 +20,7 @@ function App() {
                     {/* Protected routes */}
                     <Route element={<Layout />}>
                         <Route path="/" element={<ProtectedRoute requiredRole="driver" />} >
-                            <Route path="/" element={<div>Dashboard</div>} />
+                            <Route path="/" element={<div></div>} />
                         </Route>
                         <Route path="/createRide" element={<ProtectedRoute requiredRole="driver" />} >
                             <Route path="/createRide" element={<div>Create Ride page!!</div>} />

@@ -1,22 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
 
 .t14 {
-    font-family: "Open Sans", sans-serif !important;
+    font-family: "Montserrat", sans-serif !important;
     font-size: 1rem !important;
     font-weight: normal !important;
+    letter-spacing: .25px;
 }
+
 .t14-sb {
-    font-family: "Open Sans", sans-serif !important;
+    font-family: "Montserrat", sans-serif !important;
     font-size: 1rem !important;
+    font-weight: 600 !important;
+    letter-spacing: .25px;
+}
+
+.t16 {
+    font-family: "Montserrat", sans-serif !important;
+    font-size: 1.1428571429rem !important;
+    font-weight: normal !important;
+    letter-spacing: .25px;
+}
+
+.t16-sb {
+    font-family: "Montserrat", sans-serif !important;
+    font-size: 1.1428571429rem !important;
+    font-weight: 600 !important;
+    letter-spacing: .25px;
+}
+.t18 {
+    font-family: "Montserrat", sans-serif !important;
+    font-size: 1.2857142857rem !important;
+    font-weight: normal !important;
+}
+.t18-sb {
+    font-family: "Montserrat", sans-serif !important;
+    font-size: 1.2857142857rem !important;
+    font-weight: normal !important;
+}
+
+.t20 {
+    font-family: "Montserrat", sans-serif !important;
+    font-size: 1.4285714286rem !important;
+    font-weight: normal !important;
+}
+
+.t20-sb {
+    font-family: "Montserrat", sans-serif !important;
+    font-size: 1.4285714286rem !important;
     font-weight: 600 !important;
 }
 
-.t16 {
-    font-family: "Open Sans", sans-serif !important;
-    font-size: 1.1428571429rem !important;
+.t24 {
+    font-family: "Montserrat", sans-serif !important;
+    font-size: 1.7142857143rem !important;
     font-weight: normal !important;
 }
-.t16 {
-    font-family: "Open Sans", sans-serif !important;
-    font-size: 1.1428571429rem !important;
+
+.t24-sb {
+    font-family: "Montserrat", sans-serif !important;
+    font-size: 1.7142857143rem !important;
     font-weight: 600 !important;
 }
