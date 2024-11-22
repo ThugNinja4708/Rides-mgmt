@@ -1,28 +1,34 @@
 import { LoginTemplate } from "../../common-components/LoginTemplate";
-import {loginAPI} from "./LoginAPI"
+import { loginAPI } from "./LoginAPI";
 import useAuth from "../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 export const Login = () => {
-    const {user, setIsLoggedIn} = useAuth();
+    const { user, setIsLoggedIn } = useAuth();
     const navigate = useNavigate();
     const inputs = [
-        {type: "text", name: "username", placeholder: "Username", required: true},
-        {type: "text", name: "email", placeholder: "Email", required: true},
-        {type: "password", name: "password", placeholder: "Password", required: true},
-        {type: "dropdown", name: "role", placeholder: "Select a role", required: true, options: [
-            {label: "Driver", value: "driver"},
-            {label: "Rider", value: "rider"},
-            {label: "Admin", value: "admin"}
-        ]}
-    ]
+        { type: "text", name: "username", placeholder: "Username", required: true },
+        { type: "text", name: "email", placeholder: "Email", required: true },
+        { type: "password", name: "password", placeholder: "Password", required: true },
+        {
+            type: "dropdown",
+            name: "role",
+            placeholder: "Select a role",
+            required: true,
+            options: [
+                { label: "Driver", value: "driver" },
+                { label: "Rider", value: "rider" },
+                { label: "Admin", value: "admin" }
+            ]
+        }
+    ];
 
     const handleSubmit = async (inputData) => {
-        const response = await loginAPI(inputData)
-            setIsLoggedIn(true);
-            user.current = response?.user
-            // setUser(response?.user);
-            navigate("/");
-    }
+        const response = await loginAPI(inputData);
+        localStorage.setItem('authToken', response.data.authToken);
+        setIsLoggedIn(true);
+        user.current = response?.data?.user;
+        navigate("/");
+    };
     return (
         <LoginTemplate
             title="Log In"
@@ -33,5 +39,5 @@ export const Login = () => {
             linkHref="/signUp"
             onSubmit={handleSubmit}
         />
-    )
-}
+    );
+};

@@ -26,7 +26,7 @@
     padding: 0 16px 0 0;
     color: #3c3c3c;
 }
-.header-link:hover{
+.header-link:hover {
     text-decoration: underline;
     text-underline-offset: 3px;
     text-decoration-thickness: 1px;

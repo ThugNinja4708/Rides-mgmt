@@ -74,16 +74,7 @@ def login():
         )
         user_data = user.to_dict()
         user_data["role"] = role
-
-        response = make_response(
-            {
-                "message": "Login successful",
-                "user": user_data,
-            },
-            200,
-        )
-        response.set_cookie("access_token", access_token, httponly=True, secure=True, samesite = "Lax")
-        return response
+        return Response.generate(status=200, data={"authToken": access_token, "user": user_data})
 
     except KeyError as e:
         return Response.generate(
