@@ -1,7 +1,6 @@
 # app/__init__.py
-from flask import Flask, current_app
+from flask import Flask
 from flask_cors import CORS
-# from config import config_by_name
 from app.database import Database
 import os
 import datetime
@@ -23,7 +22,7 @@ def create_app():
 
 
     # Initialize database
-    CORS(app,supports_credentials=True)
+    CORS(app, supports_credentials=True)
     Database.initialize(app)
     jwt = JWTManager(app)
 

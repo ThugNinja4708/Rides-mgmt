@@ -1,13 +1,26 @@
 import React, { useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./Header.css";
 import { Menu } from 'primereact/menu';
 import useAuth from "hooks/useAuth";
+import {axios} from "lib/axios";
 
 const Header = () => {
+    const navigate = useNavigate()
     const [userMenuVisible, setUserMenuVisible] = useState()
     const userMenuRef = useRef();
-    const {user} = useAuth()
+    const {user, setIsLoggedIn} = useAuth()
+
+    const handleLogout = async () => {
+        try {
+            await axios.post("/auth/logout");
+            setIsLoggedIn(false);
+            user.current = null
+            navigate("/login")
+        } catch (error) {
+            console.log(error)
+        }
+    };
 
     const userMenuOptions = [
         {
@@ -15,11 +28,17 @@ const Header = () => {
             items: [
                 {
                     label: 'Settings',
-                    icon: 'pi pi-cog'
+                    icon: 'pi pi-cog',
+                    command: ()=>{
+                        navigate("/settings")
+                    }
                 },
                 {
                     label: 'Logout',
-                    icon: 'pi pi-sign-out'
+                    icon: 'pi pi-sign-out',
+                    command: ()=>{
+                        handleLogout()
+                    }
                 }
             ]
         }
