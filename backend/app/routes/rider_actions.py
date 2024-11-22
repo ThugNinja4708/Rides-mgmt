@@ -16,6 +16,7 @@ def get_all_rides_based_on_location():
     current_location = request.get_json()["current_location"]
     result = Rides.get_all_rides_rider(current_location)
     return Response.generate(
+        status=200,
         data=result, message="Fetched all rides for Rider based on pickup location"
     )
 
