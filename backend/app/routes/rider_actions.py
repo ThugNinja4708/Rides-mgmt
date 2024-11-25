@@ -10,7 +10,7 @@ from app.models import Refund
 rider_bp = Blueprint("rider", __name__, url_prefix="/api/rider")
 
 
-@rider_bp.route("/get_all_rides", methods=["GET"])
+@rider_bp.route("/get_all_rides", methods=["POST"])
 @jwt_required()
 def get_all_rides_based_on_location():
     current_location = request.get_json()["current_location"]
@@ -38,7 +38,7 @@ def get_all_rides_by_status():
         return Response.generate(message=str(e))
 
 
-@rider_bp.route("/bookride", methods=["POST"])
+@rider_bp.route("/book_ride", methods=["POST"])
 @jwt_required()
 def book_ride():
     try:
@@ -76,7 +76,7 @@ def book_ride():
     except Exception as e:
         return Response.generate(message=str(e))
     
-@rider_bp.route("/cancelride", methods=["POST"])
+@rider_bp.route("/cancel_ride", methods=["POST"])
 @jwt_required()
 def cancel_ride():
     rider_id = None

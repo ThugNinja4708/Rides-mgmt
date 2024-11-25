@@ -49,8 +49,8 @@ const Header = () => {
     };
     return (
         <header className="header-container">
-            <div className="header-left-container t18">Rides Management</div>
-            <div className="header-right-container t14">
+            <div className="header-left-container h18">Rides Management</div>
+            <div className="header-right-container h14">
                 <Link to="/rides" className="header-link">
                     Avilable rides
                 </Link>
@@ -66,7 +66,7 @@ const Header = () => {
                     onClick={handleMenuToggle}
                 >
                     <i className="pi pi-user" />
-                    <p className="t14">{user.current.username}</p>
+                    <p className="t14">{user.current?.username}</p>
                     <i className={userMenuVisible ? "pi pi-angle-up" : "pi pi-angle-down"} />
                 </div>
                 <Menu

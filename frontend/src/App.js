@@ -6,6 +6,7 @@ import ProtectedRoute from "./common-components/ProtectedRoute/ProtectedRoute.js
 import Layout from "./common-components/pageLayout/Layout.jsx";
 import NotAuthorized from "./common-components/NotAuthorized/NotAuthorized.jsx";
 import { AvailableRides } from "./pages/AvilableRides/AvailableRides";
+import { BookingsPage } from "./pages/BookingsPage/BookingPage.jsx";
 import "./global.css";
 function App() {
     return (
@@ -24,7 +25,7 @@ function App() {
                                 <Route path="/" element={<AvailableRides />} />
                             </Route>
                             <Route path="/bookings" element={<ProtectedRoute requiredRole="driver" />}>
-                                <Route path="/bookings" element={<div>Bookings page!!</div>} />
+                                <Route path="/bookings" element={<BookingsPage />} />
                             </Route>
                             <Route path="/history" element={<ProtectedRoute />}>
                                 <Route path="/history" element={<div>Book Ride page!!</div>} />
