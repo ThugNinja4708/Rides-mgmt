@@ -2,7 +2,6 @@ import { InputText } from "primereact/inputtext";
 import { InputIcon } from "primereact/inputicon";
 import { IconField } from "primereact/iconfield";
 import { TabView, TabPanel } from "primereact/tabview";
-import { Button } from "primereact/button";
 import "./BookingsPage.css";
 import { RideCard } from "common-components/RideCard/RideCard";
 import { useCallback, useEffect, useState } from "react";
@@ -27,7 +26,7 @@ export const BookingsPage = () => {
         )
     })
     }
-    const fetchRides = async ()=>{
+    const fetchRides = useCallback(async ()=>{
         setIsLoading(true);
         // await getUsersCurrentLocation()
         const response = await axios.post("/rider/get_all_rides", {
@@ -35,7 +34,7 @@ export const BookingsPage = () => {
         })
         setListOfRides(response.data.data)
 
-    }
+    }, [location.lat, location.lng])
     const renderRides = useCallback(()=>{
         return listOfRides.map((ride) => (
             <RideCard key={ride.id} ride={ride} />
@@ -43,7 +42,7 @@ export const BookingsPage = () => {
     }, [listOfRides])
     useEffect(() => {
         fetchRides()
-    }, []);
+    }, [fetchRides]);
     return (
         <div className="bookings-page">
             <div>
