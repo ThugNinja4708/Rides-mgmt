@@ -5,7 +5,7 @@ import { UserProvider } from "./context/userContext/userContextProvider.js";
 import ProtectedRoute from "./common-components/ProtectedRoute/ProtectedRoute.jsx";
 import Layout from "./common-components/pageLayout/Layout.jsx";
 import NotAuthorized from "./common-components/NotAuthorized/NotAuthorized.jsx";
-import { AvailableRides } from "./pages/AvilableRides/AvailableRides";
+import { Home } from "./pages/Home/Home.jsx";
 import { BookingsPage } from "./pages/BookingsPage/BookingPage.jsx";
 import "./global.css";
 function App() {
@@ -22,7 +22,7 @@ function App() {
                         {/* Protected routes */}
                         <Route element={<Layout />}>
                             <Route path="/" element={<ProtectedRoute requiredRole="driver" />}>
-                                <Route path="/" element={<AvailableRides />} />
+                                <Route path="/" element={<Home />} />
                             </Route>
                             <Route path="/bookings" element={<ProtectedRoute requiredRole="driver" />}>
                                 <Route path="/bookings" element={<BookingsPage />} />

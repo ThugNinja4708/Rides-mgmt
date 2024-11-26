@@ -1,8 +1,8 @@
 import "./RideCard.css";
 import { Card } from "primereact/card";
 import { Tag } from "common-components/Tag/Tag";
-import { Button } from "primereact/button";
-export const RideCard = ({ ride }) => {
+
+export const RideCard = ({ ride, footer }) => {
     const getSeverity = ()=>{
         if(ride.status == "cancelled"){
             return "failure"
@@ -16,19 +16,10 @@ export const RideCard = ({ ride }) => {
     const time = `${date.getHours()}: ${date.getHours()}`
     const pickup_location = ride.pickup_location.coordinates.coordinates
     const drop_location = ride.drop_location.coordinates.coordinates
-    const renderFooter = (
-        <div className="card-footer">
-            <div className="card-driver-info">
-                <span>Driver: {ride.driver_id}</span> <span>Vehicle: {ride.vehicle_id}</span>
-            </div>
-            <div>
-                <Button label="View details" text />
-            </div>
-        </div>
-    );
+
     return (
         <div>
-            <Card footer={renderFooter} className="card-container t14">
+            <Card footer={footer} className="card-container t14">
                 <div className="card-content">
                     <div className="card-content-left">
                         <div className="card-location-content">
