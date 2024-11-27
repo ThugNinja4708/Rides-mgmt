@@ -199,3 +199,15 @@ def get_my_earning():
          result = result,
          message='driver earnings fetched successfully'
      )
+     
+@driver_bp.route("/driver_vehicles", methods=["GET"])
+@jwt_required()
+def get_my_vehicles():
+    driver_id = get_jwt_identity()
+    result = Driver.get_all_vehicles(driver_id=driver_id)
+    return Response.generate(
+        data=result,
+        status=200,
+        message='vehicle details fetched successfully'
+    )
+    

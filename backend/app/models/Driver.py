@@ -109,6 +109,43 @@ class Driver:
         if result.modified_count > 0:
             print("Document updated successfully.")
         return vehicle_info_dict
+    
+    def get_driver_and_vehicle_name(driver_id,vehicle_id):
+        query = {
+        "_id": driver_id,
+        "vehicle_info.id": vehicle_id
+    }
+
+    # Projection to fetch only the required fields
+        projection = {
+        "username": 1,
+        "vehicle_info.name": 1
+    }
+
+    # Find the matching document
+        driver = driver_collection.find_one(query, projection)
+
+        if driver:
+            return {
+            "username": driver.get("username"),
+            "vehicle_name": driver.get("vehicle_info", {}).get("name")
+        }
+        else:
+            return None 
+        
+    def get_all_vehicles(driver_id):
+        query = {"_id": driver_id}
+    
+    # Projection to return only vehicle_info
+        projection = {"vehicle_info": 1, "_id": 0}
+    
+    # Fetch the driver's vehicle information
+        result = driver_collection.find_one(query, projection)
+    
+        if result and "vehicle_info" in result:
+            return result["vehicle_info"]
+        else:
+            return {}
 
 
     def __repr__(self):
