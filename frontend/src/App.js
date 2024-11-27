@@ -30,7 +30,7 @@ function App() {
                             <Route path="/history" element={<ProtectedRoute />}>
                                 <Route path="/history" element={<div>Book Ride page!!</div>} />
                             </Route>
-                            <Route path="/settings" element={<ProtectedRoute />}>
+                            <Route path="/settings" element={<ProtectedRoute requiredRole="driver" />}>
                                 <Route path="/settings" element={<div>Settings page!!</div>} />
                             </Route>
                         </Route>

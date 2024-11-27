@@ -43,15 +43,17 @@ def get_all_rides_by_status():
 def book_ride():
     try:
         data = request.get_json()
-        ride_info = data["ride_info"]
+        ride_id = data["ride_id"]
         payment_info = data["payment_info"]
         role = get_jwt()["role"]
         rider_id = get_jwt_identity()
 
         if role != "rider":
             return Response.generate(status=403, message="you can not perform this action")
+        ride_obj = Rides.get_ride_by_id(ride_id)
 
-        modified_count = Rides.add_rider_to_ride(ride_info["ride_id"], rider_id)
+
+        modified_count = Rides.add_rider_to_ride(rider_id)
         if modified_count != 1:
             return Response.generate(
                 data={}, message="Already Booked or No Ride Found", status=500
@@ -64,12 +66,12 @@ def book_ride():
             )
             payment_id = new_payment.make_payment()
             new_booking = Booking(
-                driver_id=ride_info["driver_id"],
-                ride_id=ride_info["ride_id"],
+                driver_id=ride_obj.driver_id,
+                ride_id=ride_obj._id,
                 payment_id=payment_id,
                 rider_id=rider_id,
             )
-            new_booking.add_booking(ride_info["price_per_seat"])
+            new_booking.add_booking(ride_obj.price_per_seat)
             return Response.generate(
                 data={}, message="Ride Booked SuccessFully", status=200
             )
