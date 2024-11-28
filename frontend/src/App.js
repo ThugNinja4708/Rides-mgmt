@@ -21,7 +21,7 @@ function App() {
 
                         {/* Protected routes */}
                         <Route element={<Layout />}>
-                            <Route path="/" element={<ProtectedRoute requiredRole="driver" />}>
+                            <Route path="/" element={<ProtectedRoute/>}>
                                 <Route path="/" element={<Home />} />
                             </Route>
                             <Route path="/bookings" element={<ProtectedRoute requiredRole="driver" />}>

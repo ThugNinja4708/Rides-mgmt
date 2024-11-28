@@ -53,7 +53,7 @@ def book_ride():
         ride_obj = Rides.get_ride_by_id(ride_id)
 
 
-        modified_count = Rides.add_rider_to_ride(rider_id)
+        modified_count = ride_obj.add_rider_to_ride(rider_id)
         if modified_count != 1:
             return Response.generate(
                 data={}, message="Already Booked or No Ride Found", status=500

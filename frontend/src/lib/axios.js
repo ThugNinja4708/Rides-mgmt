@@ -10,7 +10,7 @@ export const axios = Axios.create({
 
 axios.interceptors.request.use(
     (config) => {
-        const excludedPaths = ["/login", "/signUp"];
+        const excludedPaths = ["/login", "/signup"];
         const isExcludedPath = excludedPaths.some((path) => config.url.includes(path));
         if (!isExcludedPath) {
             const token = localStorage.getItem("authToken")
