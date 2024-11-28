@@ -19,13 +19,13 @@ export const RiderHome = () => {
     const [userInputs, setUserInputs] = useState({ cardNumber: "", expiryDate: "", cardHolderName: "", cvv: null });
     const [isValid, setIsValid] = useState({ cardNumber: false, expiryDate: false, cvv: false, cardHolderName: false });
     const [paymentStatus, setPaymentStatus] = useState("");
-    const [currentRide, setCurrentRide] = useState(null)
+    const [currentRide, setCurrentRide] = useState(null);
 
     const [isTouched, setIsTouched] = useState({
         cardNumber: false,
         expiryDate: false,
         cvv: false,
-        cardHolderName: false,
+        cardHolderName: false
     });
 
     const getUsersCurrentLocation = useCallback(() => {
@@ -57,14 +57,13 @@ export const RiderHome = () => {
         }
     }, []);
 
-    const handleCardHolderNameChange = useCallback((value)=>{
+    const handleCardHolderNameChange = useCallback((value) => {
         setUserInputs((prev) => ({ ...prev, cardHolderName: value }));
-        if(value !== "")
-            setIsValid((prev)=>({...prev, cardHolderName: /^[A-Za-z\s]+$/.test(value)}))
-        else{
-            setIsValid((prev)=>({...prev, cardHolderName: false}))
+        if (value !== "") setIsValid((prev) => ({ ...prev, cardHolderName: /^[A-Za-z\s]+$/.test(value) }));
+        else {
+            setIsValid((prev) => ({ ...prev, cardHolderName: false }));
         }
-    }, [])
+    }, []);
 
     const handleExpiryChange = useCallback((e) => {
         let value = e.target.value.replace(/\D/g, "").slice(0, 4);
@@ -91,14 +90,14 @@ export const RiderHome = () => {
         setIsTouched((prev) => ({ ...prev, cardNumber: false, expiryDate: false, cvv: false }));
     }, []);
 
-    const handlePayNow = useCallback( async() => {
+    const handlePayNow = useCallback(async () => {
         // Simulate payment processing
         const paymentInfo = {
             payment_method: "CARD",
             payment_status: "success"
-        }
-        const response = await bookRideApi(currentRide._id, paymentInfo)
-        console.log(response)
+        };
+        const response = await bookRideApi(currentRide._id, paymentInfo);
+        console.log(response);
         setPaymentStatus(true);
         setTimeout(() => {
             closeDialog();
@@ -138,9 +137,9 @@ export const RiderHome = () => {
                         id="card-holder-name"
                         placeholder="Adam Smith"
                         type="text"
-                        onFocus={()=>markFieldAsTouched("cardHolderHame")}
+                        onFocus={() => markFieldAsTouched("cardHolderHame")}
                         onChange={(e) => {
-                            handleCardHolderNameChange(e.target.value)
+                            handleCardHolderNameChange(e.target.value);
                         }}
                         className={!isValid.cardHolderName && isTouched.cardHolderName ? "p-invalid" : ""}
                     />
@@ -182,7 +181,18 @@ export const RiderHome = () => {
                 <Button label="Pay Now" disabled={!isFormValid} onClick={handlePayNow} />
             </div>
         );
-    }, [handleCardNumberChange, handleExpiryChange, handleCVVChange, isValid, userInputs, handlePayNow, paymentStatus, markFieldAsTouched, isTouched, handleCardHolderNameChange]);
+    }, [
+        handleCardNumberChange,
+        handleExpiryChange,
+        handleCVVChange,
+        isValid,
+        userInputs,
+        handlePayNow,
+        paymentStatus,
+        markFieldAsTouched,
+        isTouched,
+        handleCardHolderNameChange
+    ]);
 
     const actionDetails = {
         bookRide: {
@@ -196,7 +206,7 @@ export const RiderHome = () => {
             return (
                 <div className="card-footer">
                     <div className="card-driver-info">
-                        <span>Driver: {ride.driver_id}</span> <span>Vehicle: {ride.vehicle_id}</span>
+                        <span>Driver: {ride.driver_name}</span> <span>Vehicle: {ride.vehicle_id}</span>
                     </div>
                     <div>
                         <Button
@@ -211,13 +221,15 @@ export const RiderHome = () => {
                 </div>
             );
         };
-        return listOfRides.map((ride) => <RideCard key={ride.id} ride={ride} footer={renderFooter(ride)} />);
+        return listOfRides.map((ride) => {
+            return <RideCard key={ride.id} ride={ride} footer={renderFooter(ride)} />;
+        });
     }, [listOfRides]);
 
     const fetchRides = useCallback(async () => {
         setIsLoading(true);
         // await getUsersCurrentLocation()
-        const response = await axios.post("/rider/get_all_rides", {
+        const response = await axios.post("/rider/get_all_available_rides", {
             current_location: [location.lat, location.lng]
         });
         setListOfRides(response.data.data);
@@ -228,8 +240,9 @@ export const RiderHome = () => {
         fetchRides();
     }, [fetchRides]);
 
-    return (
-        isLoading ? (<div>loading....</div>): (
+    return isLoading ? (
+        <div>loading....</div>
+    ) : (
         <div className="Home-container">
             <div>
                 <IconField iconPosition="left">
@@ -243,7 +256,5 @@ export const RiderHome = () => {
                 <div style={{ padding: "1rem" }}>{actionDetails[actionPerformed]?.content()}</div>
             </Dialog>
         </div>
-        )
     );
 };
-

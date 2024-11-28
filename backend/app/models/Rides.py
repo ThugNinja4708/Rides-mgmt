@@ -100,6 +100,7 @@ class Rides:
                 "type": "Point",
                 "coordinates": self.drop_location  # [longitude, latitude]
             },
+            "list_of_riders": self.list_of_riders,
             "status": self.status,
             "price_per_seat": self.price_per_seat,
             "start_time": self.start_time.isoformat(),

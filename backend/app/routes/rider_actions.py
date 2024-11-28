@@ -4,9 +4,10 @@ from app.utils.response import Response
 from app.models.Rides import Rides
 from app.models.Payment import Payment
 from app.models.Booking import Booking
-
+from bson import ObjectId
 from app.models import Refund
-
+from app.utils.constants import RideStatus
+from app.models.Driver import Driver
 rider_bp = Blueprint("rider", __name__, url_prefix="/api/rider")
 
 
@@ -19,6 +20,21 @@ def get_all_rides_based_on_location():
         status=200,
         data=result, message="Fetched all rides for Rider based on pickup location"
     )
+
+@rider_bp.route("/get_all_available_rides", methods={"POST"})
+@jwt_required()
+def get_all_available_rides():
+    current_location = request.get_json()["current_location"]
+    user_id = get_jwt_identity()
+    rides = Rides.get_all_rides_rider(current_location)
+    result = []
+    for ride in rides:
+        if(ride["status"] != RideStatus.CANCELLED.value):
+            if(ObjectId(user_id) not in ride["list_of_riders"]):
+                driver_name = Driver.get_by_id(ride["driver_id"]).username
+                ride["driver_name"] = driver_name
+                result.append(ride)
+    return Response.generate(status=200, data=result)
 
 
 @rider_bp.route("/get_all_rides_by_status", methods=["GET"])
