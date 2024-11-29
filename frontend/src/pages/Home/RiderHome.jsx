@@ -207,7 +207,8 @@ export const RiderHome = () => {
             return (
                 <div className="card-footer">
                     <div className="card-driver-info">
-                        <span>Driver: {ride.driver_name}</span> <span>Vehicle: {ride.vehicle_id}</span>
+                        <span>Driver: {ride.driver_name}</span>
+                        <span>vehicle: {ride.vehicle_id.make} {ride.vehicle_id.model}</span>
                     </div>
                     <div>
                         <Button

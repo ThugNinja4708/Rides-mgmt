@@ -16,15 +16,7 @@ export const RideCard = ({ ride, footer }) => {
     const time = `${date.getHours()}:${date.getHours()}`
     const pickup_location = ride.pickup_location.coordinates.location
     const drop_location = ride.drop_location.coordinates.location
-    const vehicle = `${ride.vehicle_id.make} ${ride.vehicle_id.model}`
-    const renderFooter = (
-        <div className="card-footer">
-            <div className="card-driver-info">
-                <span>Driver: {ride.driver_id}</span> <span>Vehicle: {vehicle}</span>
-            </div>
-            {footer}
-        </div>
-    );
+
     return (
         <div>
             <Card footer={footer} className="card-container t14">
