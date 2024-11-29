@@ -97,7 +97,6 @@ export const RiderHome = () => {
             payment_status: "success"
         };
         const response = await bookRideApi(currentRide._id, paymentInfo);
-        console.log(response);
         setPaymentStatus(true);
         setTimeout(() => {
             closeDialog();
@@ -112,6 +111,7 @@ export const RiderHome = () => {
             </div>
         ) : (
             <div className="credit-card-container">
+                <span className="t14-sb " style={{display:"flex", justifyContent:"center"}}> Make Payment for ${currentRide.price_per_seat}</span>
                 <div className="credit-card-input">
                     <label htmlFor="card-number" className="t14-sb">
                         Card Number
@@ -189,9 +189,10 @@ export const RiderHome = () => {
         userInputs,
         handlePayNow,
         paymentStatus,
-        markFieldAsTouched,
         isTouched,
-        handleCardHolderNameChange
+        markFieldAsTouched,
+        handleCardHolderNameChange,
+        currentRide
     ]);
 
     const actionDetails = {

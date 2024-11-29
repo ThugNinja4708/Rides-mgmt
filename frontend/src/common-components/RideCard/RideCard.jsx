@@ -4,10 +4,10 @@ import { Tag } from "common-components/Tag/Tag";
 
 export const RideCard = ({ ride, footer }) => {
     const getSeverity = ()=>{
-        if(ride.status == "cancelled"){
+        if(ride.status === "cancelled"){
             return "failure"
         }
-        if(ride.status == "scheduled"){
+        if(ride.status === "scheduled"){
             return "success"
         }
     }
