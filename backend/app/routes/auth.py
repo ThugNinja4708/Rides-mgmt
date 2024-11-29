@@ -1,4 +1,5 @@
 from flask import Blueprint, request, make_response
+from flask_jwt_extended import get_jwt_identity
 from datetime import timedelta
 from app.utils.response import Response
 from app.utils.get_roles import get_user_collection_by_role
@@ -95,3 +96,16 @@ def logout():
 
     except Exception as error:
         return Response.generate(status=500, message=f"UnExpectedError Occurred: {error}")
+
+@auth_bp.route("/get_user_details", methods={"GET"})
+@jwt_required()
+def get_user_details():
+    try:
+        user_id = get_jwt_identity()
+        role = get_jwt()["role"]
+        user_obj = get_user_collection_by_role(role)
+
+        user = user_obj.get_by_id(user_id).to_dict()
+        return Response.generate(status=200, data=user)
+    except Exception as error:
+        return Response.generate(status=500, message=str(error))

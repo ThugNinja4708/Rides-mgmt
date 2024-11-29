@@ -4,10 +4,10 @@ import { Tag } from "common-components/Tag/Tag";
 import { Button } from "primereact/button";
 export const RideCard = ({ ride, footer }) => {
     const getSeverity = ()=>{
-        if(ride.status == "cancelled"){
+        if(ride.status === "cancelled"){
             return "failure"
         }
-        if(ride.status == "scheduled"){
+        if(ride.status === "scheduled"){
             return "success"
         }
     }
@@ -27,7 +27,7 @@ export const RideCard = ({ ride, footer }) => {
     );
     return (
         <div>
-            <Card footer={renderFooter} className="card-container t14">
+            <Card footer={footer} className="card-container t14">
                 <div className="card-content">
                     <div className="card-content-left">
                         <div className="card-location-content">

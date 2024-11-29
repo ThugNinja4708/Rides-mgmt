@@ -1,13 +1,13 @@
 import "./Tag.css"
 export const Tag = ({severity, value}) => {
     const getColor = () =>{
-        if(severity == "success"){
+        if(severity === "success"){
             return "#c7f8d2";
         }
-        if(severity == "info"){
+        if(severity === "info"){
             return "#fff0d9";
         }
-        if(severity == "failure")
+        if(severity === "failure")
             return "#ffdfe0"
     }
     return (

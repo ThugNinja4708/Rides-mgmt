@@ -102,6 +102,7 @@ class Rides:
                 "type": "Point",
                 "coordinates": self.drop_location  # [longitude, latitude]
             },
+            "list_of_riders": self.list_of_riders,
             "status": self.status,
             "price_per_seat": self.price_per_seat,
             "start_time": self.start_time.isoformat(),
@@ -148,10 +149,9 @@ class Rides:
         rides = [Rides.from_db(ride).to_dict() for ride in rides_cursor]
         return rides
 
-    @staticmethod
-    def add_rider_to_ride(ride_id, rider_id):
+    def add_rider_to_ride(self, rider_id):
         result = rides_collection.update_one(
-            {"_id": ObjectId(ride_id)},
+            {"_id": ObjectId(self._id)},
             {"$addToSet": {"list_of_riders": ObjectId(rider_id)}},
         )
         return result.modified_count

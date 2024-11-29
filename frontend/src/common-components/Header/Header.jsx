@@ -53,8 +53,8 @@ const Header = () => {
         <header className="header-container">
             <div className="header-left-container h18">Rides Management</div>
             <div className="header-right-container h14">
-                <Link to="/rides" className="header-link">
-                    Avilable rides
+                <Link to="/" className="header-link">
+                    Home
                 </Link>
                 <Link to="/bookings" className="header-link">
                     Bookings

@@ -1,0 +1,10 @@
+.credit-card-container {
+    display: flex;
+    flex-direction: column;
+    row-gap: 10px;
+}
+.credit-card-input {
+    display: flex;
+    flex-direction: column;
+    row-gap: 5px;
+}

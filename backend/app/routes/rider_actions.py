@@ -4,9 +4,10 @@ from app.utils.response import Response
 from app.models.Rides import Rides
 from app.models.Payment import Payment
 from app.models.Booking import Booking
-
+from bson import ObjectId
 from app.models import Refund
-
+from app.utils.constants import RideStatus
+from app.models.Driver import Driver
 rider_bp = Blueprint("rider", __name__, url_prefix="/api/rider")
 
 
@@ -19,6 +20,21 @@ def get_all_rides_based_on_location():
         status=200,
         data=result, message="Fetched all rides for Rider based on pickup location"
     )
+
+@rider_bp.route("/get_all_available_rides", methods={"POST"})
+@jwt_required()
+def get_all_available_rides():
+    current_location = request.get_json()["current_location"]
+    user_id = get_jwt_identity()
+    rides = Rides.get_all_rides_rider(current_location)
+    result = []
+    for ride in rides:
+        if(ride["status"] != RideStatus.CANCELLED.value):
+            if(ObjectId(user_id) not in ride["list_of_riders"]):
+                driver_name = Driver.get_by_id(ride["driver_id"]).username
+                ride["driver_name"] = driver_name
+                result.append(ride)
+    return Response.generate(status=200, data=result)
 
 
 @rider_bp.route("/get_all_rides_by_status", methods=["GET"])
@@ -43,15 +59,17 @@ def get_all_rides_by_status():
 def book_ride():
     try:
         data = request.get_json()
-        ride_info = data["ride_info"]
+        ride_id = data["ride_id"]
         payment_info = data["payment_info"]
         role = get_jwt()["role"]
         rider_id = get_jwt_identity()
 
         if role != "rider":
             return Response.generate(status=403, message="you can not perform this action")
+        ride_obj = Rides.get_ride_by_id(ride_id)
 
-        modified_count = Rides.add_rider_to_ride(ride_info["ride_id"], rider_id)
+
+        modified_count = ride_obj.add_rider_to_ride(rider_id)
         if modified_count != 1:
             return Response.generate(
                 data={}, message="Already Booked or No Ride Found", status=500
@@ -64,12 +82,12 @@ def book_ride():
             )
             payment_id = new_payment.make_payment()
             new_booking = Booking(
-                driver_id=ride_info["driver_id"],
-                ride_id=ride_info["ride_id"],
+                driver_id=ride_obj.driver_id,
+                ride_id=ride_obj._id,
                 payment_id=payment_id,
                 rider_id=rider_id,
             )
-            new_booking.add_booking(ride_info["price_per_seat"])
+            new_booking.add_booking(ride_obj.price_per_seat)
             return Response.generate(
                 data={}, message="Ride Booked SuccessFully", status=200
             )
