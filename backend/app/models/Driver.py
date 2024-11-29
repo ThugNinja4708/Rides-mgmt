@@ -102,13 +102,27 @@ class Driver:
     @staticmethod
     def add_vehicle_info(user_id, vehicle_info_dict):
         filter_query = {"_id":  ObjectId(user_id)}
-        update_value = {"$set": {"vehicle_info": vehicle_info_dict}}
-        result = driver_collection.update_one(filter_query, update_value)
-
-# Check if the document was updated
-        if result.modified_count > 0:
-            print("Document updated successfully.")
+        update_value = {"$push":{
+            "vehicle_info": {
+                "make": vehicle_info_dict.get("make"),
+                "model": vehicle_info_dict.get("model"),
+                "license_plate": vehicle_info_dict.get("license_plate"),
+                "capacity": vehicle_info_dict.get("capacity"),
+            }
+        }}
+        driver_collection.update_one(filter_query, update_value)
         return vehicle_info_dict
+    
+    def get_all_vehicles(driver_id):
+
+        query = {"_id": ObjectId(driver_id)}
+        projection = {"vehicle_info": 1, "_id": 0}
+    
+        result = driver_collection.find_one(query, projection)
+        if result and "vehicle_info" in result:
+            return result["vehicle_info"]
+        else:
+            return []
 
 
     def __repr__(self):
