@@ -69,12 +69,14 @@ class Rides:
             "driver_id": self.driver_id,
             "pickup_location": {
                 "type":"Point",
-                "coordinates": self.pickup_location,
+                "coordinates": self.pickup_location.get("coordinates"),
+                "location": self.pickup_location.get("name")
                 # maybe add place name also to retive along with name
             },
             "drop_location":  {
                 "type": "Point",
-                "coordinates": self.drop_location
+                "coordinates": self.drop_location.get("coordinates"),
+                "location": self.drop_location.get("name")
             },
             "status": self.status,
             "price_per_seat": self.price_per_seat,
@@ -104,7 +106,7 @@ class Rides:
             "price_per_seat": self.price_per_seat,
             "start_time": self.start_time.isoformat(),
             "capacity": self.capacity,
-            "vehicle_id": str(self.vehicle_id),
+            "vehicle_id": self.vehicle_id,
             "created_at": self.created_at.isoformat(),
             "updated_at": self.updated_at.isoformat()
         }

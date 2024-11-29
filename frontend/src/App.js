@@ -8,6 +8,7 @@ import NotAuthorized from "./common-components/NotAuthorized/NotAuthorized.jsx";
 import { AvailableRides } from "./pages/AvilableRides/AvailableRides";
 import { BookingsPage } from "./pages/BookingsPage/BookingPage.jsx";
 import "./global.css";
+import { ScheduledRides } from "pages/ScheduledRides/ScheduledRides.jsx";
 function App() {
     return (
         <UserProvider>
@@ -22,7 +23,7 @@ function App() {
                         {/* Protected routes */}
                         <Route element={<Layout />}>
                             <Route path="/" element={<ProtectedRoute requiredRole="driver" />}>
-                                <Route path="/" element={<AvailableRides />} />
+                                <Route path="/" element={<ScheduledRides />} />
                             </Route>
                             <Route path="/bookings" element={<ProtectedRoute requiredRole="driver" />}>
                                 <Route path="/bookings" element={<BookingsPage />} />

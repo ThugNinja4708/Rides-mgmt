@@ -83,3 +83,7 @@
     font-size: 1.7142857143rem !important;
     font-weight: 600 !important;
 }
+
+.input-fields {
+    width: 300px;
+}
