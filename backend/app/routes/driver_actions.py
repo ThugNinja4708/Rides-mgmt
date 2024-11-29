@@ -72,7 +72,7 @@ def add_vehicle():
             )
 
         result = Driver.add_vehicle_info(user_id, vehicle_info)
-        return Response.generate(data=result, message="vehicle added successfully")
+        return Response.generate(data=result, message="vehicle added successfully", status=200)
 
     except KeyError as e:
         return Response.generate(
@@ -199,3 +199,19 @@ def get_my_earning():
          result = result,
          message='driver earnings fetched successfully'
      )
+
+@driver_bp.route("/get_vehicles_list", methods=["GET"])
+@jwt_required()
+def get_vehicles_list():
+    try:
+        user_id = get_jwt_identity()
+        role = get_jwt()["role"]
+
+        if role != "driver":
+            return Response.generate(
+                status=403, message="You are not allowed to perform this action"
+            )
+        result = Driver.get_all_vehicles(driver_id=user_id)
+        return Response.generate(status=200, data=result, message="vehicles list fetched successfully")
+    except Exception as e:
+        return Response.generate(message=str(e))

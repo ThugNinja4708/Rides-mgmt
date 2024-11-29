@@ -16,6 +16,8 @@ const Header = () => {
             await axios.post("/auth/logout");
             setIsLoggedIn(false);
             user.current = null;
+            localStorage.removeItem("authToken");
+            localStorage.removeItem("user");
             navigate("/login");
         } catch (error) {
             console.log(error);

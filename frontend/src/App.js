@@ -8,6 +8,7 @@ import NotAuthorized from "./common-components/NotAuthorized/NotAuthorized.jsx";
 import { Home } from "./pages/Home/Home.jsx";
 import { BookingsPage } from "./pages/BookingsPage/BookingPage.jsx";
 import "./global.css";
+import { ScheduledRides } from "pages/ScheduledRides/ScheduledRides.jsx";
 function App() {
     return (
         <UserProvider>

@@ -2,6 +2,7 @@ import { LoginTemplate } from "../../common-components/LoginTemplate";
 import { loginAPI } from "./LoginAPI";
 import useAuth from "../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 export const Login = () => {
     const { user, setIsLoggedIn } = useAuth();
     const navigate = useNavigate();
@@ -25,10 +26,22 @@ export const Login = () => {
     const handleSubmit = async (inputData) => {
         const response = await loginAPI(inputData);
         localStorage.setItem('authToken', response.data.authToken);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
         setIsLoggedIn(true);
         user.current = response?.data?.user;
         navigate("/");
     };
+
+    useEffect(() => {
+        const authToken = localStorage.getItem('authToken');
+        const userData = localStorage.getItem('user');
+        if (authToken && userData) {
+            setIsLoggedIn(true);
+            user.current = JSON.parse(userData);
+            navigate("/");
+        }
+    }, [navigate]);
+
     return (
         <LoginTemplate
             title="Log In"
