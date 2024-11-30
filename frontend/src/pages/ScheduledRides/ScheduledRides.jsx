@@ -11,7 +11,9 @@ import { Dropdown } from "primereact/dropdown";
 import { Calendar } from "primereact/calendar";
 import { InputNumber } from "primereact/inputnumber";
 import { HttpStatusCode } from "axios";
+import { BookingsTable } from "common-components/BookingsTable/BookingsTable";
 import {getUsersCurrentLocation} from "lib/utils"
+
 export const ScheduledRides = () => {
     const [scheduledRides, setScheduledRides] = useState([]);
     const [visible, setVisible] = useState(false);
@@ -20,6 +22,7 @@ export const ScheduledRides = () => {
     const [currentLocation, setCurrentLocation] = useState(["17.434574146433405", "78.37473108060927"]); // right now fixed to Hyderabad
     const [places, setPlaces] = useState([]);
     const [capacityOptions, setCapacityOptions] = useState([]);
+    const [currentRide, setCurrentRide] = useState();
     const [inputs, setInputs] = useState({
         start_time: "",
         price_per_seat: "",
@@ -29,9 +32,13 @@ export const ScheduledRides = () => {
         vehicle_id: ""
     });
 
-    const cardFooter = (
+    const cardFooter = (ride) => (
         <div style={{ display: "flex" }}>
-            <Button label="View Bookings" text /> 
+            <Button label="View Bookings" text onClick={()=>{
+                setVisible(true);
+                setActionPerformed("showBookings");
+                setCurrentRide(ride)
+            }}/>
             <Button label="Cancel" />
         </div>
         // to be implemented
@@ -49,6 +56,12 @@ export const ScheduledRides = () => {
     useEffect(() => {
         getAllScheduledRides();
     }, []);
+
+    const renderBookingsTable = ()=>{
+        return(
+            <BookingsTable ride={currentRide}/>
+        )
+    }
 
     const createRideContent = () => {
         return (
@@ -107,15 +120,6 @@ export const ScheduledRides = () => {
         return Object.values(inputs).every((value) => !!value || value !== "");
     };
 
-    const actions = {
-        createRide: {
-            label: "Create Ride",
-            buttonLabel: "Create Ride",
-            content: createRideContent,
-            disabled: inputsFilled
-        }
-    };
-
     const DialogFooter = () => {
         return (
             <div className="scheduled-rides-dialog-footer">
@@ -124,6 +128,25 @@ export const ScheduledRides = () => {
             </div>
         );
     };
+
+    const actions = {
+        createRide: {
+            label: "Create Ride",
+            buttonLabel: "Create Ride",
+            content: createRideContent,
+            footer: DialogFooter,
+            disabled: inputsFilled,
+            header: ()=>{"Create Ride"}
+        },
+        showBookings: {
+            header: ()=><>Bookings for {currentRide.pickup_location.coordinates.location} <i className="pi pi-arrow-right"/> {currentRide.drop_location.coordinates.location}</>,
+            label: "Bookings for this ride",
+            content: renderBookingsTable,
+            footer: ()=>{<>footer</>},
+            style: {width: "52rem"}
+        }
+    };
+
 
     const getVehicles = async () => {
         try {
@@ -238,17 +261,17 @@ export const ScheduledRides = () => {
                     }}
                 />
             </div>
-            {console.log(inputs.pickup_location)}
             <div className="scheduled-rides-cards">
                 {scheduledRides.map((ride) => (
-                    <RideCard key={ride.id} ride={ride} footer={cardFooter} />
+                    <RideCard key={ride.id} ride={ride} footer={()=>cardFooter(ride)} />
                 ))}
             </div>
             <Dialog
-                header="Create Ride"
+                header={actions[actionPerformed]?.header()}
                 visible={visible}
                 onHide={onCancelDialog}
-                footer={<DialogFooter />}
+                footer={actions[actionPerformed]?.footer()}
+                style={actions[actionPerformed]?.style}
             >
                 {actions[actionPerformed]?.content()}
             </Dialog>

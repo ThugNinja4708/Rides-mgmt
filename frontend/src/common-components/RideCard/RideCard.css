@@ -51,11 +51,7 @@
     gap: 5px;
 }
 
-.card-date-time {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
+
 
 .card-location-content {
     display: flex;
