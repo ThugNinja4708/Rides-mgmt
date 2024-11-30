@@ -4,12 +4,13 @@ import { InputIcon } from "primereact/inputicon";
 import { IconField } from "primereact/iconfield";
 import { RideCard } from "common-components/RideCard/RideCard";
 import { axios } from "lib/axios";
-import { validateCreditCard, validateCVV, validateExpiryDate } from "lib/utils";
+import { validateCreditCard, validateCVV, validateExpiryDate, getUsersCurrentLocation } from "lib/utils";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import "./RiderHome.css";
 import paymentImage from "images/payment complete animation.gif";
 import { bookRideApi } from "./RiderHomeAPI.js";
+
 export const RiderHome = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [location, setLocation] = useState({ lat: 17.432774288239816, lng: 78.37526020944561 });
@@ -28,21 +29,6 @@ export const RiderHome = () => {
         cardHolderName: false
     });
 
-    const getUsersCurrentLocation = useCallback(() => {
-        return new Promise((resolve, reject) => {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    setLocation({
-                        latitude: position?.coords.latitude,
-                        longitude: position?.coords.longitude
-                    });
-                },
-                (err) => {
-                    console.log(err.message);
-                }
-            );
-        });
-    }, []);
 
     const markFieldAsTouched = useCallback((field) => {
         setIsTouched((prev) => ({ ...prev, [field]: true }));
@@ -228,14 +214,16 @@ export const RiderHome = () => {
         });
     }, [listOfRides]);
 
-    const fetchRides = useCallback(async () => {
+    const fetchRides = useCallback(() => {
         setIsLoading(true);
-        // await getUsersCurrentLocation()
-        const response = await axios.post("/rider/get_all_available_rides", {
-            current_location: [location.lat, location.lng]
-        });
-        setListOfRides(response.data.data);
-        setIsLoading(false);
+        getUsersCurrentLocation().then(async (location)=>{
+            const response = await axios.post("/rider/get_all_available_rides", {
+                current_location: [location.lat, location.lng]
+            });
+            setListOfRides(response.data.data);
+            setIsLoading(false);
+        }).catch((error)=>{console.log(error)})
+
     }, [location.lat, location.lng]);
 
     useEffect(() => {

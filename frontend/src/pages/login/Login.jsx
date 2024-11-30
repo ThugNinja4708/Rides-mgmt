@@ -40,7 +40,7 @@ export const Login = () => {
             user.current = JSON.parse(userData);
             navigate("/");
         }
-    }, [navigate]);
+    }, [navigate,setIsLoggedIn, user]);
 
     return (
         <LoginTemplate
