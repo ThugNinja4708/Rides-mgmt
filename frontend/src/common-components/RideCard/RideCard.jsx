@@ -2,6 +2,7 @@ import "./RideCard.css";
 import { Card } from "primereact/card";
 import { Tag } from "common-components/Tag/Tag";
 import { Button } from "primereact/button";
+import { DateComponent } from "common-components/DateComponent/DateComponent";
 export const RideCard = ({ ride, footer }) => {
     const getSeverity = ()=>{
         if(ride.status === "cancelled"){
@@ -30,10 +31,7 @@ export const RideCard = ({ ride, footer }) => {
                             </div>
                         </div>
                         <div className="card-date-time-availability">
-                        <div className="card-date-time t14-sb">
-                            <span ><i className="pi pi-calendar"/> {formattedDate}</span>
-                            <span><i className="pi pi-clock"/> {time}</span>
-                        </div>
+                            <DateComponent date={formattedDate} time={time}/>
                         <div>
                             <span>Available Seats: {ride.capacity}</span>
                         </div>

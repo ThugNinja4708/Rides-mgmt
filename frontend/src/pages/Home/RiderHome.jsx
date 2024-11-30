@@ -100,6 +100,7 @@ export const RiderHome = () => {
         setPaymentStatus(true);
         setTimeout(() => {
             closeDialog();
+            fetchRides();
         }, 3500);
     }, [currentRide, closeDialog]);
 
@@ -223,6 +224,9 @@ export const RiderHome = () => {
                 </div>
             );
         };
+        if(listOfRides.length === 0){
+            return <div className="t24-sb">No rides available for you right now!</div>
+        }
         return listOfRides.map((ride) => {
             return <RideCard key={ride.id} ride={ride} footer={renderFooter(ride)} />;
         });

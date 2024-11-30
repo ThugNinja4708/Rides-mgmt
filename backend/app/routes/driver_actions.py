@@ -8,6 +8,8 @@ from datetime import datetime
 from app.models.Driver import Driver
 from app.models.Booking import Booking
 from app.models.Refund import Refund
+from app.models.Rider import Rider
+from app.models.Payment import Payment
 import requests
 
 driver_bp = Blueprint("driver", __name__, url_prefix="/api/driver")
@@ -72,7 +74,9 @@ def add_vehicle():
             )
 
         result = Driver.add_vehicle_info(user_id, vehicle_info)
-        return Response.generate(data=result, message="vehicle added successfully", status=200)
+        return Response.generate(
+            data=result, message="vehicle added successfully", status=200
+        )
 
     except KeyError as e:
         return Response.generate(
@@ -191,14 +195,13 @@ def cancel_ride():
 @driver_bp.route("/driver_earning", methods=["POST"])
 @jwt_required()
 def get_my_earning():
-     ride_id = request.args.get("ride_id")
-     driver_id = get_jwt_identity()
-     result = Booking.calculate_driver_earnings(driver_id=driver_id,ride_id=ride_id)
-     return Response.generate(
-         status= 200,
-         result = result,
-         message='driver earnings fetched successfully'
-     )
+    ride_id = request.args.get("ride_id")
+    driver_id = get_jwt_identity()
+    result = Booking.calculate_driver_earnings(driver_id=driver_id, ride_id=ride_id)
+    return Response.generate(
+        status=200, result=result, message="driver earnings fetched successfully"
+    )
+
 
 @driver_bp.route("/get_vehicles_list", methods=["GET"])
 @jwt_required()
@@ -212,6 +215,44 @@ def get_vehicles_list():
                 status=403, message="You are not allowed to perform this action"
             )
         result = Driver.get_all_vehicles(driver_id=user_id)
-        return Response.generate(status=200, data=result, message="vehicles list fetched successfully")
+        return Response.generate(
+            status=200, data=result, message="vehicles list fetched successfully"
+        )
+    except Exception as e:
+        return Response.generate(message=str(e))
+
+
+@driver_bp.route("get_bookings", methods={"POST"})
+@jwt_required()
+def get_bookings():
+    try:
+        data = request.get_json()
+        ride_id = data["ride_id"]
+        driver_id = get_jwt_identity()
+        role = get_jwt()["role"]
+        if role != "driver":
+            return Response.generate(
+                status=403, message="You are not allowed to perform this action"
+            )
+        bookings = Booking.get_all_bookings_by_ride_id(ride_id=ride_id)
+        list_of_bookings = []
+        for booking in bookings:
+            rider_name = Rider.get_by_id(user_id=str(booking.rider_id)).username
+            payment_details = Payment.get_by_id(payment_id=booking.payment_id).to_dict()
+            list_of_bookings.append({
+                "rider_name": rider_name,
+                "payment_details": payment_details,
+                "created_at": booking.created_at.strftime('%Y-%m-%d %H:%M:%S')
+            })
+
+        earnings = Booking.calculate_driver_earnings(driver_id=driver_id, ride_id=ride_id)
+        result = {
+            "bookings": list_of_bookings,
+            "earnings": earnings
+        }
+
+        return Response.generate(
+            status=200, data=result
+        )
     except Exception as e:
         return Response.generate(message=str(e))
