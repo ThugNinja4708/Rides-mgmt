@@ -11,6 +11,7 @@ import { Dropdown } from "primereact/dropdown";
 import { Calendar } from "primereact/calendar";
 import { InputNumber } from "primereact/inputnumber";
 import { HttpStatusCode } from "axios";
+import {getUsersCurrentLocation} from "lib/utils"
 export const ScheduledRides = () => {
     const [scheduledRides, setScheduledRides] = useState([]);
     const [visible, setVisible] = useState(false);
@@ -137,20 +138,23 @@ export const ScheduledRides = () => {
         }
     };
 
-    const getPlaces = async () => {
+    const getPlaces = () => {
         try {
-            const response = await axios.post("/coordinates/get_places", {
-                lat: currentLocation[0],
-                lng: currentLocation[1]
-            });
-            const placesList = Object.entries(response.data.data).map(([label, value]) => ({
-                label,
-                value: {
-                    name: label,
-                    coordinates: value
-                }
-            }));
-            setPlaces(placesList);
+            getUsersCurrentLocation().then(async (location)=>{
+                const response = await axios.post("/coordinates/get_places", {
+                    lat: location.lat,
+                    lng: location.lng
+                });
+                const placesList = Object.entries(response.data.data).map(([label, value]) => ({
+                    label,
+                    value: {
+                        name: label,
+                        coordinates: value
+                    }
+                }));
+                setPlaces(placesList);
+            })
+            .catch((error)=>{console.log(error)})
         } catch (error) {
             console.log(error);
         }
