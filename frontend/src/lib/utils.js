@@ -35,3 +35,21 @@ export const validateCVV = (cvv) => {
     const cvvRegex = /^\d{3,4}$/;
     return cvvRegex.test(cvv);
 };
+
+export const getUsersCurrentLocation = () => {
+    return new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const location = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+                resolve(location);
+            },
+            (err) => {
+                console.log(err.message);
+                reject(err);
+            }
+        );
+    });
+};
