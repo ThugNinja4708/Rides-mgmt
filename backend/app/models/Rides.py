@@ -14,7 +14,7 @@ class Rides:
         vehicle_id,
         drop_location,
         status,
-        capacity,
+        available_seats,
         price_per_seat,
         start_time: datetime,
         list_of_riders = [],
@@ -28,7 +28,7 @@ class Rides:
         self.drop_location = drop_location
         self.start_time = start_time
         self.status = status
-        self.capacity = capacity
+        self.available_seats = available_seats
         self.price_per_seat = price_per_seat
         self.vehicle_id = vehicle_id
         self.list_of_riders = list_of_riders
@@ -57,7 +57,7 @@ class Rides:
             status=rides_data["status"],
             price_per_seat=rides_data["price_per_seat"],
             start_time=rides_data["start_time"],
-            capacity=rides_data["capacity"],
+            available_seats=rides_data["available_seats"],
             vehicle_id=rides_data["vehicle_id"],
             updated_at=rides_data["updated_at"],
             created_at=rides_data["created_at"],
@@ -81,7 +81,7 @@ class Rides:
             "status": self.status,
             "price_per_seat": self.price_per_seat,
             "start_time": self.start_time,
-            "capacity": self.capacity,
+            "available_seats": self.available_seats,
             "list_of_riders": self.list_of_riders,
             "vehicle_id": self.vehicle_id,
             "updated_at": datetime.now(timezone.utc),
@@ -106,8 +106,8 @@ class Rides:
             "status": self.status,
             "price_per_seat": self.price_per_seat,
             "start_time": self.start_time.isoformat(),
-            "capacity": self.capacity,
-            "vehicle_id": self.vehicle_id,
+            "available_seats": self.available_seats,
+            "vehicle_id": str(self.vehicle_id),
             "created_at": self.created_at.isoformat(),
             "updated_at": self.updated_at.isoformat()
         }
@@ -149,12 +149,20 @@ class Rides:
         rides = [Rides.from_db(ride).to_dict() for ride in rides_cursor]
         return rides
 
-    def add_rider_to_ride(self, rider_id):
-        result = rides_collection.update_one(
-            {"_id": ObjectId(self._id)},
-            {"$addToSet": {"list_of_riders": ObjectId(rider_id)}},
-        )
-        return result.modified_count
+    @staticmethod
+    def add_rider_to_ride(ride_id, rider_id):
+        
+        update_result = rides_collection.update_one(
+        {
+            "_id": ride_id,                      # Match the ride by ride_id
+            "available_seats": {"$gt": 0}       # Ensure seats are available
+        },
+        {
+            "$push": {"list_of_riders": rider_id},  # Add rider to list_of_riders
+            "$inc": {"available_seats": -1}        # Decrement available_seats by 1
+        }
+       )
+        return update_result.modified_count
 
     def cancel_ride(ride_id, driver_id):
         condition1 =  {"_id": ObjectId(ride_id)}
@@ -171,4 +179,6 @@ class Rides:
         {"$pull": {"list_of_riders": rider_id}}  # Remove the rider from the array
     )
          return result .modified_count
+     
+        
         
