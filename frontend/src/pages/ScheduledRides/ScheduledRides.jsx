@@ -74,6 +74,7 @@ export const ScheduledRides = () => {
                     options={places}
                     placeholder="Select Pickup Location"
                     className="input-fields"
+                    filter
                 />
                 <Dropdown
                     value={inputs.drop_location}
@@ -81,6 +82,7 @@ export const ScheduledRides = () => {
                     options={places}
                     placeholder="Select Drop Location"
                     className="input-fields"
+                    filter
                 />
                 <Dropdown
                     value={inputs.vehicle_id}
@@ -88,6 +90,7 @@ export const ScheduledRides = () => {
                     options={vehicles}
                     placeholder="Select Vehicle"
                     className="input-fields"
+                    filter
                 />
                 <Dropdown
                     value={inputs.capacity}
