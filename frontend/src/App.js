@@ -7,7 +7,6 @@ import Layout from "./common-components/pageLayout/Layout.jsx";
 import NotAuthorized from "./common-components/NotAuthorized/NotAuthorized.jsx";
 import { Home } from "./pages/Home/Home.jsx";
 import "./global.css";
-import { ScheduledRides } from "pages/ScheduledRides/ScheduledRides.jsx";
 function App() {
     return (
         <UserProvider>

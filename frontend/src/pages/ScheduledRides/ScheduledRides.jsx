@@ -12,17 +12,18 @@ import { Calendar } from "primereact/calendar";
 import { InputNumber } from "primereact/inputnumber";
 import { HttpStatusCode } from "axios";
 import { BookingsTable } from "common-components/BookingsTable/BookingsTable";
-import {getUsersCurrentLocation} from "lib/utils"
+import {getUsersCurrentLocation, searchRidesByInput} from "lib/utils"
 
 export const ScheduledRides = () => {
     const [scheduledRides, setScheduledRides] = useState([]);
     const [visible, setVisible] = useState(false);
     const [actionPerformed, setActionPerformed] = useState(null);
     const [vehicles, setVehicles] = useState([]);
-    const [currentLocation, setCurrentLocation] = useState(["17.434574146433405", "78.37473108060927"]); // right now fixed to Hyderabad
     const [places, setPlaces] = useState([]);
     const [capacityOptions, setCapacityOptions] = useState([]);
     const [currentRide, setCurrentRide] = useState();
+    const [searchString, setSearchString] = useState();
+    const [filteredData, setFilteredData] = useState()
     const [inputs, setInputs] = useState({
         start_time: "",
         price_per_seat: "",
@@ -33,7 +34,7 @@ export const ScheduledRides = () => {
     });
 
     const cardFooter = (ride) => (
-        <div style={{ display: "flex" }}>
+        <div style={{ display: "flex", gap: "10px" }}>
             <Button label="View Bookings" text onClick={()=>{
                 setVisible(true);
                 setActionPerformed("showBookings");
@@ -48,6 +49,7 @@ export const ScheduledRides = () => {
         try {
             const response = await axios.get("/driver/get_all_rides");
             setScheduledRides(response.data.data);
+            setFilteredData(response.data.data);
         } catch (error) {
             console.log(error);
         }
@@ -192,13 +194,11 @@ export const ScheduledRides = () => {
 
     useEffect(() => {
         if (inputs.vehicle_id) {
-            {
                 const options = Array.from({ length: inputs.vehicle_id?.capacity }, (_, index) => ({
                     label: (index + 1).toString(),
                     value: index + 1
                 }));
                 setCapacityOptions(options);
-            }
         } else {
             setCapacityOptions([]);
         }
@@ -242,6 +242,10 @@ export const ScheduledRides = () => {
             onCancelDialog();
         }
     };
+    const handleSearch = (e)=>{
+        setSearchString(e.target.value);
+        setFilteredData(searchRidesByInput(e.target.value, scheduledRides))
+    }
 
     return (
         <div className="scheduled-rides">
@@ -249,7 +253,7 @@ export const ScheduledRides = () => {
                 <div className="scheduled-rides-search-container">
                     <IconField iconPosition="left">
                         <InputIcon className="pi pi-search"> </InputIcon>
-                        <InputText placeholder="Search bookings..." className="scheduled-rides-search" />
+                        <InputText value={searchString} placeholder="Search bookings..." className="scheduled-rides-search" onChange={handleSearch}/>
                     </IconField>
                 </div>
                 <Button
@@ -262,7 +266,7 @@ export const ScheduledRides = () => {
                 />
             </div>
             <div className="scheduled-rides-cards">
-                {scheduledRides.map((ride) => (
+                {filteredData?.map((ride) => (
                     <RideCard key={ride.id} ride={ride} footer={()=>cardFooter(ride)} />
                 ))}
             </div>

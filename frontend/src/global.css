@@ -87,3 +87,6 @@
 .input-fields {
     width: 300px;
 }
+.p-button{
+    border-radius: 5px !important;
+}

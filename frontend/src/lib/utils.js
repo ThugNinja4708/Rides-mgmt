@@ -53,3 +53,20 @@ export const getUsersCurrentLocation = () => {
         );
     });
 };
+
+export function searchRidesByInput(searchString, rides) {
+    const input = searchString.toLowerCase();
+
+    return rides.filter(ride => {
+        return (
+            ride.pickup_location.coordinates.location.toLowerCase().includes(input) ||
+            ride.drop_location.coordinates.location.toLowerCase().includes(input) ||
+            ride.status.toLowerCase().includes(input) ||
+            String(ride.price_per_seat).includes(input) ||
+            ride.start_time.includes(input) ||
+            ride.vehicle_id.make.toLowerCase().includes(input) ||
+            ride.vehicle_id.model.toLowerCase().includes(input) ||
+            ride.vehicle_id.license_plate.toLowerCase().includes(input)
+        );
+    });
+}
