@@ -1,7 +1,6 @@
 import "./RideCard.css";
 import { Card } from "primereact/card";
 import { Tag } from "common-components/Tag/Tag";
-import { Button } from "primereact/button";
 import { DateComponent } from "common-components/DateComponent/DateComponent";
 export const RideCard = ({ ride, footer }) => {
     const getSeverity = ()=>{

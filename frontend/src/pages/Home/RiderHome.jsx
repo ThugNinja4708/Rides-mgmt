@@ -4,7 +4,7 @@ import { InputIcon } from "primereact/inputicon";
 import { IconField } from "primereact/iconfield";
 import { RideCard } from "common-components/RideCard/RideCard";
 import { axios } from "lib/axios";
-import { validateCreditCard, validateCVV, validateExpiryDate, getUsersCurrentLocation } from "lib/utils";
+import { validateCreditCard, validateCVV, validateExpiryDate, getUsersCurrentLocation, searchRidesByInput } from "lib/utils";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import "./RiderHome.css";
@@ -13,7 +13,6 @@ import { bookRideApi } from "./RiderHomeAPI.js";
 
 export const RiderHome = () => {
     const [isLoading, setIsLoading] = useState(false);
-    const [location, setLocation] = useState({ lat: 17.432774288239816, lng: 78.37526020944561 });
     const [listOfRides, setListOfRides] = useState([]);
     const [visible, setVisible] = useState(false);
     const [actionPerformed, setActionPerformed] = useState();
@@ -21,6 +20,8 @@ export const RiderHome = () => {
     const [isValid, setIsValid] = useState({ cardNumber: false, expiryDate: false, cvv: false, cardHolderName: false });
     const [paymentStatus, setPaymentStatus] = useState("");
     const [currentRide, setCurrentRide] = useState(null);
+    const [searchString, setSearchString] = useState();
+    const [filteredData, setFilteredData] = useState([]);
 
     const [isTouched, setIsTouched] = useState({
         cardNumber: false,
@@ -76,6 +77,18 @@ export const RiderHome = () => {
         setIsTouched((prev) => ({ ...prev, cardNumber: false, expiryDate: false, cvv: false }));
     }, []);
 
+    const fetchRides = useCallback(() => {
+        setIsLoading(true);
+        getUsersCurrentLocation().then(async (location)=>{
+            const response = await axios.post("/rider/get_all_available_rides", {
+                current_location: [location.lat, location.lng]
+            });
+            setListOfRides(response.data.data);
+            setFilteredData(response.data.data);
+            setIsLoading(false);
+        }).catch((error)=>{console.log(error)})
+    }, []);
+
     const handlePayNow = useCallback(async () => {
         // Simulate payment processing
         const paymentInfo = {
@@ -83,12 +96,13 @@ export const RiderHome = () => {
             payment_status: "success"
         };
         const response = await bookRideApi(currentRide._id, paymentInfo);
+        console.log(response)
         setPaymentStatus(true);
         setTimeout(() => {
             closeDialog();
             fetchRides();
         }, 3500);
-    }, [currentRide, closeDialog]);
+    }, [currentRide, closeDialog, fetchRides]);
 
     const renderCreditCardPayment = useCallback(() => {
         const isFormValid = isValid.cardNumber && isValid.expiryDate && isValid.cvv && isValid.cardHolderName;
@@ -211,37 +225,31 @@ export const RiderHome = () => {
             );
         };
         if(listOfRides.length === 0){
-            return <div className="t24-sb">No rides available for you right now!</div>
+            return <div className="t18-sb">No rides available for you right now!</div>
         }
-        return listOfRides.map((ride) => {
+        return filteredData.map((ride) => {
             return <RideCard key={ride.id} ride={ride} footer={renderFooter(ride)} />;
         });
-    }, [listOfRides]);
+    }, [filteredData]);
 
-    const fetchRides = useCallback(() => {
-        setIsLoading(true);
-        getUsersCurrentLocation().then(async (location)=>{
-            const response = await axios.post("/rider/get_all_available_rides", {
-                current_location: [location.lat, location.lng]
-            });
-            setListOfRides(response.data.data);
-            setIsLoading(false);
-        }).catch((error)=>{console.log(error)})
-
-    }, [location.lat, location.lng]);
 
     useEffect(() => {
         fetchRides();
     }, [fetchRides]);
 
+    const handleSearch = (e)=>{
+        setSearchString(e.target.value);
+        setFilteredData(searchRidesByInput(e.target.value, listOfRides))
+    }
+
     return isLoading ? (
         <div>loading....</div>
     ) : (
         <div className="Home-container">
-            <div>
+            <div className="search-container">
                 <IconField iconPosition="left">
                     <InputIcon className="pi pi-search"> </InputIcon>
-                    <InputText placeholder="Search rides..." className="bookings-search" />
+                    <InputText value={searchString} placeholder="Search rides..." className="rides-search" onChange={handleSearch}/>
                 </IconField>
             </div>
             <div className="rides-container">{renderRides()}</div>

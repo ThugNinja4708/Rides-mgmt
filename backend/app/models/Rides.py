@@ -107,7 +107,7 @@ class Rides:
             "price_per_seat": self.price_per_seat,
             "start_time": self.start_time.isoformat(),
             "available_seats": self.available_seats,
-            "vehicle_id": str(self.vehicle_id),
+            "vehicle_id": self.vehicle_id,
             "created_at": self.created_at.isoformat(),
             "updated_at": self.updated_at.isoformat()
         }

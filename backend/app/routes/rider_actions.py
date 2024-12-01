@@ -9,7 +9,6 @@ from app.models.Driver import Driver
 
 from app.models import Refund
 from app.utils.constants import RideStatus
-from app.models.Driver import Driver
 rider_bp = Blueprint("rider", __name__, url_prefix="/api/rider")
 
 
