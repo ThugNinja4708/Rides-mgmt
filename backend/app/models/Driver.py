@@ -146,22 +146,7 @@ class Driver:
             "vehicle_name": driver.get("vehicle_info", {}).get("name")
         }
         else:
-            return None 
-        
-    def get_all_vehicles(driver_id):
-        query = {"_id": driver_id}
-    
-    # Projection to return only vehicle_info
-        projection = {"vehicle_info": 1, "_id": 0}
-    
-    # Fetch the driver's vehicle information
-        result = driver_collection.find_one(query, projection)
-    
-        if result and "vehicle_info" in result:
-            return result["vehicle_info"]
-        else:
-            return {}
-
+            return None
 
     def __repr__(self):
         return f"<Rider {self.username} ({self.email})>"

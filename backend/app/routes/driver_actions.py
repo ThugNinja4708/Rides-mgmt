@@ -95,7 +95,7 @@ def create_ride():
         pickup_location = data["pickup_location"]
         drop_location = data["drop_location"]
         vehicle_id = data["vehicle_id"]
-        capacity = data["capacity"]
+        available_seats = data["capacity"]
         price_per_seat = data["price_per_seat"]
         start_time_str = data["start_time"]
         start_time = datetime.strptime(start_time_str, "%Y-%m-%dT%H:%M:%S%z")
@@ -112,7 +112,7 @@ def create_ride():
             pickup_location=pickup_location,
             drop_location=drop_location,
             vehicle_id=vehicle_id,
-            capacity=capacity,
+            available_seats=available_seats,
             price_per_seat=price_per_seat,
             start_time=start_time,
             driver_id=user_id,
@@ -179,7 +179,7 @@ def cancel_ride():
             booking.admin_commission = 0
             booking.driver_earning = 0
             booking.save()
-
+        
     except KeyError as e:
         return Response.generate(
             status=400, message=f"KeyError: Missing required attribute: {e}"

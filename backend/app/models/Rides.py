@@ -149,16 +149,14 @@ class Rides:
         rides = [Rides.from_db(ride).to_dict() for ride in rides_cursor]
         return rides
 
-    @staticmethod
-    def add_rider_to_ride(ride_id, rider_id):
-        
+    def add_rider_to_ride(self, rider_id):
         update_result = rides_collection.update_one(
         {
-            "_id": ride_id,                      # Match the ride by ride_id
+            "_id": self._id,                      # Match the ride by ride_id
             "available_seats": {"$gt": 0}       # Ensure seats are available
         },
         {
-            "$push": {"list_of_riders": rider_id},  # Add rider to list_of_riders
+            "$push": {"list_of_riders": ObjectId(rider_id)},  # Add rider to list_of_riders
             "$inc": {"available_seats": -1}        # Decrement available_seats by 1
         }
        )
@@ -172,13 +170,10 @@ class Rides:
             {"$set": {"status": RideStatus.CANCELLED.value}}
         )
         return result.modified_count
-    
+
     def cancel_ride_by_rider(ride_id,rider_id):
-         result = rides_collection.update_one(
-        {"_id": ride_id},  # Match the ride by its ID
-        {"$pull": {"list_of_riders": rider_id}}  # Remove the rider from the array
+        result = rides_collection.update_one(
+        {"_id": ObjectId(ride_id)},  # Match the ride by its ID
+        {"$pull": {"list_of_riders": ObjectId(rider_id)}}  # Remove the rider from the array
     )
-         return result .modified_count
-     
-        
-        
+        return result.modified_count
