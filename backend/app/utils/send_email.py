@@ -13,7 +13,15 @@ class SendMail:
         message = Message(sender="rithvikkantha3771@gmail.com", subject="Your ride has been cancelled", recipients=recipients)
         pick_up_location = ride.pickup_location["location"]
         drop_location = ride.drop_location["location"]
-        message.html = f"<H1>Your ride FROM: {pick_up_location} TO: {drop_location} has been cancelled \
-        which has been scheduled on: {ride.start_time}\
-        <H1/>"
+        # TODO: change this
+        driver_name = "{Driver naem}"
+        rider_name = "{Rider Name}"
+        message.html = f"""
+        <h2>Dear {rider_name},</h2>
+        <h3>Your ride FROM: {pick_up_location} TO: {drop_location} has been cancelled.</h3>
+        <p>This ride was scheduled to start on: {ride.start_time}.</p>
+        <p>The driver {driver_name} has cancelled this ride.
+        Your refund will be processed with in 2-3 workings days</p>
+        <p>Thank you for your understanding.</p>
+        """
         SendMail.mail.send(message)
