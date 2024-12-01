@@ -25,7 +25,7 @@ class Refund:
             "amount_refunded": self.amount_refunded,
             "refund_status": self.refund_status,
             "payment_id": self.payment_id,
-            "refund_dat": self.refund_date
+            "refund_date": self.refund_date
 
         }
         refund_collection.update_one({"_id": self._id}, {"$set": refund_data}, upsert=True)
