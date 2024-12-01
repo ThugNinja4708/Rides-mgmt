@@ -11,6 +11,7 @@ from app.models.Refund import Refund
 from app.models.Rider import Rider
 from app.models.Payment import Payment
 import requests
+from app.utils.send_email import SendMail
 
 driver_bp = Blueprint("driver", __name__, url_prefix="/api/driver")
 
@@ -162,7 +163,6 @@ def cancel_ride():
                 status=403, message="You are not allowed to perform this action"
             )
         result = Rides.cancel_ride(ride_id=ride_id, driver_id=user_id)
-
         if result != 1:
             return Response.generate(status=500, message="can not find ride")
         list_of_bookings = Booking.get_all_bookings_by_ride_id(ride_id=ride_id)
@@ -179,7 +179,12 @@ def cancel_ride():
             booking.admin_commission = 0
             booking.driver_earning = 0
             booking.save()
+        ride = Rides.get_ride_by_id(ride_id)
+        recipients= []
+        for rider in ride.list_of_riders:
+            recipients.append(Rider.get_by_id(rider).email)
         
+        SendMail.send_email(recipients=recipients, ride=ride)
     except KeyError as e:
         return Response.generate(
             status=400, message=f"KeyError: Missing required attribute: {e}"
