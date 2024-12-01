@@ -124,6 +124,29 @@ class Driver:
         else:
             return []
 
+    
+    def get_driver_and_vehicle_name(driver_id,vehicle_id):
+        query = {
+        "_id": driver_id,
+        "vehicle_info.id": vehicle_id
+    }
+
+    # Projection to fetch only the required fields
+        projection = {
+        "username": 1,
+        "vehicle_info.name": 1
+    }
+
+    # Find the matching document
+        driver = driver_collection.find_one(query, projection)
+
+        if driver:
+            return {
+            "username": driver.get("username"),
+            "vehicle_name": driver.get("vehicle_info", {}).get("name")
+        }
+        else:
+            return None
 
     def __repr__(self):
         return f"<Rider {self.username} ({self.email})>"

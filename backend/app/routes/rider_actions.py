@@ -5,6 +5,8 @@ from app.models.Rides import Rides
 from app.models.Payment import Payment
 from app.models.Booking import Booking
 from bson import ObjectId
+from app.models.Driver import Driver
+
 from app.models import Refund
 from app.utils.constants import RideStatus
 from app.models.Driver import Driver
@@ -72,7 +74,7 @@ def book_ride():
         modified_count = ride_obj.add_rider_to_ride(rider_id)
         if modified_count != 1:
             return Response.generate(
-                data={}, message="Already Booked or No Ride Found", status=500
+                data={}, message="Already Booked or No Ride Found or No Seats Available", status=500
             )
         else:
             new_payment = Payment(
@@ -129,5 +131,20 @@ def cancel_ride():
     booking.driver_earning = 0
     booking.save()
     return Response.generate(status=200, message="cancelled ride successfully!!")
+
+
+@rider_bp.route("/get_driver_vehicle_name",methods=['POST'])
+@jwt_required()
+def get_driver_vehicle_name():
+    data = request.get_json()
+    driver_id = data['driver_id']
+    vehicle_id = data['vehicle_id']
+    result = Driver.get_driver_and_vehicle_name(driver_id=driver_id,vehicle_id=vehicle_id)
+    return Response.generate(
+        data=result,
+        status=200,
+        message='Driver and Vehicle Name fetched successfully'
+    )
+    
         
         

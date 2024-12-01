@@ -24,6 +24,7 @@ pyjwt = "*"
 flask-jwt-extended = "*"
 requests = "*"
 flask-cors = "*"
+flask-mail = "*"
 
 [dev-packages]
 

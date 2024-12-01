@@ -33,7 +33,7 @@ export const RideCard = ({ ride, footer }) => {
                         <div className="card-date-time-availability">
                             <DateComponent date={formattedDate} time={time}/>
                         <div>
-                            <span>Available Seats: {ride.capacity}</span>
+                            <span>Available Seats: {ride.available_seats}</span>
                         </div>
                         </div>
 

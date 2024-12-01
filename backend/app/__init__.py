@@ -5,7 +5,8 @@ from app.database import Database
 import os
 import datetime
 from flask_jwt_extended import JWTManager
-
+from flask_mail import Mail
+from app.utils.send_email import SendMail
 blacklist = set()
 def create_app():
     app = Flask(__name__)
@@ -19,12 +20,19 @@ def create_app():
     app.config["DB_NAME"] = "rides_mgmt"
     app.config["MONGO_URI"] = "mongodb+srv://rithvik:FcHMhwUQMnuoT70a@ridesmgmt.yjcqq.mongodb.net/?retryWrites=true&w=majority&appName=ridesmgmt"
     app.config["GOOGLE_API_KEY"] = "AIzaSyDJ6xZxVNPiNVWIGsE82M1tOGeqHfGX7dI"
+    app.config['MAIL_SERVER']="smtp-relay.brevo.com"
+    app.config['MAIL_PORT'] = 587
+    app.config['MAIL_USERNAME'] = '810761001@smtp-brevo.com'
+    app.config['MAIL_PASSWORD'] = '6UjQ1Zsznqw3Sc8A'
+    app.config['MAIL_USE_TLS'] = True  # Use TLS
+    app.config['MAIL_USE_SSL'] = False  # No SSL needed with STARTTLS
 
 
     # Initialize database
     CORS(app, supports_credentials=True)
     Database.initialize(app)
     jwt = JWTManager(app)
+    SendMail.initialize(app)
 
     @jwt.token_in_blocklist_loader
     def check_if_token_in_blacklist(jwt_header, jwt_payload):
