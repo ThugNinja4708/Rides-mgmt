@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState, useMemo } from "react";
 import { AgGridReact } from "ag-grid-react";
 import { axios } from "lib/axios";
 import { DateComponent } from "common-components/DateComponent/DateComponent";
+import Spinner from "common-components/Spinner/Spinner";
 
 export const BookingsTable = ({ ride }) => {
     const [rowData, setRowData] = useState([]);
@@ -65,7 +66,7 @@ export const BookingsTable = ({ ride }) => {
         fetchBookings();
     }, [fetchBookings]);
     return isLoading ? (
-        <>Loading..</>
+        <Spinner/>
     ) : (
         <div>
             <div className="ag-theme-quartz" style={{ height: "20rem", width: "100%" }}>

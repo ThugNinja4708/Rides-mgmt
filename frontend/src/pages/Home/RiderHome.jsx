@@ -10,6 +10,7 @@ import { Dialog } from "primereact/dialog";
 import "./RiderHome.css";
 import paymentImage from "images/payment complete animation.gif";
 import { bookRideApi } from "./RiderHomeAPI.js";
+import Spinner from "common-components/Spinner/Spinner";
 
 export const RiderHome = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -243,7 +244,7 @@ export const RiderHome = () => {
     }
 
     return isLoading ? (
-        <div>loading....</div>
+        <Spinner/>
     ) : (
         <div className="Home-container">
             <div className="search-container">
