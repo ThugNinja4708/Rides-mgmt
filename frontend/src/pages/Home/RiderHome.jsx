@@ -326,7 +326,7 @@ export const RiderHome = () => {
     ) : (
         <div className="Home-container">
             <div className="search-container">
-                <IconField iconPosition="left">
+                <IconField iconPosition="left" className="search-field">
                     <InputIcon className="pi pi-search"> </InputIcon>
                     <InputText value={searchString} placeholder="Search rides..." className="rides-search" onChange={handleSearch} />
                 </IconField>

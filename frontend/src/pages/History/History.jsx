@@ -2,19 +2,19 @@ import { InputText } from "primereact/inputtext";
 import { InputIcon } from "primereact/inputicon";
 import { IconField } from "primereact/iconfield";
 import { TabView, TabPanel } from "primereact/tabview";
-import "./BookingsPage.css";
+import "./History.css";
 import { RideCard } from "common-components/RideCard/RideCard";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { axios } from "lib/axios";
 import { searchRidesByInput } from "lib/utils";
 import Spinner from "common-components/Spinner/Spinner";
-export const BookingsPage = () => {
+export const History = () => {
     const [activeIndex, setActiveIndex] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
     const [listOfRides, setListOfRides] = useState([]);
     const [searchString, setSearchString] = useState();
     const [filteredData, setFilteredData] = useState([]);
-    const statusMapping = ["scheduled", "completed", "completed"];
+    const statusMapping = useMemo(()=>["scheduled", "completed", "completed"], []);
     const fetchRides = useCallback(async (status) => {
         try{
         setIsLoading(true);
@@ -48,7 +48,10 @@ export const BookingsPage = () => {
             );
         };
         if (listOfRides.length === 0) {
-            return <div className="t18-sb">No rides available for you right now!</div>
+            return <div className="t18-sb">There are no ride here</div>
+        }
+        if(filteredData.length === 0){
+            return <div className="t18-sb">No search result found</div>
         }
         return filteredData.map((ride) => {
             return <RideCard key={ride.id} ride={ride} footer={renderFooter(ride)} />;
@@ -56,7 +59,7 @@ export const BookingsPage = () => {
     }, [filteredData, listOfRides]);
     useEffect(() => {
         fetchRides(statusMapping[activeIndex]);
-    }, [fetchRides, activeIndex]);
+    }, [fetchRides, activeIndex, statusMapping]);
     return (
         <div className="bookings-page">
             <div>
@@ -66,7 +69,7 @@ export const BookingsPage = () => {
                         placeholder="Search bookings..."
                         className="bookings-search"
                         value={searchString}
-                        onChange={(e) => { handleSearch(e.target.value) }}
+                        onChange={handleSearch}
                     />
                 </IconField>
             </div>

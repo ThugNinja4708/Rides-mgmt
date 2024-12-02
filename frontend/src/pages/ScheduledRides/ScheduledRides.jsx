@@ -254,7 +254,7 @@ export const ScheduledRides = () => {
         <div className="scheduled-rides">
             <div className="scheduled-rides-toolbar">
                 <div className="search-container">
-                    <IconField iconPosition="left">
+                    <IconField iconPosition="left" className="search-field">
                         <InputIcon className="pi pi-search"> </InputIcon>
                         <InputText value={searchString} placeholder="Search bookings..." className="rides-search" onChange={handleSearch}/>
                     </IconField>
