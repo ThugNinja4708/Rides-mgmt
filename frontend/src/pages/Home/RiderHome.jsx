@@ -81,7 +81,7 @@ export const RiderHome = () => {
         setIsLoading(true);
         getUsersCurrentLocation().then(async (location)=>{
             const response = await axios.post("/rider/get_all_available_rides", {
-                current_location: [location.lat, location.lng]
+                current_location: [location.lng, location.lat]
             });
             setListOfRides(response.data.data);
             setFilteredData(response.data.data);
