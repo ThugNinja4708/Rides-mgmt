@@ -7,6 +7,7 @@ import Layout from "./common-components/pageLayout/Layout.jsx";
 import NotAuthorized from "./common-components/NotAuthorized/NotAuthorized.jsx";
 import { Home } from "./pages/Home/Home.jsx";
 import "./global.css";
+import { BookingsPage } from "pages/BookingsPage/BookingsPage.jsx";
 function App() {
     return (
         <UserProvider>
@@ -23,8 +24,8 @@ function App() {
                             <Route path="/" element={<ProtectedRoute/>}>
                                 <Route path="/" element={<Home />} />
                             </Route>
-                            <Route path="/history" element={<ProtectedRoute />}>
-                                <Route path="/history" element={<div>Book Ride page!!</div>} />
+                            <Route path="/history" element={<ProtectedRoute  requiredRole={"rider"}/>}>
+                                <Route path="/history" element={<BookingsPage/>} />
                             </Route>
                             <Route path="/settings" element={<ProtectedRoute requiredRole="driver" />}>
                                 <Route path="/settings" element={<div>Settings page!!</div>} />

@@ -38,14 +38,20 @@ def get_all_available_rides():
     return Response.generate(status=200, data=result)
 
 
-@rider_bp.route("/get_all_rides_by_status", methods=["GET"])
+@rider_bp.route("/get_all_rides_by_status", methods=["POST"])
 @jwt_required()
 def get_all_rides_by_status():
     try:
         data = request.get_json()
         status = data["status"]
         rider_id = get_jwt_identity()
-        result = Rides.get_all_rides_status(rider_id, status)
+        rides = Rides.get_all_rides_status(rider_id, status)
+        result = []
+        for ride in rides:
+            if(ObjectId(rider_id) in ride["list_of_riders"]):
+                driver_name = Driver.get_by_id(ride["driver_id"]).username
+                ride["driver_name"] = driver_name
+                result.append(ride)
         return Response.generate(
             status=200,
             data=result,
