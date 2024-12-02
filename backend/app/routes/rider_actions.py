@@ -62,6 +62,7 @@ def book_ride():
         data = request.get_json()
         ride_id = data["ride_id"]
         payment_info = data["payment_info"]
+        rider_pickup_location = data["rider_pickup_location"]
         role = get_jwt()["role"]
         rider_id = get_jwt_identity()
 
@@ -87,6 +88,7 @@ def book_ride():
                 ride_id=ride_obj._id,
                 payment_id=payment_id,
                 rider_id=rider_id,
+                rider_pickup_location=rider_pickup_location
             )
             new_booking.add_booking(ride_obj.price_per_seat)
             return Response.generate(

@@ -247,6 +247,7 @@ def get_bookings():
             list_of_bookings.append({
                 "rider_name": rider_name,
                 "payment_details": payment_details,
+                "rider_pickup_location": booking.rider_pickup_location,
                 "created_at": booking.created_at.strftime('%Y-%m-%d %H:%M:%S')
             })
 

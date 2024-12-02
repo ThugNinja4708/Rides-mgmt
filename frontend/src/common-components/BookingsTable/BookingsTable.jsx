@@ -1,5 +1,5 @@
 import "./BookingsTable.css";
-import React, { useCallback, useEffect, useState, useMemo } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { AgGridReact } from "ag-grid-react";
 import { axios } from "lib/axios";
 import { DateComponent } from "common-components/DateComponent/DateComponent";
@@ -14,6 +14,11 @@ export const BookingsTable = ({ ride }) => {
             field: "rider_name",
             valueFormatter: (params)=>params.value.charAt(0).toUpperCase() + params.value.slice(1),
         },
+        {
+            headerName: "Rider Pickup Location",
+            field: "rider_pickup_location.name"
+        },
+
         {
             headerName: "Payment Status",
             field: "payment_details.payment_status",
@@ -34,19 +39,7 @@ export const BookingsTable = ({ ride }) => {
         {
             headerName: "Payment Method",
             field: "payment_details.payment_method"
-        },
-        // {
-        //     headerName: "Created At",
-        //     field: "created_at",
-        //     cellRenderer: (params) => {
-        //         const date = new Date(params.value);
-        //         const formattedDate = date.toISOString().split("T")[0];
-        //         const time = `${date.getHours()}:${date.getHours()}`
-        //         return (
-        //             <DateComponent date={formattedDate} time={time}/>
-        //         );
-        //     }
-        // }
+        }
     ];
     const fetchBookings = useCallback(async () => {
         setIsLoading(true);
@@ -60,7 +53,7 @@ export const BookingsTable = ({ ride }) => {
         } finally {
             setIsLoading(false);
         }
-    }, []);
+    }, [ride]);
 
     useEffect(() => {
         fetchBookings();
