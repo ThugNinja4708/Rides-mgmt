@@ -204,7 +204,7 @@ def get_my_earning():
     driver_id = get_jwt_identity()
     result = Booking.calculate_driver_earnings(driver_id=driver_id, ride_id=ride_id)
     return Response.generate(
-        status=200, result=result, message="driver earnings fetched successfully"
+        status=200, data=result, message="driver earnings fetched successfully"
     )
 
 
