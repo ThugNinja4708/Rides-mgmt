@@ -50,6 +50,19 @@ class Payment:
             "payment_method": self.payment_method
         }
 
+    def save(self):
+        payment_data = {
+            "_id": self._id,
+            "rider_id": self.rider_id,
+            "payment_method": self.payment_method,
+            "payment_status": self.payment_status,
+            "payment_date": self.payment_date,
+        }
+        payment_collection.update_one(
+            {"_id": self._id}, {"$set": payment_data}, upsert=True
+        )
+        return self._id
+
     def make_payment(self):
         payment_data = {
             "_id": self._id,

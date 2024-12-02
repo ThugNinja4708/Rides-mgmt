@@ -12,7 +12,7 @@ export const BookingsTable = ({ ride }) => {
     const [rowData, setRowData] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [searchString, setSearchString] = useState();
-    const [earnings, setEarnings] = useState();
+    const [earnings, setEarnings] = useState(0);
     const [gridApi, setGridApi] = useState();
     const columnDef = [
         {
@@ -84,7 +84,7 @@ export const BookingsTable = ({ ride }) => {
                     <InputIcon className="pi pi-search"> </InputIcon>
                     <InputText value={searchString} placeholder="Search bookings..." className="rides-search" onChange={handleSearch} />
                 </IconField>
-                <span className="t14-sb earnings"> Total Ernings: ${earnings}</span>
+                <span className="t14-sb earnings"> Total Earnings: ${earnings}</span>
             </div>
             <div className="ag-theme-quartz" style={{ height: "20rem", width: "100%" }}>
                 <AgGridReact

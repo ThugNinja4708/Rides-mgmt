@@ -3,7 +3,7 @@ from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity
 from app.utils.response import Response
 from app.utils.get_roles import get_user_collection_by_role
 from app.models.Rides import Rides
-from app.utils.constants import RideStatus
+from app.utils.constants import RideStatus, PaymentStatus
 from datetime import datetime
 from app.models.Driver import Driver
 from app.models.Booking import Booking
@@ -176,6 +176,9 @@ def cancel_ride():
                 refund_status="DONE",
             )
             refund.save()
+            payment = Payment.get_by_id(booking.payment_id)
+            payment.payment_status = PaymentStatus.REFUNDED.value
+            payment.save()
             booking.admin_commission = 0
             booking.driver_earning = 0
             booking.save()
@@ -183,8 +186,8 @@ def cancel_ride():
         recipients= []
         for rider in ride.list_of_riders:
             recipients.append(Rider.get_by_id(rider).email)
-        
-        SendMail.send_email(recipients=recipients, ride=ride)
+
+        SendMail.send_email(recipients=recipients, ride=ride )
     except KeyError as e:
         return Response.generate(
             status=400, message=f"KeyError: Missing required attribute: {e}"

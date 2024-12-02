@@ -8,7 +8,7 @@ from bson import ObjectId
 from app.models.Driver import Driver
 
 from app.models import Refund
-from app.utils.constants import RideStatus
+from app.utils.constants import RideStatus, PaymentStatus
 rider_bp = Blueprint("rider", __name__, url_prefix="/api/rider")
 
 
@@ -86,7 +86,7 @@ def book_ride():
             new_payment = Payment(
                 rider_id=rider_id,
                 payment_method=payment_info["payment_method"],
-                payment_status=payment_info["payment_status"],
+                payment_status=PaymentStatus.SUCCESS.value,
             )
             payment_id = new_payment.make_payment()
             new_booking = Booking(
@@ -114,9 +114,9 @@ def cancel_ride():
 
     if role != "rider":
         return Response.generate(status=403, message="you can not perform this action")
-    
+
     if rider_id is None:
-         rider_id = get_jwt_identity()
+        rider_id = get_jwt_identity()
     else:
         rider_id = ride_info['rider_id']
     result = Rides.cancel_ride_by_rider(ride_id=ride_id,rider_id=rider_id)
@@ -134,6 +134,9 @@ def cancel_ride():
             refund_status="DONE",
         )
     refund.save()
+    payment = Payment.get_by_id(booking.payment_id)
+    payment.payment_status = PaymentStatus.REFUNDED.value
+    payment.save()
     booking.admin_commission = 0
     booking.driver_earning = 0
     booking.save()

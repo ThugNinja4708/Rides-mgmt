@@ -23,7 +23,8 @@ export const ScheduledRides = () => {
     const [capacityOptions, setCapacityOptions] = useState([]);
     const [currentRide, setCurrentRide] = useState();
     const [searchString, setSearchString] = useState();
-    const [filteredData, setFilteredData] = useState()
+    const [filteredData, setFilteredData] = useState();
+    const [isLoading, setIsLoading] = useState(false);
     const [inputs, setInputs] = useState({
         start_time: "",
         price_per_seat: "",
@@ -40,7 +41,13 @@ export const ScheduledRides = () => {
                 setActionPerformed("showBookings");
                 setCurrentRide(ride)
             }}/>
-            <Button label="Cancel" />
+            <Button label="Cancel"
+            onClick={()=>{
+                setActionPerformed("cancelRide");
+                setVisible(true);
+            }}
+            disabled={!(ride.status!="cancelled")}
+            />
         </div>
         // to be implemented
     );
@@ -129,27 +136,9 @@ export const ScheduledRides = () => {
         return (
             <div className="scheduled-rides-dialog-footer">
                 <Button label="Cancel" text onClick={onCancelDialog} />
-                <Button label="Create Ride" disabled={!actions[actionPerformed]?.disabled()} onClick={createRide} />
+                <Button label={actions[actionPerformed].buttonLabel} disabled={!actions[actionPerformed]?.disabled()} onClick={actions[actionPerformed]?.submit} />
             </div>
         );
-    };
-
-    const actions = {
-        createRide: {
-            label: "Create Ride",
-            buttonLabel: "Create Ride",
-            content: createRideContent,
-            footer: DialogFooter,
-            disabled: inputsFilled,
-            header: ()=>{"Create Ride"}
-        },
-        showBookings: {
-            header: ()=><>Bookings for {currentRide.pickup_location.coordinates.location} <i className="pi pi-arrow-right"/> {currentRide.drop_location.coordinates.location}</>,
-            label: "Bookings for this ride",
-            content: renderBookingsTable,
-            footer: ()=>{<>footer</>},
-            style: {width: "52rem"}
-        }
     };
 
 
@@ -245,10 +234,53 @@ export const ScheduledRides = () => {
             onCancelDialog();
         }
     };
+
+    const cancelRide = async ()=>{
+        try{
+            setIsLoading(true);
+            const response = await axios.post("/driver/cancel_ride", {
+                ride_id: currentRide._id
+            })
+        }catch(error){
+            console.log(error);
+        }finally{
+            setIsLoading(false);
+            onCancelDialog();
+        }
+    }
+
     const handleSearch = (e)=>{
         setSearchString(e.target.value);
         setFilteredData(searchRidesByInput(e.target.value, scheduledRides))
     }
+
+    const actions = {
+        createRide: {
+            label: "Create Ride",
+            buttonLabel: "Create Ride",
+            content: createRideContent,
+            footer: DialogFooter,
+            disabled: inputsFilled,
+            header: ()=>{"Create Ride"},
+            submit: createRide
+        },
+        showBookings: {
+            header: ()=><>Bookings for {currentRide.pickup_location.coordinates.location} <i className="pi pi-arrow-right"/> {currentRide.drop_location.coordinates.location}</>,
+            label: "Bookings for this ride",
+            content: renderBookingsTable,
+            footer: ()=>{<>footer</>},
+            style: {width: "52rem"}
+        },
+        cancelRide: {
+            header: ()=><>{currentRide.pickup_location.coordinates.location} <i className="pi pi-arrow-right"/> {currentRide.drop_location.coordinates.location}</>,
+            content: ()=><span className="t14"> Are you sure you want to cancel this ride?</span>,
+            footer: DialogFooter,
+            submit: cancelRide,
+            disabled: ()=>{return true},
+            buttonLabel: "Cancel Ride"
+
+        }
+    };
 
     return (
         <div className="scheduled-rides">
