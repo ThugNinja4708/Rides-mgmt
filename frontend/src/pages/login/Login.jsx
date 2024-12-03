@@ -7,7 +7,6 @@ export const Login = () => {
     const { user, setIsLoggedIn } = useAuth();
     const navigate = useNavigate();
     const inputs = [
-        { type: "text", name: "username", placeholder: "Username", required: true },
         { type: "text", name: "email", placeholder: "Email", required: true },
         { type: "password", name: "password", placeholder: "Password", required: true },
         {
