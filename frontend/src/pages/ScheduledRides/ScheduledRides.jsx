@@ -39,14 +39,15 @@ export const ScheduledRides = () => {
             <Button label="View Bookings" text onClick={()=>{
                 setVisible(true);
                 setActionPerformed("showBookings");
-                setCurrentRide(ride)
+                setCurrentRide(ride);
             }}/>
             <Button label="Cancel"
             onClick={()=>{
                 setActionPerformed("cancelRide");
                 setVisible(true);
+                setCurrentRide(ride);
             }}
-            disabled={!(ride.status!="cancelled")}
+            disabled={!(ride.status!=="cancelled")}
             />
         </div>
         // to be implemented
@@ -300,7 +301,7 @@ export const ScheduledRides = () => {
                     }}
                 />
             </div>
-            <div className="scheduled-rides-cards">
+            <div className="rides-container">
                 {filteredData?.map((ride) => (
                     <RideCard key={ride.id} ride={ride} footer={()=>cardFooter(ride)} />
                 ))}

@@ -48,7 +48,11 @@ export const getUsersCurrentLocation = () => {
             },
             (err) => {
                 console.log(err.message);
-                reject(err);
+                const location = {
+                    lat: 17.43451273072334,
+                    lng: 78.37472035177288
+                };
+                resolve(location);
             }
         );
     });

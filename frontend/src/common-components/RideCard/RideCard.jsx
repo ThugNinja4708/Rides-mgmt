@@ -13,7 +13,7 @@ export const RideCard = ({ ride, footer }) => {
     }
     const date = new Date(ride.start_time);
     const formattedDate = date.toISOString().split("T")[0];
-    const time = `${date.getHours()}:${date.getHours()}`
+    const time = `${date.getHours()}:${date.getMinutes()}`
     const pickup_location = ride.pickup_location.coordinates.location
     const drop_location = ride.drop_location.coordinates.location
 

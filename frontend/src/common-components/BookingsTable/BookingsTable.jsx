@@ -36,7 +36,7 @@ export const BookingsTable = ({ ride }) => {
             cellRenderer: (params) => {
                 const date = new Date(params.value);
                 const formattedDate = date.toISOString().split("T")[0];
-                const time = `${date.getHours()}:${date.getHours()}`
+                const time = `${date.getHours()}:${date.getMinutes()}`
                 return (
                     <DateComponent date={formattedDate} time={time} />
                 );
