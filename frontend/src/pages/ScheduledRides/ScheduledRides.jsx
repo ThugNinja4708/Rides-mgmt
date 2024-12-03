@@ -248,6 +248,7 @@ export const ScheduledRides = () => {
         }finally{
             setIsLoading(false);
             onCancelDialog();
+            getAllScheduledRides();
         }
     }
 
