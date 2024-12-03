@@ -1,7 +1,7 @@
 import "./RideCard.css";
 import { Card } from "primereact/card";
 import { Tag } from "common-components/Tag/Tag";
-import { Button } from "primereact/button";
+import { DateComponent } from "common-components/DateComponent/DateComponent";
 export const RideCard = ({ ride, footer }) => {
     const getSeverity = ()=>{
         if(ride.status === "cancelled"){
@@ -13,7 +13,7 @@ export const RideCard = ({ ride, footer }) => {
     }
     const date = new Date(ride.start_time);
     const formattedDate = date.toISOString().split("T")[0];
-    const time = `${date.getHours()}:${date.getHours()}`
+    const time = `${date.getHours()}:${date.getMinutes()}`
     const pickup_location = ride.pickup_location.coordinates.location
     const drop_location = ride.drop_location.coordinates.location
 
@@ -30,12 +30,9 @@ export const RideCard = ({ ride, footer }) => {
                             </div>
                         </div>
                         <div className="card-date-time-availability">
-                        <div className="card-date-time t14-sb">
-                            <span ><i className="pi pi-calendar"/> {formattedDate}</span>
-                            <span><i className="pi pi-clock"/> {time}</span>
-                        </div>
+                            <DateComponent date={formattedDate} time={time}/>
                         <div>
-                            <span>Available Seats: {ride.capacity}</span>
+                            <span>Available Seats: {ride.available_seats}</span>
                         </div>
                         </div>
 

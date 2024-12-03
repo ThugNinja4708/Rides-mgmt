@@ -10,17 +10,13 @@
     gap: 20px;
 }
 
-.scheduled-rides-search-container {
-    width: 90%;
-}
-
-.scheduled-rides-search {
-    width: 100%;
-    height: 2.5rem;
-}
-
 .create-ride-btn {
-    height: 2.5rem;
+    height: fit-content;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    padding: 0.5rem 1rem;
 }
 
 .scheduled-rides-cards {

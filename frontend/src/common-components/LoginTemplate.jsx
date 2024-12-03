@@ -42,7 +42,7 @@ export const LoginTemplate = ({title, inputs, buttonLabel, loginPrompt, linkText
             <div className="login-template-image">
                 <img src={Image} alt="signup" />
             </div>
-            <div className="login-template-form">
+            <div className="login-template-form t14">
                     <div className="login-template-header"><h2 style={{color:"#1174c0"}}>{title}</h2></div>
                     <div className="login-template-inputs">
                     {inputs.map((input, index) => {

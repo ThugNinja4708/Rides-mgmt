@@ -51,7 +51,6 @@ def signup():
 def login():
     try:
         data = request.get_json()
-        username = data["username"]
         email = data["email"]
         password = data["password"]
         role = data["role"]
@@ -60,8 +59,8 @@ def login():
 
         user = user_obj.get_by_email(email=email)
 
-        if not (user and user.username == username):
-            return Response.generate(status=401, message="Invalid username")
+        if not (user):
+            return Response.generate(status=401, message="User details not found!")
 
         if not user or not user.check_password(password=password):
             return Response.generate(status=401, message="Invalid credentials")

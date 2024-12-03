@@ -52,26 +52,31 @@
     font-size: 1.1428571429rem !important;
     font-weight: 600 !important;
 }
+
 .t18 {
     font-family: "Open Sans", sans-serif !important;
     font-size: 1.2857142857rem !important;
     font-weight: normal !important;
 }
+
 .t18-sb {
     font-family: "Open Sans", sans-serif !important;
     font-size: 1.2857142857rem !important;
     font-weight: 600 !important;
 }
+
 .h18 {
     font-family: "Montserrat", sans-serif !important;
     font-size: 1.2857142857rem !important;
     font-weight: normal !important;
 }
+
 .h18-sb {
     font-family: "Montserrat", sans-serif !important;
     font-size: 1.2857142857rem !important;
     font-weight: normal !important;
 }
+
 .t20 {
     font-family: "Open Sans", sans-serif !important;
     font-size: 1.4285714286rem !important;
@@ -115,3 +120,29 @@
     padding: 20px;
 }
 
+.p-button {
+    border-radius: 5px !important;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+}
+
+.rides-search {
+    width: 100%;
+    height: 2.5rem;
+}
+
+.p-dialog {
+    min-height: 200px;
+}
+
+.search-field {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    max-width: 100%;
+}

@@ -39,8 +39,8 @@ def get_places():
         for place in places:
             location = place["location"]
             list_of_places[place["displayName"]["text"]] = [
-                location["latitude"],
                 location["longitude"],
+                location["latitude"],
             ]
         return Response.generate(status=200, data=list_of_places)
     except Exception as e:

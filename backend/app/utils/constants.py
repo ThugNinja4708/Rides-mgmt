@@ -5,3 +5,7 @@ class RideStatus(enum.Enum):
     ONGOING = "ongoing"
     COMPLETED = "completed"
     CANCELLED = "cancelled"
+
+class PaymentStatus(enum.Enum):
+    REFUNDED = "refunded"
+    SUCCESS = "successfull"

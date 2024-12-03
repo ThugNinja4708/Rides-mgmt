@@ -35,3 +35,43 @@ export const validateCVV = (cvv) => {
     const cvvRegex = /^\d{3,4}$/;
     return cvvRegex.test(cvv);
 };
+
+export const getUsersCurrentLocation = () => {
+    return new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const location = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+                resolve(location);
+            },
+            (err) => {
+                console.log(err.message);
+                const location = {
+                    lat: 17.43451273072334,
+                    lng: 78.37472035177288
+                };
+                resolve(location);
+            }
+        );
+    });
+};
+
+export function searchRidesByInput(searchString, rides) {
+    const input = searchString.toLowerCase();
+    if (rides.length > 0) {
+        return rides.filter(ride => {
+            return (
+                ride.pickup_location?.coordinates?.location.toLowerCase().includes(input) ||
+                ride.drop_location?.coordinates?.location.toLowerCase().includes(input) ||
+                ride.status?.toLowerCase().includes(input) ||
+                String(ride.price_per_seat).includes(input) ||
+                ride.start_time.includes(input) ||
+                ride.vehicle_id?.make.toLowerCase().includes(input) ||
+                ride.vehicle_id?.model.toLowerCase().includes(input) ||
+                ride.vehicle_id?.license_plate.toLowerCase().includes(input)
+            );
+        });
+    }
+}

@@ -11,14 +11,20 @@ import { Dropdown } from "primereact/dropdown";
 import { Calendar } from "primereact/calendar";
 import { InputNumber } from "primereact/inputnumber";
 import { HttpStatusCode } from "axios";
+import { BookingsTable } from "common-components/BookingsTable/BookingsTable";
+import {getUsersCurrentLocation, searchRidesByInput} from "lib/utils"
+
 export const ScheduledRides = () => {
     const [scheduledRides, setScheduledRides] = useState([]);
     const [visible, setVisible] = useState(false);
     const [actionPerformed, setActionPerformed] = useState(null);
     const [vehicles, setVehicles] = useState([]);
-    const [currentLocation, setCurrentLocation] = useState(["17.434574146433405", "78.37473108060927"]); // right now fixed to Hyderabad
     const [places, setPlaces] = useState([]);
     const [capacityOptions, setCapacityOptions] = useState([]);
+    const [currentRide, setCurrentRide] = useState();
+    const [searchString, setSearchString] = useState();
+    const [filteredData, setFilteredData] = useState();
+    const [isLoading, setIsLoading] = useState(false);
     const [inputs, setInputs] = useState({
         start_time: "",
         price_per_seat: "",
@@ -29,10 +35,21 @@ export const ScheduledRides = () => {
     });
     const [currentDate, setCurrentDate] = useState("");
 
-    const cardFooter = (
-        <div style={{ display: "flex" }}>
-            <Button label="View Bookings" text /> 
-            <Button label="Cancel" />
+    const cardFooter = (ride) => (
+        <div style={{ display: "flex", gap: "10px" }}>
+            <Button label="View Bookings" text onClick={()=>{
+                setVisible(true);
+                setActionPerformed("showBookings");
+                setCurrentRide(ride);
+            }}/>
+            <Button label="Cancel"
+            onClick={()=>{
+                setActionPerformed("cancelRide");
+                setVisible(true);
+                setCurrentRide(ride);
+            }}
+            disabled={!(ride.status!=="cancelled")}
+            />
         </div>
         // to be implemented
     );
@@ -41,6 +58,7 @@ export const ScheduledRides = () => {
         try {
             const response = await axios.get("/driver/get_all_rides");
             setScheduledRides(response.data.data);
+            setFilteredData(response.data.data);
         } catch (error) {
             console.log(error);
         }
@@ -49,6 +67,12 @@ export const ScheduledRides = () => {
     useEffect(() => {
         getAllScheduledRides();
     }, []);
+
+    const renderBookingsTable = ()=>{
+        return(
+            <BookingsTable ride={currentRide}/>
+        )
+    }
 
     const createRideContent = () => {
         return (
@@ -59,6 +83,7 @@ export const ScheduledRides = () => {
                     options={places}
                     placeholder="Select Pickup Location"
                     className="input-fields"
+                    filter
                 />
                 <Dropdown
                     value={inputs.drop_location}
@@ -66,6 +91,7 @@ export const ScheduledRides = () => {
                     options={places}
                     placeholder="Select Drop Location"
                     className="input-fields"
+                    filter
                 />
                 <Dropdown
                     value={inputs.vehicle_id}
@@ -73,6 +99,7 @@ export const ScheduledRides = () => {
                     options={vehicles}
                     placeholder="Select Vehicle"
                     className="input-fields"
+                    filter
                 />
                 <Dropdown
                     value={inputs.capacity}
@@ -111,10 +138,11 @@ export const ScheduledRides = () => {
         return (
             <div className="scheduled-rides-dialog-footer">
                 <Button label="Cancel" text onClick={onCancelDialog} />
-                <Button label="Create Ride" disabled={!actions[actionPerformed]?.disabled()} onClick={actions[actionPerformed]?.action()} />
+                <Button label={actions[actionPerformed].buttonLabel} disabled={!actions[actionPerformed]?.disabled()} onClick={actions[actionPerformed]?.submit} />
             </div>
         );
     };
+
 
     const getVehicles = async () => {
         try {
@@ -129,20 +157,23 @@ export const ScheduledRides = () => {
         }
     };
 
-    const getPlaces = async () => {
+    const getPlaces = () => {
         try {
-            const response = await axios.post("/coordinates/get_places", {
-                lat: currentLocation[0],
-                lng: currentLocation[1]
-            });
-            const placesList = Object.entries(response.data.data).map(([label, value]) => ({
-                label,
-                value: {
-                    name: label,
-                    coordinates: value
-                }
-            }));
-            setPlaces(placesList);
+            getUsersCurrentLocation().then(async (location)=>{
+                const response = await axios.post("/coordinates/get_places", {
+                    lat: location.lat,
+                    lng: location.lng
+                });
+                const placesList = Object.entries(response.data.data).map(([label, value]) => ({
+                    label,
+                    value: {
+                        name: label,
+                        coordinates: value
+                    }
+                }));
+                setPlaces(placesList);
+            })
+            .catch((error)=>{console.log(error)})
         } catch (error) {
             console.log(error);
         }
@@ -206,30 +237,60 @@ export const ScheduledRides = () => {
         }
     };
 
+    const cancelRide = async ()=>{
+        try{
+            setIsLoading(true);
+            const response = await axios.post("/driver/cancel_ride", {
+                ride_id: currentRide._id
+            })
+        }catch(error){
+            console.log(error);
+        }finally{
+            setIsLoading(false);
+            onCancelDialog();
+        }
+    }
+
+    const handleSearch = (e)=>{
+        setSearchString(e.target.value);
+        setFilteredData(searchRidesByInput(e.target.value, scheduledRides))
+    }
+
     const actions = {
         createRide: {
             label: "Create Ride",
             buttonLabel: "Create Ride",
             content: createRideContent,
+            footer: DialogFooter,
             disabled: inputsFilled,
-            action: createRide
+            header: ()=>{"Create Ride"},
+            submit: createRide
+        },
+        showBookings: {
+            header: ()=><>Bookings for {currentRide.pickup_location.coordinates.location} <i className="pi pi-arrow-right"/> {currentRide.drop_location.coordinates.location}</>,
+            label: "Bookings for this ride",
+            content: renderBookingsTable,
+            footer: ()=>{<>footer</>},
+            style: {width: "52rem"}
         },
         cancelRide: {
-            label: "Cancel Ride",
-            buttonLabel: "Cancel Ride",
-            content: () => <div>Are you sure you want to cancel ride?</div>,
-            disabled: () => false,
-            action: () => console.log("Cancel Ride")
+            header: ()=><>{currentRide.pickup_location.coordinates.location} <i className="pi pi-arrow-right"/> {currentRide.drop_location.coordinates.location}</>,
+            content: ()=><span className="t14"> Are you sure you want to cancel this ride?</span>,
+            footer: DialogFooter,
+            submit: cancelRide,
+            disabled: ()=>{return true},
+            buttonLabel: "Cancel Ride"
+
         }
     };
 
     return (
         <div className="scheduled-rides">
             <div className="scheduled-rides-toolbar">
-                <div className="scheduled-rides-search-container">
-                    <IconField iconPosition="left">
+                <div className="search-container">
+                    <IconField iconPosition="left" className="search-field">
                         <InputIcon className="pi pi-search"> </InputIcon>
-                        <InputText placeholder="Search bookings..." className="scheduled-rides-search" />
+                        <InputText value={searchString} placeholder="Search bookings..." className="rides-search" onChange={handleSearch}/>
                     </IconField>
                 </div>
                 <Button
@@ -241,17 +302,17 @@ export const ScheduledRides = () => {
                     }}
                 />
             </div>
-            {console.log(inputs.pickup_location)}
-            <div className="scheduled-rides-cards">
-                {scheduledRides.map((ride) => (
-                    <RideCard key={ride.id} ride={ride} footer={cardFooter} />
+            <div className="rides-container">
+                {filteredData?.map((ride) => (
+                    <RideCard key={ride.id} ride={ride} footer={()=>cardFooter(ride)} />
                 ))}
             </div>
             <Dialog
-                header="Create Ride"
+                header={actions[actionPerformed]?.header()}
                 visible={visible}
                 onHide={onCancelDialog}
-                footer={<DialogFooter />}
+                footer={actions[actionPerformed]?.footer()}
+                style={actions[actionPerformed]?.style}
             >
                 {actions[actionPerformed]?.content()}
             </Dialog>

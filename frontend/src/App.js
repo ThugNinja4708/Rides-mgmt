@@ -6,9 +6,8 @@ import ProtectedRoute from "./common-components/ProtectedRoute/ProtectedRoute.js
 import Layout from "./common-components/pageLayout/Layout.jsx";
 import NotAuthorized from "./common-components/NotAuthorized/NotAuthorized.jsx";
 import { Home } from "./pages/Home/Home.jsx";
-import { BookingsPage } from "./pages/BookingsPage/BookingPage.jsx";
 import "./global.css";
-import { ScheduledRides } from "pages/ScheduledRides/ScheduledRides.jsx";
+import { History } from "pages/History/History.jsx";
 import { Profile } from "pages/Profile/Profile.jsx";
 import { ErrorProvider } from "context/errorContext/errorContextProvider";
 import { ErrorDialog } from "common-components/ErrorDialog/ErrorDialog.jsx";
@@ -30,11 +29,8 @@ function App() {
                             <Route element={<ProtectedRoute/>}>
                                 <Route exact path="/" element={<Home />} />
                             </Route>
-                            <Route path="/bookings" element={<ProtectedRoute requiredRole="driver" />}>
-                                <Route path="/bookings" element={<BookingsPage />} />
-                            </Route>
-                            <Route path="/history" element={<ProtectedRoute />}>
-                                <Route path="/history" element={<div>Book Ride page!!</div>} />
+                            <Route path="/history" element={<ProtectedRoute  requiredRole={"rider"}/>}>
+                                <Route path="/history" element={<History/>} />
                             </Route>
                             <Route path="/profile" element={<Profile/>} />
                         </Route>
