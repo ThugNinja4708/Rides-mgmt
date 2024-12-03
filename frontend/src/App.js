@@ -9,8 +9,13 @@ import { Home } from "./pages/Home/Home.jsx";
 import { BookingsPage } from "./pages/BookingsPage/BookingPage.jsx";
 import "./global.css";
 import { ScheduledRides } from "pages/ScheduledRides/ScheduledRides.jsx";
+import { Profile } from "pages/Profile/Profile.jsx";
+import { ErrorProvider } from "context/errorContext/errorContextProvider";
+import { ErrorDialog } from "common-components/ErrorDialog/ErrorDialog.jsx";
 function App() {
     return (
+        <ErrorProvider>
+        <ErrorDialog/>
         <UserProvider>
             <div className="App">
                 <Router>
@@ -22,8 +27,8 @@ function App() {
 
                         {/* Protected routes */}
                         <Route element={<Layout />}>
-                            <Route path="/" element={<ProtectedRoute/>}>
-                                <Route path="/" element={<Home />} />
+                            <Route element={<ProtectedRoute/>}>
+                                <Route exact path="/" element={<Home />} />
                             </Route>
                             <Route path="/bookings" element={<ProtectedRoute requiredRole="driver" />}>
                                 <Route path="/bookings" element={<BookingsPage />} />
@@ -31,14 +36,13 @@ function App() {
                             <Route path="/history" element={<ProtectedRoute />}>
                                 <Route path="/history" element={<div>Book Ride page!!</div>} />
                             </Route>
-                            <Route path="/settings" element={<ProtectedRoute requiredRole="driver" />}>
-                                <Route path="/settings" element={<div>Settings page!!</div>} />
-                            </Route>
+                            <Route path="/profile" element={<Profile/>} />
                         </Route>
                     </Routes>
                 </Router>
             </div>
         </UserProvider>
+        </ErrorProvider>
     );
 }
 

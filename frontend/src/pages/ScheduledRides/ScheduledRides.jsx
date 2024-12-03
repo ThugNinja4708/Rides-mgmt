@@ -27,6 +27,7 @@ export const ScheduledRides = () => {
         drop_location: "",
         vehicle_id: ""
     });
+    const [currentDate, setCurrentDate] = useState("");
 
     const cardFooter = (
         <div style={{ display: "flex" }}>
@@ -106,20 +107,11 @@ export const ScheduledRides = () => {
         return Object.values(inputs).every((value) => !!value || value !== "");
     };
 
-    const actions = {
-        createRide: {
-            label: "Create Ride",
-            buttonLabel: "Create Ride",
-            content: createRideContent,
-            disabled: inputsFilled
-        }
-    };
-
     const DialogFooter = () => {
         return (
             <div className="scheduled-rides-dialog-footer">
                 <Button label="Cancel" text onClick={onCancelDialog} />
-                <Button label="Create Ride" disabled={!actions[actionPerformed]?.disabled()} onClick={createRide} />
+                <Button label="Create Ride" disabled={!actions[actionPerformed]?.disabled()} onClick={actions[actionPerformed]?.action()} />
             </div>
         );
     };
@@ -165,13 +157,11 @@ export const ScheduledRides = () => {
 
     useEffect(() => {
         if (inputs.vehicle_id) {
-            {
                 const options = Array.from({ length: inputs.vehicle_id?.capacity }, (_, index) => ({
                     label: (index + 1).toString(),
                     value: index + 1
                 }));
                 setCapacityOptions(options);
-            }
         } else {
             setCapacityOptions([]);
         }
@@ -213,6 +203,23 @@ export const ScheduledRides = () => {
             console.log(error);
         } finally {
             onCancelDialog();
+        }
+    };
+
+    const actions = {
+        createRide: {
+            label: "Create Ride",
+            buttonLabel: "Create Ride",
+            content: createRideContent,
+            disabled: inputsFilled,
+            action: createRide
+        },
+        cancelRide: {
+            label: "Cancel Ride",
+            buttonLabel: "Cancel Ride",
+            content: () => <div>Are you sure you want to cancel ride?</div>,
+            disabled: () => false,
+            action: () => console.log("Cancel Ride")
         }
     };
 

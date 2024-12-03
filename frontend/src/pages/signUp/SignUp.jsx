@@ -1,5 +1,6 @@
 import { LoginTemplate } from "../../common-components/LoginTemplate";
 import { signUpAPI } from "./SignUpApi";
+import useError from "hooks/useError";
 export const SignUp = () => {
     const inputs = [
         {type: "text", name: "username", placeholder: "Username", required: true},
@@ -10,14 +11,15 @@ export const SignUp = () => {
             {label: "Driver", value: "driver"},
             {label: "Rider", value: "rider"}
         ]}
-    ]
+    ];
+    const {setError} = useError();
 
     const handleSubmit = async (inputData) => {
         try {
             const response = await signUpAPI(inputData);
             console.log(response);
         } catch (error) {
-            console.error(error);
+            setError(error);
     }
 }
     return (

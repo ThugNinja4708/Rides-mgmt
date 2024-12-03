@@ -4,10 +4,10 @@ import { ScheduledRides } from "pages/ScheduledRides/ScheduledRides";
 
 export const Home = ()=>{
     const {user}  = useAuth();
-    if (user.current.role === "rider"){
+    if (user?.role === "rider"){
         return <RiderHome/>
     }
-    if(user.current.role === "driver"){
+    if(user?.role === "driver"){
         return <ScheduledRides/>
     }
 }

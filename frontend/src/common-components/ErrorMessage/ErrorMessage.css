@@ -1,0 +1,14 @@
+.error-message {
+    display: flex;
+    align-items: center;
+    color: #dc2626;
+    display: block;
+}
+
+.message-hidden {
+    visibility: hidden;
+}
+
+.message-visible {
+    visibility: visible;
+}
