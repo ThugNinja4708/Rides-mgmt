@@ -4,11 +4,13 @@ import "./Header.css";
 import { Menu } from "primereact/menu";
 import useAuth from "hooks/useAuth";
 import { axios } from "lib/axios";
+import useError from "hooks/useError";
 
 const Header = () => {
     const navigate = useNavigate();
     const [userMenuVisible, setUserMenuVisible] = useState();
     const userMenuRef = useRef();
+    const {setErrorRef} = useError();
     const { user, setIsLoggedIn, setUser } = useAuth();
 
     const handleLogout = async () => {
@@ -20,7 +22,7 @@ const Header = () => {
             localStorage.removeItem("user");
             navigate("/login");
         } catch (error) {
-            console.log(error);
+            setErrorRef.current(error);
         }
     };
 
@@ -55,9 +57,10 @@ const Header = () => {
                 <Link to="/" className="header-link">
                     Home
                 </Link>
+                {user?.role === "rider" ?
                 <Link to="/history" className="header-link">
                     History
-                </Link>
+                </Link> : null}
                 <div
                     id="header-usermenu-container"
                     className="header-user-menu-container cyb-pt-16"

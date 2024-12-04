@@ -48,7 +48,7 @@ def get_all_rides_by_status():
         rides = Rides.get_all_rides_status(rider_id, status)
         result = []
         for ride in rides:
-            if(ObjectId(rider_id) in ride["list_of_riders"]):
+            if((rider_id) in ride["list_of_riders"]):
                 driver_name = Driver.get_by_id(ride["driver_id"]).username
                 ride["driver_name"] = driver_name
                 result.append(ride)

@@ -101,7 +101,7 @@
     font-weight: 600 !important;
 }
 
-.input-fields {
+.input-fields, .p-inputtext {
     width: 250px;
     border-radius: 5px;
 }

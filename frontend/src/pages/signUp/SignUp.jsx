@@ -1,7 +1,9 @@
+import { useNavigate } from "react-router-dom";
 import { LoginTemplate } from "../../common-components/LoginTemplate";
 import { signUpAPI } from "./SignUpApi";
 import useError from "hooks/useError";
 export const SignUp = () => {
+    const navigate = useNavigate();
     const inputs = [
         {type: "text", name: "username", placeholder: "Username", required: true},
         {type: "text", name: "email", placeholder: "Email", required: true},
@@ -17,6 +19,9 @@ export const SignUp = () => {
     const handleSubmit = async (inputData) => {
         try {
             const response = await signUpAPI(inputData);
+            if(response.status === 201){
+                navigate("/login")
+            }
             console.log(response);
         } catch (error) {
             setErrorRef.current(error);

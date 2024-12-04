@@ -199,6 +199,8 @@ export const ScheduledRides = () => {
                 });;
         } catch (error) {
             setErrorRef.current(error);
+        }finally{
+            setIsLoading((prev)=>({...prev, getPlaces: false}));
         }
     };
 

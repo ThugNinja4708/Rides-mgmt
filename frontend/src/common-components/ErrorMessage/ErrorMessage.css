@@ -4,6 +4,7 @@
     color: #dc2626;
     display: block;
     text-wrap: wrap;
+    max-width: 250px;
 }
 
 .message-hidden {

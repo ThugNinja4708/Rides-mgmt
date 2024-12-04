@@ -7,6 +7,7 @@ import Spinner from "common-components/Spinner/Spinner";
 import { InputText } from "primereact/inputtext";
 import { InputIcon } from "primereact/inputicon";
 import { IconField } from "primereact/iconfield";
+import useError from "hooks/useError";
 
 export const BookingsTable = ({ ride }) => {
     const [rowData, setRowData] = useState([]);
@@ -14,6 +15,7 @@ export const BookingsTable = ({ ride }) => {
     const [searchString, setSearchString] = useState();
     const [earnings, setEarnings] = useState(0);
     const [gridApi, setGridApi] = useState();
+    const {setErrorRef} = useError();
     const columnDef = [
         {
             headerName: "Rider Name",
@@ -61,7 +63,7 @@ export const BookingsTable = ({ ride }) => {
             setRowData(response.data.data.bookings);
             setEarnings(response.data.data.earnings);
         } catch (error) {
-            console.error("Error fetching rides:", error);
+            setErrorRef.current(error);
         } finally {
             setIsLoading(false);
         }

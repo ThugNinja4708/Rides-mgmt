@@ -135,12 +135,12 @@ export const Profile = () => {
     };
 
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    const usernameRegex = /^[a-zA-Z0-9]+$/;
+    const usernameRegex = /^[a-zA-Z0-9- ]+$/;
     const numberRegex = /^(10|[1-9])$/;
     const licenseRegex = /^(?=.*\d)(?=.*[A-Z])[A-Z0-9]{7,12}$/; // will work for most of the states in US
-    const licensePlateRegex = /^[A-Z0-9- ]{6,7}$/; // change this if it doesn't work with most of the states
-    const phoneRegex = /^\(\d{3}\) \d{3}-\d{4}$/;
-    const nameRegex = /^[a-zA-Z]+$/;
+    const licensePlateRegex = /^[A-Z0-9- ]{6,10}$/; // change this if it doesn't work with most of the states
+    const phoneRegex = /^\(\d{3}\)\d{3}-\d{4}$/;
+    const nameRegex = /^[a-zA-Z ]+$/;
 
     const validateUserName = (value) => {
         setUserInfo((prev) => ({ ...prev, username: value }));
@@ -152,7 +152,7 @@ export const Profile = () => {
         } else if (!usernameRegex.test(value)) {
             setUserInfoValidations((prev) => ({
                 ...prev,
-                username: { valid: false, message: "Username should contain only letters and numbers" }
+                username: { valid: false, message: "Username should not contain special characters except hyphen" }
             }));
         } else {
             setUserInfoValidations((prev) => ({ ...prev, username: { valid: true, message: "" } }));
@@ -176,7 +176,7 @@ export const Profile = () => {
                 phone: { valid: false, message: "Phone number is required" }
             }));
         } else if (!phoneRegex.test(value)) {
-            setUserInfoValidations((prev) => ({ ...prev, phone: { valid: false, message: "Phone number should be of format (123) 456-7890" } }));
+            setUserInfoValidations((prev) => ({ ...prev, phone: { valid: false, message: "Phone number should be of format (123)456-7890" } }));
         } else {
             setUserInfoValidations((prev) => ({ ...prev, phone: { valid: true, message: "" } }));
         }
@@ -212,7 +212,7 @@ export const Profile = () => {
         } else if (!licensePlateRegex.test(value)) {
             setVehicleInputsValidations((prev) => ({
                 ...prev,
-                license_plate: { valid: false, message: "License plate can only have letters, digits, hyphens and spaces " }
+                license_plate: { valid: false, message: "License plate can only have uppercase letters, digits, hyphens and spaces " }
             }));
         } else {
             setVehicleInputsValidations((prev) => ({ ...prev, license_plate: { valid: true, message: "" } }));
@@ -263,7 +263,7 @@ export const Profile = () => {
         } else if (!usernameRegex.test(value)) {
             setVehicleInputsValidations((prev) => ({
                 ...prev,
-                model: { valid: false, message: "Vehicle model should only contain letters" }
+                model: { valid: false, message: "Vehicle model should not contain any special characters except hyphen" }
             }));
         } else {
             setVehicleInputsValidations((prev) => ({ ...prev, model: { valid: true, message: "" } }));

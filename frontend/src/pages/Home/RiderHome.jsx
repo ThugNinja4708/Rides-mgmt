@@ -334,9 +334,9 @@ export const RiderHome = () => {
                 </div>
             );
         };
-        // if (listOfRides.length === 0) {
-        //     return <div className="t18-sb">No rides available for you right now!</div>;
-        // }
+        if (listOfRides.length === 0) {
+            return <div className="t18-sb">No rides available for you right now!</div>;
+        }
         return filteredData.map((ride) => {
             return <RideCard key={ride.id} ride={ride} footer={renderFooter(ride)} />;
         });

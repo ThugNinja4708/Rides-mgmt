@@ -8,7 +8,7 @@ export const CustomDialog = ({visible, onHide, header, footer, className, ...pro
             onHide={onHide}
             footer={footer}
             {...props}
-            className={`custom-dialog ${className}`}
+            className={`custom-dialog ${className?className: "dialog-sm"}`}
         >
             {props.children}
         </Dialog>

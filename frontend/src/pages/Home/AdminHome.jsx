@@ -8,6 +8,7 @@ import { AgGridReact } from "ag-grid-react";
 import { DateComponent } from "common-components/DateComponent/DateComponent";
 import { CustomDialog } from "common-components/CustomDialog/CustomDialog";
 import { BookingsTable } from "common-components/BookingsTable/BookingsTable";
+import useError from "hooks/useError";
 
 export const AdminHome = () => {
     const [rowData, setRowData] = useState([]);
@@ -18,6 +19,7 @@ export const AdminHome = () => {
     const [visible, setVisible] = useState(false);
     const [actionPerformed, setActionPerformed] = useState(null);
     const [currentRide, setCurrentRide] = useState();
+    const {setErrorRef} = useError();
     const columnDef = [
         {
             headerName: "Pickup Location",
@@ -77,7 +79,7 @@ export const AdminHome = () => {
             setRowData(response.data.data.list_of_rides);
             setTotalEarnings(response.data.data.admin_earnings);
         } catch (error) {
-            console.error("Error fetching rides:", error);
+            setErrorRef.current(error);
         } finally {
             setIsLoading(false);
         }
