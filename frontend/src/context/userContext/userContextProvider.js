@@ -1,5 +1,5 @@
-import { createContext, useState, useRef, useEffect } from "react";
-
+import { createContext, useState, useEffect, useCallback } from "react";
+import { axios } from "lib/axios";
 export const UserContext = createContext(
     {
         user: null,
@@ -17,19 +17,30 @@ export const UserProvider = ({ children }) => {
     const [authToken, setAuthToken] = useState("");
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const storedUser = localStorage.getItem('user');
-        const storedAuthToken = localStorage.getItem('authToken');
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-            setIsLoggedIn(true);
+
+    const fetchUserDetails = useCallback(async () => {
+
+        try {
+            const response = await axios.get("/auth/get_user_details");
+            if(response.status === 200){
+                setUser(response.data?.data);
+                const authToken = localStorage.getItem("authToken");
+                if(authToken){
+                    setAuthToken(authToken);
+                    setIsLoggedIn(true);
+                }
+            }
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setLoading(false);
         }
 
-        if (storedAuthToken) {
-            setAuthToken(storedAuthToken);
-        }
-        setLoading(false);
-    }, []);
+    },[]);
+
+    useEffect(() => {
+        fetchUserDetails();
+    }, [fetchUserDetails]);
 
     return (
         <UserContext.Provider

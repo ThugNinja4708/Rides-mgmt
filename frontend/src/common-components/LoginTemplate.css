@@ -44,12 +44,18 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 15px;
+    gap: 10px;
 }
 
 .inputs, .p-password-input {
     width: 250px;
     border-radius: 5px;
+}
+
+.login-template-error {
+    width: 250px !important;
+    text-align: center;
+    font-size: 14px;
 }
 
 

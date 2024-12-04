@@ -265,3 +265,25 @@ def get_bookings():
         )
     except Exception as e:
         return Response.generate(message=str(e))
+    
+@driver_bp.route("/delete_vehicle", methods=["POST"])
+@jwt_required()
+def delete_vehicle():
+    try:
+        data = request.get_json()
+        user_id = get_jwt_identity()
+        role = get_jwt()["role"]
+        license_plate = data["license_plate"]
+
+        if role != "driver":
+            return Response.generate(
+                status=401, message="You are not allowed to perform this action"
+            )
+        result = Driver.delete_vehicle(user_id, license_plate)
+        return Response.generate(
+            status=200, message="vehicle deleted successfully", data=result
+        )
+    except Exception as e:
+        return Response.generate(status=500, message=str(e))
+    
+

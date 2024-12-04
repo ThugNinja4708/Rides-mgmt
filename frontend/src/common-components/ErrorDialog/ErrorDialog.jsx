@@ -8,16 +8,23 @@ export const ErrorDialog = () => {
     const onHide = () => {
         setError(null);
     };
+    const onHandleClick = () => {
+        setError(null);
+        if(error?.status === 422) {
+            localStorage.clear();
+            window.location.replace("/login");
+    }
+}
     return (
         <CustomDialog
             header="Something went wrong"
             visible={!!error}
             style={{ width: "50vw" }}
             onHide={onHide}
-            footer={<Button label="OK" className="input-buttons" onClick={onHide} />}
+            footer={<Button label={error?.status === 422 ? "Log Out" : "Ok"} className="input-buttons" onClick={onHandleClick} />}
             headerStyle= {{color: "#ef4444"}}
             >
-            <div className="error-content t16-sb">{error?.message}</div>
+            <div className="error-content t16-sb">{error?.status === 422 ? "Session Expired" : error?.message}</div>
         </CustomDialog>
     );
 }

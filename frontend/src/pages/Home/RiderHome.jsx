@@ -12,6 +12,7 @@ import paymentImage from "images/payment complete animation.gif";
 import { bookRideApi } from "./RiderHomeAPI.js";
 import Spinner from "common-components/Spinner/Spinner";
 import { Dropdown } from "primereact/dropdown";
+import useError from "hooks/useError";
 
 export const RiderHome = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -39,6 +40,7 @@ export const RiderHome = () => {
         cvv: false,
         cardHolderName: false
     });
+    const { setErrorRef } = useError();
 
     const nextStep = () => {
         setStep(prevStep => prevStep + 1);
@@ -109,7 +111,7 @@ export const RiderHome = () => {
             setListOfRides(response.data.data);
             setFilteredData(response.data.data);
             setIsLoading(false);
-        }).catch((error) => { console.log(error) })
+        }).catch((error) => { setErrorRef.current(error) })
     }, []);
 
     const handlePayNow = useCallback(async () => {
@@ -119,7 +121,6 @@ export const RiderHome = () => {
             payment_status: "success"
         };
         const response = await bookRideApi(currentRide._id, paymentInfo, userInputs.riderPickupLocation);
-        console.log(response);
         setPaymentStatus(true);
         setTimeout(() => {
             closeDialog();
@@ -262,9 +263,9 @@ export const RiderHome = () => {
                 }));
                 setPlaces(placesList);
             })
-                .catch((error) => { console.log(error) })
+                .catch((error) => { setErrorRef.current(error) });
         } catch (error) {
-            console.log(error);
+            setErrorRef.current(error);
         }
     };
 

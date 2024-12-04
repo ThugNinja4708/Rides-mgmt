@@ -91,7 +91,21 @@ class Rider:
             "phone_number": self.phone_number,
             "created_at": self.created_at.isoformat(),
             "updated_at": self.updated_at.isoformat(),
+            "role": "rider"
         }
     
     def __repr__(self):
         return f"<Rider {self.username} ({self.email})>"
+    
+    def update_details(self, data):
+        update_data = {
+            "username": data.get("username"),
+            "email": data.get("email"),
+            "phone_number": data.get("phone_number"),
+            "updated_at": datetime.now(timezone.utc)
+        }
+        if update_data:
+            result = rider_collection.update_one({"_id": self._id}, {"$set": update_data}, upsert=True)
+            if result.modified_count == 0:
+                raise Exception("Rider details not updated")
+            return True

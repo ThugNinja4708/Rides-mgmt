@@ -1,10 +1,13 @@
 import { InputText } from "primereact/inputtext";
 import "./Profile.css";
 import { Button } from "primereact/button";
-import { useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { InputNumber } from "primereact/inputnumber";
 import { CustomDialog } from "common-components/CustomDialog/CustomDialog";
 import { ErrorMessage } from "common-components/ErrorMessage/ErrorMessage";
+import useAuth from "hooks/useAuth";
+import { axios } from "lib/axios";
+import useError from "hooks/useError";
 export const Profile = () => {
     const [visible, setVisible] = useState(false);
     const [actionPerformed, setActionPerformed] = useState("");
@@ -22,10 +25,10 @@ export const Profile = () => {
         license: ""
     });
     const [initialUserInfo, setInitialUserInfo] = useState({
-        username: "JohnDoe",
-        email: "john.doe@gmail.com",
-        phone: "123-456-7890",
-        license: "AB1234567"
+        username: "",
+        email: "",
+        phone: "",
+        license: ""
     });
     const [userInfoValidations, setUserInfoValidations] = useState({
         username: { valid: true, message: "" },
@@ -39,28 +42,104 @@ export const Profile = () => {
         capacity: { valid: false, message: "" },
         license_plate: { valid: false, message: "" }
     });
-
-    const vehicles_list = [
-        {
-            make: "Toyota",
-            model: "Camry",
-            capacity: 5,
-            license_plate: "CA 7ABC123"
-        },
-        {
-            make: "Honda",
-            model: "Civic",
-            capacity: 5,
-            license_plate: "TX 1A2B3C"
+    const { user } = useAuth();
+    const [vehiclesList, setVehiclesList] = useState([]);
+    const { setErrorRef } = useError();
+    const [earnings, setEarnings] = useState(0);
+    const getVehicles = async () => {
+        try {
+            const response = await axios.get("/driver/get_vehicles_list");
+            console.log(response);
+            if (response.status === 200) {
+                setVehiclesList(response.data?.data);
+            }
+        } catch (error) {
+            setErrorRef.current(error);
         }
-    ];
+    };
+
+    const getEarnings = async () => {
+        try {
+            const response = await axios.post("/driver/driver_earning");
+            if (response.status === 200) {
+                setEarnings(response.data?.data);
+            }
+        } catch (error) {
+            setErrorRef.current(error);
+        }
+    };
+
+    useEffect(() => {
+        setInitialUserInfo({
+            username: user?.username,
+            email: user?.email,
+            phone: user?.phone_number,
+            license: user?.license_number
+        });
+        if(user?.role === "driver") {
+           Promise.all([getVehicles(), getEarnings()]);
+        }
+    }, [user]);
+
+    const updateUserInfo = async () => {
+        try {
+            const response = await axios.put("/auth/update_user", {
+                username: userInfo.username,
+                email: userInfo.email,
+                phone_number: userInfo.phone,
+                license_number: userInfo.license
+            });
+            if (response.status === 200) {
+                setInitialUserInfo(userInfo);
+            }
+        } catch (error) {
+            setErrorRef.current(error);
+        } finally {
+            onCancelDialog();
+        }
+    };
+
+    const addVehicle = async () => {
+        try {
+            const response = await axios.post("/driver/add_vehicle", {
+                vehicle_info: {
+                    make: vehicleInputs.make,
+                    model: vehicleInputs.model,
+                    capacity: vehicleInputs.capacity,
+                    license_plate: vehicleInputs.license_plate
+                }
+            });
+            if (response.status === 200) {
+                getVehicles();
+            }
+        } catch (error) {
+            setErrorRef.current(error);
+        } finally {
+            onCancelDialog();
+        }
+    };
+
+    const deleteVehicle = async () => {
+        try {
+            const response = await axios.post("/driver/delete_vehicle", {
+                license_plate: vehicle.license_plate
+            });
+            if (response.status === 200) {
+                getVehicles();
+            }
+        } catch (error) {
+            setErrorRef.current(error);
+        } finally {
+            onCancelDialog();
+        }
+    };
 
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     const usernameRegex = /^[a-zA-Z0-9]+$/;
     const numberRegex = /^(10|[1-9])$/;
     const licenseRegex = /^(?=.*\d)(?=.*[A-Z])[A-Z0-9]{7,12}$/; // will work for most of the states in US
-    const licensePlateRegex = /^[A-Z0-9 ]{7,12}$/; // change this if it doesn't work with most of the states
-    const phoneRegex = /^(\+?1[-.\s]?)?(\(?[2-9]\d{2}\)?[-.\s]?)([2-9]\d{2})[-.\s]?(\d{4})$/;
+    const licensePlateRegex = /^[A-Z0-9- ]{6,7}$/; // change this if it doesn't work with most of the states
+    const phoneRegex = /^\(\d{3}\) \d{3}-\d{4}$/;
     const nameRegex = /^[a-zA-Z]+$/;
 
     const validateUserName = (value) => {
@@ -97,7 +176,7 @@ export const Profile = () => {
                 phone: { valid: false, message: "Phone number is required" }
             }));
         } else if (!phoneRegex.test(value)) {
-            setUserInfoValidations((prev) => ({ ...prev, phone: { valid: false, message: "Invalid phone number" } }));
+            setUserInfoValidations((prev) => ({ ...prev, phone: { valid: false, message: "Phone number should be of format (123) 456-7890" } }));
         } else {
             setUserInfoValidations((prev) => ({ ...prev, phone: { valid: true, message: "" } }));
         }
@@ -112,7 +191,11 @@ export const Profile = () => {
         } else if (!licenseRegex.test(value)) {
             setUserInfoValidations((prev) => ({
                 ...prev,
-                license: { valid: false, message: "Invalid license number" }
+                license: {
+                    valid: false,
+                    message:
+                        "License must be 7-12 characters long, contain at least one digit, one uppercase letter, and only consist of uppercase letters and digits."
+                }
             }));
         } else {
             setUserInfoValidations((prev) => ({ ...prev, license: { valid: true, message: "" } }));
@@ -129,7 +212,7 @@ export const Profile = () => {
         } else if (!licensePlateRegex.test(value)) {
             setVehicleInputsValidations((prev) => ({
                 ...prev,
-                license_plate: { valid: false, message: "Invalid license plate" }
+                license_plate: { valid: false, message: "License plate can only have letters, digits, hyphens and spaces " }
             }));
         } else {
             setVehicleInputsValidations((prev) => ({ ...prev, license_plate: { valid: true, message: "" } }));
@@ -163,7 +246,7 @@ export const Profile = () => {
         } else if (!nameRegex.test(value)) {
             setVehicleInputsValidations((prev) => ({
                 ...prev,
-                make: { valid: false, message: "Invalid vehicle company" }
+                make: { valid: false, message: "Vehicle company should only contain letters" }
             }));
         } else {
             setVehicleInputsValidations((prev) => ({ ...prev, make: { valid: true, message: "" } }));
@@ -180,7 +263,7 @@ export const Profile = () => {
         } else if (!usernameRegex.test(value)) {
             setVehicleInputsValidations((prev) => ({
                 ...prev,
-                model: { valid: false, message: "Invalid vehicle model" }
+                model: { valid: false, message: "Vehicle model should only contain letters" }
             }));
         } else {
             setVehicleInputsValidations((prev) => ({ ...prev, model: { valid: true, message: "" } }));
@@ -188,18 +271,18 @@ export const Profile = () => {
     };
 
     const validateUserInfoChange = () => {
-        const isUserInfoChanged = 
+        const isUserInfoChanged =
             userInfo.username !== initialUserInfo.username ||
             userInfo.email !== initialUserInfo.email ||
             userInfo.phone !== initialUserInfo.phone ||
             userInfo.license !== initialUserInfo.license;
-    
+
         const isValidInfo =
             userInfoValidations.username.valid &&
             userInfoValidations.email.valid &&
             userInfoValidations.phone.valid &&
-            userInfoValidations.license.valid;
-    
+            (user?.role === "driver" ? userInfoValidations.license.valid : true);
+
         return isUserInfoChanged && isValidInfo;
     };
 
@@ -211,7 +294,6 @@ export const Profile = () => {
                         Username
                     </label>
                     <div className="read-only-input-fields t14-sb">{initialUserInfo.username}</div>
-
                 </div>
                 <div className="profile-info-input-container">
                     <label htmlFor="email" className="t14">
@@ -225,22 +307,28 @@ export const Profile = () => {
                     </label>
                     <div className="read-only-input-fields t14-sb">{initialUserInfo.phone}</div>
                 </div>
-                <div className="profile-info-input-container">
-                    <label htmlFor="license" className="t14">
-                        License Number
-                    </label>
-                    <div className="read-only-input-fields t14-sb">{initialUserInfo.license}</div>
-                </div>
-                    <Button
-                        label="Edit"
-                        className="edit-button input-buttons"
-                        icon="pi pi-pen-to-square"
-                        onClick={() => {
-                            setVisible(true);
-                            setActionPerformed("editUserInfo");
-                            setUserInfo(initialUserInfo);
-                        }}
-                    />
+                {user?.role === "driver" && (
+                    <div className="profile-info-input-container">
+                        <label htmlFor="license" className="t14">
+                            License Number
+                        </label>
+                        {!!initialUserInfo.license || initialUserInfo.license !== "" ? (
+                            <div className="read-only-input-fields t14-sb">{initialUserInfo.license}</div>
+                        ) : (
+                            <ErrorMessage message="Please add your license number to add vehicles" />
+                        )}
+                    </div>
+                )}
+                <Button
+                    label="Edit"
+                    className="edit-button input-buttons"
+                    icon="pi pi-pen-to-square"
+                    onClick={() => {
+                        setVisible(true);
+                        setActionPerformed("editUserInfo");
+                        setUserInfo(initialUserInfo);
+                    }}
+                />
             </div>
         );
     };
@@ -339,68 +427,70 @@ export const Profile = () => {
 
     const editUserInfoDialogContent = (
         <div className="profile-info-conatiner">
-                <div className="profile-info-input-container">
-                    <label htmlFor="username" className="t14">
-                        Username
-                    </label>
-                        <InputText
-                        id="username"
-                        value={userInfo.username}
-                        className="input-fields t14"
-                        onChange={(e) => {
-                            setUserInfo((prev) => ({ ...prev, username: e.target.value }));
-                            validateUserName(e.target.value)
-                        }}
-                    />
-                    <ErrorMessage message={userInfoValidations.username.message} />
-
-                </div>
-                <div className="profile-info-input-container">
-                    <label htmlFor="email" className="t14">
-                        Email
-                    </label>
-                        <InputText
-                        id="email"
-                        value={userInfo.email}
-                        className="input-fields t14"
-                        onChange={(e) => {
-                            setUserInfo((prev) => ({ ...prev, email: e.target.value }));
-                            validateEmail(e.target.value)
-                        }}
-                    />
-                    <ErrorMessage message={userInfoValidations.email.message} />
-                </div>
-                <div className="profile-info-input-container">
-                    <label htmlFor="phone" className="t14">
-                        Phone Number
-                    </label>
-                        <InputText
-                        id="phone"
-                        value={userInfo.phone}
-                        className="input-fields t14"
-                        onChange={(e) => {
-                            setUserInfo((prev) => ({ ...prev, phone: e.target.value }));
-                            validatePhone(e.target.value)}}
-                    />
-                    <ErrorMessage message={userInfoValidations.phone.message} />
-                </div>
+            <div className="profile-info-input-container">
+                <label htmlFor="username" className="t14">
+                    Username
+                </label>
+                <InputText
+                    id="username"
+                    value={userInfo.username}
+                    className="input-fields t14"
+                    onChange={(e) => {
+                        setUserInfo((prev) => ({ ...prev, username: e.target.value }));
+                        validateUserName(e.target.value);
+                    }}
+                />
+                <ErrorMessage message={userInfoValidations.username.message} />
+            </div>
+            <div className="profile-info-input-container">
+                <label htmlFor="email" className="t14">
+                    Email
+                </label>
+                <InputText
+                    id="email"
+                    value={userInfo.email}
+                    className="input-fields t14"
+                    onChange={(e) => {
+                        setUserInfo((prev) => ({ ...prev, email: e.target.value }));
+                        validateEmail(e.target.value);
+                    }}
+                />
+                <ErrorMessage message={userInfoValidations.email.message} />
+            </div>
+            <div className="profile-info-input-container">
+                <label htmlFor="phone" className="t14">
+                    Phone Number
+                </label>
+                <InputText
+                    id="phone"
+                    value={userInfo.phone}
+                    className="input-fields t14"
+                    onChange={(e) => {
+                        setUserInfo((prev) => ({ ...prev, phone: e.target.value }));
+                        validatePhone(e.target.value);
+                    }}
+                />
+                <ErrorMessage message={userInfoValidations.phone.message} />
+            </div>
+            {user?.role === "driver" && (
                 <div className="profile-info-input-container">
                     <label htmlFor="license" className="t14">
                         License Number
                     </label>
-                        <InputText
+                    <InputText
                         id="license"
                         value={userInfo.license}
                         className="input-fields t14"
                         onChange={(e) => {
                             setUserInfo((prev) => ({ ...prev, license: e.target.value }));
-                            validateLicense(e.target.value)
+                            validateLicense(e.target.value);
                         }}
                     />
                     <ErrorMessage message={userInfoValidations.license.message} />
                 </div>
-                </div>
-    )
+            )}
+        </div>
+    );
 
     const DialogFooter = () => {
         return (
@@ -437,35 +527,35 @@ export const Profile = () => {
             email: "",
             phone: "",
             license: ""
-        })
+        });
     };
 
     const actions = {
         addVehicle: {
             header: "Add Vehicle",
             content: addVehicleDialogContent,
-            action: () => console.log(vehicleInputs),
+            action: addVehicle,
             buttonLabel: "Add Vehicle",
             disable: () => {
                 return (
-                vehicleInputsValidations.make.valid &&
-                vehicleInputsValidations.model.valid &&
-                vehicleInputsValidations.capacity.valid &&
-                vehicleInputsValidations.license_plate.valid
-                )
+                    vehicleInputsValidations.make.valid &&
+                    vehicleInputsValidations.model.valid &&
+                    vehicleInputsValidations.capacity.valid &&
+                    vehicleInputsValidations.license_plate.valid
+                );
             }
         },
         deleteVehicle: {
             header: "Delete Vehicle",
             content: <div>Are you sure you want to delete this vehicle?</div>,
-            action: () => console.log(vehicle),
+            action: deleteVehicle,
             buttonLabel: "Delete Vehicle",
             disable: () => true
         },
         editUserInfo: {
             header: "Edit User Info",
             content: editUserInfoDialogContent,
-            action: () => console.log(userInfo),
+            action: updateUserInfo,
             buttonLabel: "Edit User Info",
             disable: validateUserInfoChange
         }
@@ -474,17 +564,20 @@ export const Profile = () => {
     return (
         <div className="profile-container">
             <div>
-                <div className="profile-info">
+                <div className={user?.role === "driver" ? "profile-info" : "profile-info-non-driver"}>
                     <div className="t18-sb">Personal Details</div>
                     <PersonalInfo />
                 </div>
-                <div className="profile-earnings">
-                    <div className="t18-sb">My Earnings</div>
-                    <div className="t16">$ 450</div>
-                </div>
+                {user?.role === "driver" && (
+                    <div className="profile-earnings">
+                        <div className="t18-sb">My Earnings</div>
+                        <div className="t16">$ {earnings}</div>
+                    </div>
+                )}
             </div>
-            <div className="profile-vehicles-earnings">
-                <div className="profile-vehicles">
+            {
+                user?.role === "driver" && (
+                    <div className="profile-vehicles">
                     <div className="profile-vehicle-header">
                         <div className="t18-sb">My Vehicles</div>
                         <Button
@@ -495,17 +588,18 @@ export const Profile = () => {
                                 setVisible(true);
                                 setActionPerformed("addVehicle");
                             }}
+                            disabled={initialUserInfo.license == "" || initialUserInfo.license == null}
                         />
                     </div>
-                    {vehicles_list.map((vehicle) => {
+                    {vehiclesList.map((vehicle) => {
                         return <VehicleCard vehicle={vehicle} />;
                     })}
                 </div>
-            </div>
+                )
+            }
             <CustomDialog
                 header={<div>{actions[actionPerformed]?.header}</div>}
                 visible={visible}
-                style={{ width: "50vw", borderRadius: "10px !important" }}
                 footer={<DialogFooter />}
                 onHide={onCancelDialog}
             >

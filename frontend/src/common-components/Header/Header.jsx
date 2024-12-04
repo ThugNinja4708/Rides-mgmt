@@ -26,13 +26,12 @@ const Header = () => {
 
     const userMenuOptions = [
         {
-            label: "Profile",
             items: [
                 {
-                    label: "Settings",
-                    icon: "pi pi-cog",
+                    label: "Profile",
+                    icon: "pi pi-user",
                     command: () => {
-                        navigate("/settings");
+                        navigate("/profile");
                     }
                 },
                 {

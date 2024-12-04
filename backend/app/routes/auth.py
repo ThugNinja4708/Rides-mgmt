@@ -118,7 +118,7 @@ def update_user():
         user_obj = get_user_collection_by_role(role)
         user = user_obj.get_by_id(user_id)
         data = request.get_json()
-        user.update(data)
+        user.update_details(data)
         return Response.generate(status=200, message="User updated successfully")
     except Exception as error:
         return Response.generate(status=500, message=str(error))

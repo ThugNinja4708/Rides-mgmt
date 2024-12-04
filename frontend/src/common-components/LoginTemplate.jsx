@@ -6,9 +6,11 @@ import {Dropdown} from "primereact/dropdown";
 import Image from "../../src/images/ride.png";
 import "./LoginTemplate.css";
 import { Link } from "react-router-dom";
+import { ErrorMessage } from "./ErrorMessage/ErrorMessage";
 export const LoginTemplate = ({title, inputs, buttonLabel, loginPrompt, linkText, linkHref, onSubmit}) => {
     const [inputData, setInputData] = useState({});
     const [isFormValid, setIsFormValid] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
         const allFilled = inputs.every(input => {
@@ -17,16 +19,30 @@ export const LoginTemplate = ({title, inputs, buttonLabel, loginPrompt, linkText
             }
             return true;
         });
-        setIsFormValid(allFilled);
+        const valid = allFilled && errorMessage === "";
+        setIsFormValid(valid);
     }, [inputData, inputs]);
 
     useEffect(()=> {
         setInputData({});
     },[linkHref]);
 
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const usernameRegex = /^[a-zA-Z0-9]+$/;
+    const phoneRegex = /^\(\d{3}\) \d{3}-\d{4}$/;
+
     const handleInputChange = (e) => {
         setInputData({...inputData, [e.target.name]: e.target.value});
+        if (e.target.name === "email" && !emailRegex.test(e.target.value)) {
+            setErrorMessage("Invalid email");
+        } else if (e.target.name === "username" && !usernameRegex.test(e.target.value)) {
+            setErrorMessage("Invalid username");
+        } else if (e.target.name === "phone" && !phoneRegex.test(e.target.value)) {
+            setErrorMessage("Phone number should be of format (123) 456-7890");
+        } else {
+            setErrorMessage("");
     }
+}
 
     const handleInputDropdownChange = (e) => {
         setInputData({...inputData, [e.target.name]: e.value});
@@ -57,6 +73,7 @@ export const LoginTemplate = ({title, inputs, buttonLabel, loginPrompt, linkText
                     })}
                     </div>
                     <div className="login-template-button-container">
+                    <ErrorMessage message={errorMessage} className="login-template-error"/>
                     <Button label={buttonLabel} className="inputs" onClick={handleSubmit} disabled={!isFormValid}/>
                     <div>{loginPrompt} <span><Link to={linkHref}>{linkText}</Link></span></div>
                     </div>

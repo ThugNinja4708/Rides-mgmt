@@ -2,6 +2,7 @@ import { LoginTemplate } from "../../common-components/LoginTemplate";
 import { loginAPI } from "./LoginAPI";
 import useAuth from "../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
+import useError from "hooks/useError";
 export const Login = () => {
     const { setUser, setIsLoggedIn, setAuthToken } = useAuth();
     const navigate = useNavigate();
@@ -20,16 +21,22 @@ export const Login = () => {
             ]
         }
     ];
+    const { setErrorRef } = useError();
 
     const handleSubmit = async (inputData) => {
-        const response = await loginAPI(inputData);
-        localStorage.setItem('authToken', response.data.authToken);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-        setUser(response?.data?.user);
-        setAuthToken(response?.data?.authToken);
-        setIsLoggedIn(true);
-        navigate("/");
-    };
+        try {
+            const response = await loginAPI(inputData);
+            if(response.status === 200){
+                localStorage.setItem('authToken', response.data.authToken);
+                setUser(response?.data?.user);
+                setAuthToken(response?.data?.authToken);
+                setIsLoggedIn(true);
+                navigate("/");
+            }
+        } catch(error){
+            setErrorRef.current(error);
+    }
+};
 
     return (
         <LoginTemplate

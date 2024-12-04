@@ -13,6 +13,7 @@ import { InputNumber } from "primereact/inputnumber";
 import { HttpStatusCode } from "axios";
 import { BookingsTable } from "common-components/BookingsTable/BookingsTable";
 import {getUsersCurrentLocation, searchRidesByInput} from "lib/utils"
+import useError from "hooks/useError";
 
 export const ScheduledRides = () => {
     const [scheduledRides, setScheduledRides] = useState([]);
@@ -33,7 +34,7 @@ export const ScheduledRides = () => {
         drop_location: "",
         vehicle_id: ""
     });
-    const [currentDate, setCurrentDate] = useState("");
+    const {setErrorRef} = useError();
 
     const cardFooter = (ride) => (
         <div style={{ display: "flex", gap: "10px" }}>
@@ -60,7 +61,7 @@ export const ScheduledRides = () => {
             setScheduledRides(response.data.data);
             setFilteredData(response.data.data);
         } catch (error) {
-            console.log(error);
+            setErrorRef.current(error);
         }
     };
 
@@ -153,7 +154,7 @@ export const ScheduledRides = () => {
             }));
             setVehicles(vehiclesList);
         } catch (error) {
-            console.log(error);
+            setErrorRef.current(error);
         }
     };
 
@@ -173,9 +174,9 @@ export const ScheduledRides = () => {
                 }));
                 setPlaces(placesList);
             })
-            .catch((error)=>{console.log(error)})
+            .catch((error)=>{setErrorRef.current(error)});
         } catch (error) {
-            console.log(error);
+            setErrorRef.current(error);
         }
     };
 
@@ -229,9 +230,9 @@ export const ScheduledRides = () => {
             });
             if(response.data.status === HttpStatusCode.Ok){
                 getAllScheduledRides();
-            } // this is not tested verify this
+            } 
         } catch (error) {
-            console.log(error);
+            setErrorRef.current(error); 
         } finally {
             onCancelDialog();
         }
@@ -244,7 +245,7 @@ export const ScheduledRides = () => {
                 ride_id: currentRide._id
             })
         }catch(error){
-            console.log(error);
+            setErrorRef.current(error);
         }finally{
             setIsLoading(false);
             onCancelDialog();
