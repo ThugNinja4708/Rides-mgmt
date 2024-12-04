@@ -10,7 +10,6 @@ from app.models.Booking import Booking
 from app.models.Refund import Refund
 from app.models.Rider import Rider
 from app.models.Payment import Payment
-import requests
 from app.utils.send_email import SendMail
 
 driver_bp = Blueprint("driver", __name__, url_prefix="/api/driver")
@@ -237,11 +236,7 @@ def get_bookings():
         data = request.get_json()
         ride_id = data["ride_id"]
         driver_id = get_jwt_identity()
-        role = get_jwt()["role"]
-        if role != "driver":
-            return Response.generate(
-                status=403, message="You are not allowed to perform this action"
-            )
+
         bookings = Booking.get_all_bookings_by_ride_id(ride_id=ride_id)
         list_of_bookings = []
         for booking in bookings:

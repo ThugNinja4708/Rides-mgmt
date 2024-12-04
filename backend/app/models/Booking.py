@@ -129,19 +129,23 @@ class Booking:
         ]  # Get sum or default to 0
         return total
 
+    def calculate_admin_earnings(ride_id=None):
+        match_stage = {}
+        # Add ride ID to the match stage if provided
+        if ride_id:
+            match_stage["ride_id"] = ObjectId(ride_id)
 
-    def calculate_admin_earnings():
-        result = booking_collection.aggregate(
-            [
-                {
-                    "$group": {
-                        "_id": None,  # Group all documents
-                        "total": {
-                            "$sum": "admin_commission"
-                        },  # Sum the specified field
-                    }
-                }
-            ]
-        )
-        total = next(result, {"total": 0})["total"]  # Get the sum or default to 0
+        # Aggregation pipeline
+        pipeline = [
+            {"$match": match_stage},  # Filter documents
+            {"$group": {
+                "_id": None,  # Group all matching documents
+                "total_earnings": {"$sum": "$admin_commission"}  # Sum driver earnings
+            }}
+        ]
+
+        result = booking_collection.aggregate(pipeline)
+        total = next(result, {"total_earnings": 0})[
+            "total_earnings"
+        ]  # Get sum or default to 0
         return total
