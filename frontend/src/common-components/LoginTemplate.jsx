@@ -5,12 +5,13 @@ import {Password} from "primereact/password";
 import {Dropdown} from "primereact/dropdown";
 import Image from "../../src/images/ride.png";
 import "./LoginTemplate.css";
-import { Link } from "react-router-dom";
 import { ErrorMessage } from "./ErrorMessage/ErrorMessage";
+import { useNavigate } from "react-router-dom";
 export const LoginTemplate = ({title, inputs, buttonLabel, loginPrompt, linkText, linkHref, onSubmit}) => {
     const [inputData, setInputData] = useState({});
     const [isFormValid, setIsFormValid] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+    const navigate = useNavigate();
 
     useEffect(() => {
         const allFilled = inputs.every(input => {
@@ -75,7 +76,7 @@ export const LoginTemplate = ({title, inputs, buttonLabel, loginPrompt, linkText
                     <div className="login-template-button-container">
                     <ErrorMessage message={errorMessage} className="login-template-error"/>
                     <Button label={buttonLabel} className="inputs" onClick={handleSubmit} disabled={!isFormValid}/>
-                    <div>{loginPrompt} <span><Link to={linkHref}>{linkText}</Link></span></div>
+                    <div>{loginPrompt} <Button text onClick={()=>{navigate(linkHref)}} label={linkText}/></div>
                     </div>
             </div>
             </div>

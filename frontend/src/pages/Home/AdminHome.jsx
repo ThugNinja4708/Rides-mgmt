@@ -6,7 +6,7 @@ import { InputIcon } from "primereact/inputicon";
 import { IconField } from "primereact/iconfield";
 import { AgGridReact } from "ag-grid-react";
 import { DateComponent } from "common-components/DateComponent/DateComponent";
-import { Dialog } from "primereact/dialog";
+import { CustomDialog } from "common-components/CustomDialog/CustomDialog";
 import { BookingsTable } from "common-components/BookingsTable/BookingsTable";
 
 export const AdminHome = () => {
@@ -50,6 +50,11 @@ export const AdminHome = () => {
             headerName: "Total seats booked",
             field: "list_of_riders",
             valueFormatter: (params) => params.value.length
+        },
+        {
+            headerName: "Price Per Seat",
+            field: "price_per_seat",
+            cellRenderer: (params)=>`$ ${params.value}`
         },
         {
             headerName: "Admin Comission",
@@ -101,7 +106,7 @@ export const AdminHome = () => {
             ),
             content:renderBookingsTable,
             footer: ()=><>Footer</>,
-            style: { width: "52rem" }
+            className: "dialog-xl"
         }
     };
     const onCancelDialog = () => {
@@ -133,15 +138,15 @@ export const AdminHome = () => {
                     onRowClicked={showBookings}
                 />
             </div>
-            <Dialog
+            <CustomDialog
                 header={actions[actionPerformed]?.header()}
                 visible={visible}
                 onHide={onCancelDialog}
                 footer={actions[actionPerformed]?.footer()}
-                style={actions[actionPerformed]?.style}
+                className={actions[actionPerformed]?.className}
             >
                 {actions[actionPerformed]?.content()}
-            </Dialog>
+            </CustomDialog>
         </div>
     );
 };

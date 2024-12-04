@@ -1,6 +1,6 @@
 import { Dialog } from "primereact/dialog"
 import "./CustomDialog.css"
-export const CustomDialog = ({visible, onHide, header, footer, ...props}) => {
+export const CustomDialog = ({visible, onHide, header, footer, className, ...props}) => {
     return (
         <Dialog
             header={header}
@@ -8,8 +8,7 @@ export const CustomDialog = ({visible, onHide, header, footer, ...props}) => {
             onHide={onHide}
             footer={footer}
             {...props}
-            className="custom-dialog"
-            style={{width: "40rem"}}
+            className={`custom-dialog ${className}`}
         >
             {props.children}
         </Dialog>
