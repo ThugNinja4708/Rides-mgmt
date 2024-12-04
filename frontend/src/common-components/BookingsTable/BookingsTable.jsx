@@ -24,7 +24,6 @@ export const BookingsTable = ({ ride }) => {
             headerName: "Rider Pickup Location",
             field: "rider_pickup_location.name"
         },
-
         {
             headerName: "Payment Status",
             field: "payment_details.payment_status",

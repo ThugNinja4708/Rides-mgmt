@@ -33,7 +33,6 @@ export const ScheduledRides = () => {
         drop_location: "",
         vehicle_id: ""
     });
-    const [currentDate, setCurrentDate] = useState("");
 
     const cardFooter = (ride) => (
         <div style={{ display: "flex", gap: "10px" }}>
