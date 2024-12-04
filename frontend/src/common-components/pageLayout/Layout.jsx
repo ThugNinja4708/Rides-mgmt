@@ -16,7 +16,7 @@ const Layout = () => {
                 <Outlet />
             </main>
         </div>
-    ) : <Navigate to="/login" />;
+    ) : <Navigate to="/login" replace/>;
 };
 
 export default Layout;

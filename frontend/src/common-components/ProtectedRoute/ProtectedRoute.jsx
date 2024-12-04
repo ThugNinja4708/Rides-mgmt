@@ -3,14 +3,10 @@ import { Navigate, Outlet } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 
 const ProtectedRoute = ({ requiredRole }) => {
-    const { user, isLoggedIn } = useAuth();
-
-    if (!isLoggedIn) {
-        return <Navigate to="/login" />;
-    }
-
+    const { user } = useAuth();
+    
     if (requiredRole && user?.role !== requiredRole) {
-        return <Navigate to="/notAuthorized" />;
+        return <Navigate to="/notAuthorized" replace/>;
     }
 
     return <Outlet />;

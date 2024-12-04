@@ -14,6 +14,7 @@ import { HttpStatusCode } from "axios";
 import { BookingsTable } from "common-components/BookingsTable/BookingsTable";
 import { getUsersCurrentLocation, searchRidesByInput } from "lib/utils";
 import Spinner from "common-components/Spinner/Spinner";
+import useError from "hooks/useError";
 
 export const ScheduledRides = () => {
     const [scheduledRides, setScheduledRides] = useState([]);
@@ -33,6 +34,7 @@ export const ScheduledRides = () => {
         drop_location: "",
         vehicle_id: ""
     });
+    const {setErrorRef} = useError();
     const [isLoading, setIsLoading] = useState({createRide:false, cancelRide: false, getVehicles: false, getPlaces: false, getAllScheduledRides: false});
     let minDate = new Date();
 
@@ -67,7 +69,7 @@ export const ScheduledRides = () => {
             setScheduledRides(response.data.data);
             setFilteredData(response.data.data);
         } catch (error) {
-            console.log(error);
+            setErrorRef.current(error);
         } finally {
             setIsLoading((prev)=>({...prev, getAllScheduledRides: false}));
         }
@@ -168,7 +170,7 @@ export const ScheduledRides = () => {
             }));
             setVehicles(vehiclesList);
         } catch (error) {
-            console.log(error);
+            setErrorRef.current(error);
         } finally {
             setIsLoading((prev)=>({...prev, getVehicles: false}));
         }
@@ -193,12 +195,10 @@ export const ScheduledRides = () => {
                     setPlaces(placesList);
                 })
                 .catch((error) => {
-                    console.log(error);
-                });
+                    setErrorRef.current(error);
+                });;
         } catch (error) {
-            console.log(error);
-        } finally {
-            setIsLoading((prev)=>({...prev, getPlaces: false}));
+            setErrorRef.current(error);
         }
     };
 
@@ -254,9 +254,9 @@ export const ScheduledRides = () => {
             });
             if (response.data.status === HttpStatusCode.Ok) {
                 getAllScheduledRides();
-            } // this is not tested verify this
+            } 
         } catch (error) {
-            console.log(error);
+            setErrorRef.current(error); 
         } finally {
             setIsLoading((prev)=>({...prev, createRide: false}));
             onCancelDialog();
@@ -270,9 +270,9 @@ export const ScheduledRides = () => {
                 ride_id: currentRide._id
             });
         } catch (error) {
-            console.log(error);
+            setErrorRef.current(error);
         } finally {
-            setIsLoading((prev)=>({...prev, cancelRide: true}));
+            setIsLoading((prev)=>({...prev, cancelRide: false}));
             onCancelDialog();
             getAllScheduledRides();
         }

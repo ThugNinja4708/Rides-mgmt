@@ -32,7 +32,9 @@ function App() {
                             <Route path="/history" element={<ProtectedRoute  requiredRole={"rider"}/>}>
                                 <Route path="/history" element={<History/>} />
                             </Route>
-                            <Route path="/profile" element={<Profile/>} />
+                            <Route  element={<ProtectedRoute/>}>
+                                <Route path="/profile" element={<Profile/>} />
+                            </Route>
                         </Route>
                     </Routes>
                 </Router>

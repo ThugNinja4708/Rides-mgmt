@@ -52,4 +52,10 @@
     border-radius: 5px;
 }
 
+.login-template-error {
+    width: 250px !important;
+    text-align: center;
+    font-size: 14px;
+}
+
 

@@ -12,14 +12,14 @@ export const SignUp = () => {
             {label: "Rider", value: "rider"}
         ]}
     ];
-    const {setError} = useError();
+    const {setErrorRef} = useError();
 
     const handleSubmit = async (inputData) => {
         try {
             const response = await signUpAPI(inputData);
             console.log(response);
         } catch (error) {
-            setError(error);
+            setErrorRef.current(error);
     }
 }
     return (

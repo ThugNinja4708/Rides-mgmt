@@ -8,6 +8,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { axios } from "lib/axios";
 import { searchRidesByInput } from "lib/utils";
 import Spinner from "common-components/Spinner/Spinner";
+import useError from "hooks/useError";
 export const History = () => {
     const [activeIndex, setActiveIndex] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
@@ -15,6 +16,7 @@ export const History = () => {
     const [searchString, setSearchString] = useState();
     const [filteredData, setFilteredData] = useState([]);
     const statusMapping = useMemo(()=>["scheduled", "completed", "completed"], []);
+    const { setErrorRef } = useError();
     const fetchRides = useCallback(async (status) => {
         try{
         setIsLoading(true);
@@ -24,7 +26,7 @@ export const History = () => {
         setListOfRides(response.data.data);
         setFilteredData(response.data.data);
     }catch(error){
-        console.log(error);
+        setErrorRef.current(error);
     }
     finally{
         setIsLoading(false);

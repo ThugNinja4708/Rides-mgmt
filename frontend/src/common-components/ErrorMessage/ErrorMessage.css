@@ -3,6 +3,7 @@
     align-items: center;
     color: #dc2626;
     display: block;
+    text-wrap: wrap;
 }
 
 .message-hidden {
