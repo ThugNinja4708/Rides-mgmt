@@ -185,8 +185,8 @@ def cancel_ride():
         recipients= []
         for rider in ride.list_of_riders:
             recipients.append(Rider.get_by_id(rider).email)
-
-        SendMail.send_email(recipients=recipients, ride=ride )
+        if len(recipients) !=0:
+            SendMail.send_email(recipients=recipients, ride=ride )
     except KeyError as e:
         return Response.generate(
             status=400, message=f"KeyError: Missing required attribute: {e}"

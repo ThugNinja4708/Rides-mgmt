@@ -4,9 +4,15 @@ import { InputIcon } from "primereact/inputicon";
 import { IconField } from "primereact/iconfield";
 import { RideCard } from "common-components/RideCard/RideCard";
 import { axios } from "lib/axios";
-import { validateCreditCard, validateCVV, validateExpiryDate, getUsersCurrentLocation, searchRidesByInput } from "lib/utils";
+import {
+    validateCreditCard,
+    validateCVV,
+    validateExpiryDate,
+    getUsersCurrentLocation,
+    searchRidesByInput
+} from "lib/utils";
 import { Button } from "primereact/button";
-import { Dialog } from "primereact/dialog";
+import { CustomDialog } from "common-components/CustomDialog/CustomDialog";
 import "./RiderHome.css";
 import paymentImage from "images/payment complete animation.gif";
 import { bookRideApi } from "./RiderHomeAPI.js";
@@ -14,7 +20,6 @@ import Spinner from "common-components/Spinner/Spinner";
 import { Dropdown } from "primereact/dropdown";
 
 export const RiderHome = () => {
-    const [isLoading, setIsLoading] = useState(false);
     const [listOfRides, setListOfRides] = useState([]);
     const [visible, setVisible] = useState(false);
     const [actionPerformed, setActionPerformed] = useState();
@@ -32,6 +37,7 @@ export const RiderHome = () => {
     const [filteredData, setFilteredData] = useState([]);
     const [step, setStep] = useState(1);
     const [places, setPlaces] = useState([]);
+    const [isLoading, setIsLoading] = useState({ getPlaces: false, getRides: false });
 
     const [isTouched, setIsTouched] = useState({
         cardNumber: false,
@@ -41,11 +47,11 @@ export const RiderHome = () => {
     });
 
     const nextStep = () => {
-        setStep(prevStep => prevStep + 1);
+        setStep((prevStep) => prevStep + 1);
     };
 
     const prevStep = () => {
-        setStep(prevStep => prevStep - 1);
+        setStep((prevStep) => prevStep - 1);
     };
 
     const markFieldAsTouched = useCallback((field) => {
@@ -101,15 +107,24 @@ export const RiderHome = () => {
     }, []);
 
     const fetchRides = useCallback(() => {
-        setIsLoading(true);
-        getUsersCurrentLocation().then(async (location) => {
-            const response = await axios.post("/rider/get_all_available_rides", {
-                current_location: [location.lng, location.lat]
-            });
-            setListOfRides(response.data.data);
-            setFilteredData(response.data.data);
-            setIsLoading(false);
-        }).catch((error) => { console.log(error) })
+        try {
+            setIsLoading((prev) => ({ ...prev, getRides: true }));
+            getUsersCurrentLocation()
+                .then(async (location) => {
+                    const response = await axios.post("/rider/get_all_available_rides", {
+                        current_location: [location.lng, location.lat]
+                    });
+                    setListOfRides(response.data.data);
+                    setFilteredData(response.data.data);
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setIsLoading((prev) => ({ ...prev, getRides: false }));
+        }
     }, []);
 
     const handlePayNow = useCallback(async () => {
@@ -135,7 +150,10 @@ export const RiderHome = () => {
             </div>
         ) : (
             <div className="credit-card-container">
-                <span className="t14-sb " style={{ display: "flex", justifyContent: "center" }}> Make Payment for ${currentRide.price_per_seat}</span>
+                <span className="t14-sb " style={{ display: "flex", justifyContent: "center" }}>
+                    {" "}
+                    Make Payment for ${currentRide.price_per_seat}
+                </span>
                 <div className="credit-card-input">
                     <label htmlFor="card-number" className="t14-sb">
                         Card Number
@@ -202,8 +220,8 @@ export const RiderHome = () => {
                     />
                     {!isValid.cvv && isTouched.cvv && <small className="p-error">Invalid CVV</small>}
                 </div>
-                <div style={{display: "flex", justifyContent:"space-between" }}>
-                    <Button label="Go Back" onClick={prevStep} text iconPos="left" icon="pi pi-angle-left"/>
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                    <Button label="Go Back" onClick={prevStep} text iconPos="left" icon="pi pi-angle-left" />
                     <Button label="Pay Now" disabled={!isFormValid} onClick={handlePayNow} />
                 </div>
             </div>
@@ -223,7 +241,9 @@ export const RiderHome = () => {
     ]);
 
     const renderRiderPickUpLocation = () => {
-        return (
+        return isLoading.getPlaces ? (
+            <Spinner />
+        ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                 <Dropdown
                     value={userInputs.riderPickupLocation}
@@ -234,37 +254,44 @@ export const RiderHome = () => {
                     filter={true}
                 />
                 <div>
-                <Button label="Next"
-                    icon="pi pi-angle-right"
-                    iconPos="right"
-                    style={{ width: "100px" }}
-                    disabled={!userInputs.riderPickupLocation}
-                    onClick={nextStep}
-                />
+                    <Button
+                        label="Next"
+                        icon="pi pi-angle-right"
+                        iconPos="right"
+                        style={{ width: "100px" }}
+                        disabled={!userInputs.riderPickupLocation}
+                        onClick={nextStep}
+                    />
                 </div>
             </div>
-        )
-    }
+        );
+    };
 
     const getPlaces = () => {
         try {
-            getUsersCurrentLocation().then(async (location) => {
-                const response = await axios.post("/coordinates/get_places", {
-                    lat: location.lat,
-                    lng: location.lng
+            setIsLoading((prev) => ({ ...prev, getPlaces: true }));
+            getUsersCurrentLocation()
+                .then(async (location) => {
+                    const response = await axios.post("/coordinates/get_places", {
+                        lat: location.lat,
+                        lng: location.lng
+                    });
+                    const placesList = Object.entries(response.data.data).map(([label, value]) => ({
+                        label,
+                        value: {
+                            name: label,
+                            coordinates: value
+                        }
+                    }));
+                    setPlaces(placesList);
+                })
+                .catch((error) => {
+                    console.log(error);
                 });
-                const placesList = Object.entries(response.data.data).map(([label, value]) => ({
-                    label,
-                    value: {
-                        name: label,
-                        coordinates: value
-                    }
-                }));
-                setPlaces(placesList);
-            })
-                .catch((error) => { console.log(error) })
         } catch (error) {
             console.log(error);
+        } finally {
+            setIsLoading((prev) => ({ ...prev, getPlaces: false }));
         }
     };
 
@@ -278,7 +305,8 @@ export const RiderHome = () => {
         bookRide: {
             header: step === 1 ? "Enter the pick up location" : "Credit Card Payment",
             content: step === 1 ? renderRiderPickUpLocation : renderCreditCardPayment,
-            disabled: !(isValid.cardNumber && isValid.expiryDate && isValid.cvv)
+            disabled: !(isValid.cardNumber && isValid.expiryDate && isValid.cvv),
+            className: "dialog-sm"
         }
     };
 
@@ -288,7 +316,9 @@ export const RiderHome = () => {
                 <div className="card-footer">
                     <div className="card-driver-info">
                         <span>Driver: {ride.driver_name}</span>
-                        <span>vehicle: {ride.vehicle_id.make} {ride.vehicle_id.model}</span>
+                        <span>
+                            vehicle: {ride.vehicle_id.make} {ride.vehicle_id.model}
+                        </span>
                     </div>
                     <div>
                         <Button
@@ -303,14 +333,13 @@ export const RiderHome = () => {
                 </div>
             );
         };
-        if (listOfRides.length === 0) {
-            return <div className="t18-sb">No rides available for you right now!</div>
-        }
+        // if (listOfRides.length === 0) {
+        //     return <div className="t18-sb">No rides available for you right now!</div>;
+        // }
         return filteredData.map((ride) => {
             return <RideCard key={ride.id} ride={ride} footer={renderFooter(ride)} />;
         });
     }, [filteredData, listOfRides]);
-
 
     useEffect(() => {
         fetchRides();
@@ -318,24 +347,32 @@ export const RiderHome = () => {
 
     const handleSearch = (e) => {
         setSearchString(e.target.value);
-        setFilteredData(searchRidesByInput(e.target.value, listOfRides))
-    }
+        setFilteredData(searchRidesByInput(e.target.value, listOfRides));
+    };
 
-    return isLoading ? (
-        <Spinner />
-    ) : (
+    return (
         <div className="Home-container">
             <div className="search-container">
                 <IconField iconPosition="left" className="search-field">
                     <InputIcon className="pi pi-search"> </InputIcon>
-                    <InputText value={searchString} placeholder="Search rides..." className="rides-search" onChange={handleSearch} />
+                    <InputText
+                        value={searchString}
+                        placeholder="Search rides..."
+                        className="rides-search"
+                        onChange={handleSearch}
+                    />
                 </IconField>
             </div>
-            <div className="rides-container">{renderRides()}</div>
+             {isLoading.getRides? <div>Loading.................</div>:<div className="rides-container">{renderRides()}</div>}
 
-            <Dialog header={actionDetails[actionPerformed]?.header} visible={visible} onHide={closeDialog} style={{ width: "30rem" }}>
-                <div style={{ padding: "1rem" }}>{actionDetails[actionPerformed]?.content()}</div>
-            </Dialog>
+            <CustomDialog
+                header={actionDetails[actionPerformed]?.header}
+                visible={visible}
+                onHide={closeDialog}
+                className={actionDetails[actionPerformed]?.className}
+            >
+                <div>{actionDetails[actionPerformed]?.content()}</div>
+            </CustomDialog>
         </div>
     );
 };
