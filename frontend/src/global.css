@@ -3,6 +3,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
 
 
+.t12 {
+    font-family: "Open Sans", sans-serif !important;
+    font-size: 0.875rem !important;
+    font-weight: normal !important;
+}
+
+.t12-sb {
+    font-family: "Open Sans", sans-serif !important;
+    font-size: 0.875rem !important;
+    font-weight: 600 !important;
+}
+
 .t14 {
     font-family: "Open Sans", sans-serif !important;
     font-size: 1rem !important;
@@ -90,7 +102,22 @@
 }
 
 .input-fields {
-    width: 300px;
+    width: 250px;
+    border-radius: 5px;
+}
+
+.input-buttons {
+    width: fit-content;
+    border-radius: 0.5rem;
+}
+
+.custom-dialog-header {
+    border-bottom: 1px solid #2f3564;
+    padding: 20px;
+}
+
+.custom-dialog-content, .custom-dialog-footer {
+    padding: 20px;
 }
 
 .p-button {

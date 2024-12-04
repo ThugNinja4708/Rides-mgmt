@@ -31,7 +31,7 @@ def get_all_available_rides():
     result = []
     for ride in rides:
         if(ride["status"] != RideStatus.CANCELLED.value):
-            if(ObjectId(user_id) not in ride["list_of_riders"]):
+            if(user_id not in ride["list_of_riders"]):
                 driver_name = Driver.get_by_id(ride["driver_id"]).username
                 ride["driver_name"] = driver_name
                 result.append(ride)

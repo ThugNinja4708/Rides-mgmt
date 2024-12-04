@@ -2,9 +2,8 @@ import { LoginTemplate } from "../../common-components/LoginTemplate";
 import { loginAPI } from "./LoginAPI";
 import useAuth from "../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
 export const Login = () => {
-    const { user, setIsLoggedIn } = useAuth();
+    const { setUser, setIsLoggedIn, setAuthToken } = useAuth();
     const navigate = useNavigate();
     const inputs = [
         { type: "text", name: "email", placeholder: "Email", required: true },
@@ -26,20 +25,11 @@ export const Login = () => {
         const response = await loginAPI(inputData);
         localStorage.setItem('authToken', response.data.authToken);
         localStorage.setItem('user', JSON.stringify(response.data.user));
+        setUser(response?.data?.user);
+        setAuthToken(response?.data?.authToken);
         setIsLoggedIn(true);
-        user.current = response?.data?.user;
         navigate("/");
     };
-
-    useEffect(() => {
-        const authToken = localStorage.getItem('authToken');
-        const userData = localStorage.getItem('user');
-        if (authToken && userData) {
-            setIsLoggedIn(true);
-            user.current = JSON.parse(userData);
-            navigate("/");
-        }
-    }, [navigate,setIsLoggedIn, user]);
 
     return (
         <LoginTemplate

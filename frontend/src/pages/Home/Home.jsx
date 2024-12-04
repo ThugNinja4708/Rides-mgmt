@@ -1,13 +1,17 @@
 import useAuth from "hooks/useAuth"
 import { RiderHome } from "./RiderHome";
 import { ScheduledRides } from "pages/ScheduledRides/ScheduledRides";
+import { AdminHome } from "./AdminHome";
 
 export const Home = ()=>{
     const {user}  = useAuth();
-    if (user.current.role === "rider"){
+    if (user?.role === "rider"){
         return <RiderHome/>
     }
-    if(user.current.role === "driver"){
+    if(user?.role === "driver"){
         return <ScheduledRides/>
+    }
+    if(user?.role === "admin"){
+        return <AdminHome/>
     }
 }

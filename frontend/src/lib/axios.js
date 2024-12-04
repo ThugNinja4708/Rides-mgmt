@@ -8,6 +8,14 @@ export const axios = Axios.create({
     withCredentials: true
 });
 
+const statusCodes = {
+    400: "Bad request",
+    403: "Forbidden",
+    404: "Resource not found",
+    500: "Internal server error",
+    424: "Identity api failed to respond",
+};
+
 axios.interceptors.request.use(
     (config) => {
         const excludedPaths = ["/login", "/signup"];
@@ -31,7 +39,7 @@ axios.interceptors.response.use(
     (error) => {
         const err = new Error();
         err.status = error?.response?.status;
-        err.message = error?.response?.data?.message;
+        err.message = error?.response?.data?.message || statusCodes[err.status] || error?.message;
         throw err;
     }
 );

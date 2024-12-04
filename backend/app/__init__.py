@@ -44,10 +44,12 @@ def create_app():
     from app.routes.driver_actions import driver_bp
     from app.routes.rider_actions import rider_bp
     from app.routes.cordinates import coordinates_bp
+    from app.routes.admin_actions import admin_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(driver_bp)
     app.register_blueprint(rider_bp)
     app.register_blueprint(coordinates_bp)
+    app.register_blueprint(admin_bp)
 
     return app

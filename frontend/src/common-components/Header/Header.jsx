@@ -9,13 +9,13 @@ const Header = () => {
     const navigate = useNavigate();
     const [userMenuVisible, setUserMenuVisible] = useState();
     const userMenuRef = useRef();
-    const { user, setIsLoggedIn } = useAuth();
+    const { user, setIsLoggedIn, setUser } = useAuth();
 
     const handleLogout = async () => {
         try {
             await axios.post("/auth/logout");
             setIsLoggedIn(false);
-            user.current = null;
+            setUser(null);
             localStorage.removeItem("authToken");
             localStorage.removeItem("user");
             navigate("/login");
@@ -65,7 +65,7 @@ const Header = () => {
                     onClick={handleMenuToggle}
                 >
                     <i className="pi pi-user" />
-                    <p className="t14">{user.current?.username}</p>
+                    <p className="t14">{user?.username}</p>
                     <i className={userMenuVisible ? "pi pi-angle-up" : "pi pi-angle-down"} />
                 </div>
                 <Menu

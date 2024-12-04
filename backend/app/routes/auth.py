@@ -108,3 +108,17 @@ def get_user_details():
         return Response.generate(status=200, data=user)
     except Exception as error:
         return Response.generate(status=500, message=str(error))
+    
+@auth_bp.route("/update_user", methods={"PUT"})
+@jwt_required()
+def update_user():
+    try:
+        user_id = get_jwt_identity()
+        role = get_jwt()["role"]
+        user_obj = get_user_collection_by_role(role)
+        user = user_obj.get_by_id(user_id)
+        data = request.get_json()
+        user.update(data)
+        return Response.generate(status=200, message="User updated successfully")
+    except Exception as error:
+        return Response.generate(status=500, message=str(error))

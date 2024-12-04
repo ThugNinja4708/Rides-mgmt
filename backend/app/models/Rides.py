@@ -102,7 +102,7 @@ class Rides:
                 "type": "Point",
                 "coordinates": self.drop_location  # [longitude, latitude]
             },
-            "list_of_riders": self.list_of_riders,
+            "list_of_riders": [str(rider_id) for rider_id in self.list_of_riders],
             "status": self.status,
             "price_per_seat": self.price_per_seat,
             "start_time": self.start_time.isoformat(),
@@ -175,5 +175,9 @@ class Rides:
         result = rides_collection.update_one(
         {"_id": ObjectId(ride_id)},  # Match the ride by its ID
         {"$pull": {"list_of_riders": ObjectId(rider_id)}}  # Remove the rider from the array
-    )
+        )
         return result.modified_count
+
+    def get_all_rides():
+        rides_cursor =  rides_collection.find()
+        return [Rides.from_db(ride) for ride in rides_cursor]
