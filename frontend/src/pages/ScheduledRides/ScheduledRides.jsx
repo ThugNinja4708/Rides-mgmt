@@ -15,6 +15,7 @@ import { BookingsTable } from "common-components/BookingsTable/BookingsTable";
 import { getUsersCurrentLocation, searchRidesByInput } from "lib/utils";
 import Spinner from "common-components/Spinner/Spinner";
 import useError from "hooks/useError";
+import useDebounce from "hooks/useDebounce";
 
 export const ScheduledRides = () => {
     const [scheduledRides, setScheduledRides] = useState([]);
@@ -37,6 +38,8 @@ export const ScheduledRides = () => {
     const {setErrorRef} = useError();
     const [isLoading, setIsLoading] = useState({createRide:false, cancelRide: false, getVehicles: false, getPlaces: false, getAllScheduledRides: false});
     let minDate = new Date();
+    const [locationSearch,setLocationSearch] = useState();
+    const debouncedFilterText = useDebounce(locationSearch, 350);
 
     const cardFooter = (ride) => (
         <div style={{ display: "flex", gap: "10px" }}>
@@ -82,6 +85,10 @@ export const ScheduledRides = () => {
     const renderBookingsTable = () => {
         return <BookingsTable ride={currentRide} />;
     };
+    const handleLocationSearch =(e)=>{
+        //# add debounce
+        setLocationSearch(e.filter);
+    }
 
     const createRideContent = () => {
         return isLoading.createRide || isLoading.getPlaces || isLoading.getVehicles ? (
@@ -95,6 +102,8 @@ export const ScheduledRides = () => {
                     placeholder="Select Pickup Location"
                     className="input-fields"
                     filter
+                    onFilter={handleLocationSearch}
+                    showClear
                 />
                 <Dropdown
                     value={inputs.drop_location}
@@ -103,6 +112,8 @@ export const ScheduledRides = () => {
                     placeholder="Select Drop Location"
                     className="input-fields"
                     filter
+                    onFilter={handleLocationSearch}
+                    showClear
                 />
                 <Dropdown
                     value={inputs.vehicle_id}
@@ -175,13 +186,15 @@ export const ScheduledRides = () => {
             setIsLoading((prev)=>({...prev, getVehicles: false}));
         }
     };
-
+useEffect(()=>{
+    if(debouncedFilterText){
     const getPlaces = () => {
         try {
             setIsLoading((prev)=>({...prev, getPlaces: true}));
             getUsersCurrentLocation()
                 .then(async (location) => {
                     const response = await axios.post("/coordinates/get_places", {
+                        search_text : debouncedFilterText,
                         lat: location.lat,
                         lng: location.lng
                     });
@@ -203,11 +216,13 @@ export const ScheduledRides = () => {
             setIsLoading((prev)=>({...prev, getPlaces: false}));
         }
     };
+    getPlaces();
+}
+},[debouncedFilterText])
 
     useEffect(() => {
         if (actionPerformed === "createRide") {
             getVehicles();
-            getPlaces();
         }
     }, [actionPerformed]);
 

@@ -11,7 +11,7 @@ from app.models.Refund import Refund
 from app.models.Rider import Rider
 from app.models.Payment import Payment
 from app.utils.send_email import SendMail
-
+from app.routes.cordinates import get_lag_and_lat
 driver_bp = Blueprint("driver", __name__, url_prefix="/api/driver")
 
 
@@ -107,7 +107,8 @@ def create_ride():
             return Response.generate(
                 status=403, message="You are not allowed to perform this action"
             )
-
+        pickup_location["coordinates"] = get_lag_and_lat(pickup_location["coordinates"])
+        pickup_location["coordinates"] = get_lag_and_lat(drop_location["coordinates"])
         rides_obj = Rides(
             pickup_location=pickup_location,
             drop_location=drop_location,

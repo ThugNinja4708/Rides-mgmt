@@ -19,6 +19,7 @@ import { bookRideApi } from "./RiderHomeAPI.js";
 import Spinner from "common-components/Spinner/Spinner";
 import { Dropdown } from "primereact/dropdown";
 import useError from "hooks/useError";
+import useDebounce from "hooks/useDebounce";
 
 export const RiderHome = () => {
     const [listOfRides, setListOfRides] = useState([]);
@@ -39,6 +40,8 @@ export const RiderHome = () => {
     const [step, setStep] = useState(1);
     const [places, setPlaces] = useState([]);
     const [isLoading, setIsLoading] = useState({ getPlaces: false, getRides: false });
+    const [locationSearch,setLocationSearch] = useState();
+    const debouncedFilterText = useDebounce(locationSearch, 350);
 
     const [isTouched, setIsTouched] = useState({
         cardNumber: false,
@@ -240,6 +243,10 @@ export const RiderHome = () => {
         handleCardHolderNameChange,
         currentRide
     ]);
+    const handleLocationSearch =(e)=>{
+        //# add debounce
+        setLocationSearch(e.filter);
+    }
 
     const renderRiderPickUpLocation = () => {
         return isLoading.getPlaces ? (
@@ -253,6 +260,8 @@ export const RiderHome = () => {
                     placeholder="Select Pickup Location"
                     className="input-fields"
                     filter={true}
+                    onFilter={handleLocationSearch}
+                    showClear
                 />
                 <div>
                     <Button
@@ -268,39 +277,45 @@ export const RiderHome = () => {
         );
     };
 
-    const getPlaces = () => {
-        try {
-            setIsLoading((prev) => ({ ...prev, getPlaces: true }));
-            getUsersCurrentLocation()
-                .then(async (location) => {
-                    const response = await axios.post("/coordinates/get_places", {
-                        lat: location.lat,
-                        lng: location.lng
-                    });
-                    const placesList = Object.entries(response.data.data).map(([label, value]) => ({
-                        label,
-                        value: {
-                            name: label,
-                            coordinates: value
-                        }
-                    }));
-                    setPlaces(placesList);
-                })
-                .catch((error) => {
-                    setErrorRef.current(error);
-                });;
-        } catch (error) {
-            setErrorRef.current(error);
-        } finally {
-            setIsLoading((prev) => ({ ...prev, getPlaces: false }));
-        }
-    };
+    useEffect(()=>{
+        if(debouncedFilterText){
+        const getPlaces = () => {
+            try {
+                setIsLoading((prev)=>({...prev, getPlaces: true}));
+                getUsersCurrentLocation()
+                    .then(async (location) => {
+                        const response = await axios.post("/coordinates/get_places", {
+                            search_text : debouncedFilterText,
+                            lat: location.lat,
+                            lng: location.lng
+                        });
+                        const placesList = Object.entries(response.data.data).map(([label, value]) => ({
+                            label,
+                            value: {
+                                name: label,
+                                coordinates: value
+                            }
+                        }));
+                        setPlaces(placesList);
+                    })
+                    .catch((error) => {
+                        setErrorRef.current(error);
+                    });;
+            } catch (error) {
+                setErrorRef.current(error);
+            }finally{
+                setIsLoading((prev)=>({...prev, getPlaces: false}));
+            }
+        };
+        getPlaces();
+    }
+    },[debouncedFilterText])
 
-    useEffect(() => {
-        if (actionPerformed === "bookRide") {
-            getPlaces();
-        }
-    }, [actionPerformed]);
+    // useEffect(() => {
+    //     if (actionPerformed === "bookRide") {
+    //         getPlaces();
+    //     }
+    // }, [actionPerformed]);
 
     const actionDetails = {
         bookRide: {

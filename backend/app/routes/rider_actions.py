@@ -6,6 +6,7 @@ from app.models.Payment import Payment
 from app.models.Booking import Booking
 from bson import ObjectId
 from app.models.Driver import Driver
+from app.routes.cordinates import get_lag_and_lat
 
 from app.models import Refund
 from app.utils.constants import RideStatus, PaymentStatus
@@ -74,6 +75,7 @@ def book_ride():
 
         if role != "rider":
             return Response.generate(status=403, message="you can not perform this action")
+        rider_pickup_location["coordinates"] = get_lag_and_lat(rider_pickup_location["coordinates"])
         ride_obj = Rides.get_ride_by_id(ride_id)
 
 
