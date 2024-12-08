@@ -109,7 +109,7 @@ def logout():
     except Exception as error:
         return Response.generate(status=500, message=f"UnExpectedError Occurred: {error}")
 
-@auth_bp.route("/get_user_details", methods={"GET"})
+@auth_bp.route("/get_user_details", methods=["GET"])
 @jwt_required()
 def get_user_details():
     try:
@@ -118,6 +118,7 @@ def get_user_details():
         user_obj = get_user_collection_by_role(role)
 
         user = user_obj.get_by_id(user_id).to_dict()
+
         return Response.generate(status=200, data=user)
     except Exception as error:
         return Response.generate(status=500, message=str(error))
@@ -153,12 +154,15 @@ def upload_image():
     user_obj.save()
     return Response.generate(status=200, data={"file_id": str(file_id)})
 
-@auth_bp.route('/profile_image/<file_id>', methods=['GET'])
-@jwt_required()
-def get_image(file_id):
+@auth_bp.route("/get_profile_image/<profile_image_id>", methods=["GET"])
+def get_profile_image(profile_image_id):
     try:
         fs = Gridfs.fs
-        file = fs.get(ObjectId(file_id))
-        return send_file(io.BytesIO(file.read()), mimetype=file.content_type)
+        file = fs.get(ObjectId(profile_image_id))
+        return send_file(
+            io.BytesIO(file.read()),
+            mimetype=file.content_type,
+            download_name="profile_image"
+        )
     except Exception as error:
-        return Response.generate(message=str(error))
+        return Response.generate(status=404, message=str(error))

@@ -96,3 +96,9 @@
     display: flex;
     gap: 20px;
 }
+
+.personal-details-heading{
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+}

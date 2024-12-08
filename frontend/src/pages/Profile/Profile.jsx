@@ -590,7 +590,7 @@ export const Profile = () => {
         <div className="profile-container">
             <div>
                 <div className={user?.role === "driver" ? "profile-info" : "profile-info-non-driver"}>
-                    <div className="t18-sb">
+                    <div className="t18-sb personal-details-heading" >
                         <span>Personal Details</span>
                         <ProfileImage/>
                     </div>

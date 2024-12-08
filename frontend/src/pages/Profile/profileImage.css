@@ -1,0 +1,10 @@
+.profile-image-container{
+    display: flex;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.profile-image-container img {
+    border-radius: 50%;
+    object-fit: cover;
+}
