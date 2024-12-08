@@ -47,6 +47,12 @@
     gap: 15px;
 }
 
+.login-template-inputs {
+    overflow-y: auto;
+    gap: 2px;
+    width: 100%;
+}
+
 .inputs, .p-password-input {
     width: 250px;
     border-radius: 5px;

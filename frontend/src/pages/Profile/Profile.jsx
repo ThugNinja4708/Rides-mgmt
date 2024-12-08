@@ -8,6 +8,7 @@ import { ErrorMessage } from "common-components/ErrorMessage/ErrorMessage";
 import useAuth from "hooks/useAuth";
 import { axios } from "lib/axios";
 import useError from "hooks/useError";
+import { ProfileImage } from "./ProfileImage";
 export const Profile = () => {
     const [visible, setVisible] = useState(false);
     const [actionPerformed, setActionPerformed] = useState("");
@@ -28,7 +29,10 @@ export const Profile = () => {
         username: "",
         email: "",
         phone: "",
-        license: ""
+        license: "",
+        city: "",
+        street: "",
+        ssn: "",
     });
     const [userInfoValidations, setUserInfoValidations] = useState({
         username: { valid: true, message: "" },
@@ -74,10 +78,13 @@ export const Profile = () => {
             username: user?.username,
             email: user?.email,
             phone: user?.phone_number,
-            license: user?.license_number
+            license: user?.license_number,
+            ssn: user?.ssn,
+            city: user?.city,
+            street: user?.street
         });
-        if(user?.role === "driver") {
-           Promise.all([getVehicles(), getEarnings()]);
+        if (user?.role === "driver") {
+            Promise.all([getVehicles(), getEarnings()]);
         }
     }, [user]);
 
@@ -306,6 +313,24 @@ export const Profile = () => {
                         Phone Number
                     </label>
                     <div className="read-only-input-fields t14-sb">{initialUserInfo.phone}</div>
+                </div>
+                <div className="profile-info-input-container">
+                    <label htmlFor="ssn" className="t14">
+                        SSN
+                    </label>
+                    <div className="read-only-input-fields t14-sb">{initialUserInfo.ssn}</div>
+                </div>
+                <div className="profile-info-input-container">
+                    <label htmlFor="city" className="t14">
+                        City
+                    </label>
+                    <div className="read-only-input-fields t14-sb">{initialUserInfo.city}</div>
+                </div>
+                <div className="profile-info-input-container">
+                    <label htmlFor="phone" className="t14">
+                        street
+                    </label>
+                    <div className="read-only-input-fields t14-sb">{initialUserInfo.street}</div>
                 </div>
                 {user?.role === "driver" && (
                     <div className="profile-info-input-container">
@@ -565,7 +590,10 @@ export const Profile = () => {
         <div className="profile-container">
             <div>
                 <div className={user?.role === "driver" ? "profile-info" : "profile-info-non-driver"}>
-                    <div className="t18-sb">Personal Details</div>
+                    <div className="t18-sb">
+                        <span>Personal Details</span>
+                        <ProfileImage/>
+                    </div>
                     <PersonalInfo />
                 </div>
                 {user?.role === "driver" && (
@@ -578,23 +606,23 @@ export const Profile = () => {
             {
                 user?.role === "driver" && (
                     <div className="profile-vehicles">
-                    <div className="profile-vehicle-header">
-                        <div className="t18-sb">My Vehicles</div>
-                        <Button
-                            label="Add Vehicle"
-                            className="input-buttons"
-                            icon="pi pi-plus"
-                            onClick={() => {
-                                setVisible(true);
-                                setActionPerformed("addVehicle");
-                            }}
-                            disabled={initialUserInfo.license == "" || initialUserInfo.license == null}
-                        />
+                        <div className="profile-vehicle-header">
+                            <div className="t18-sb">My Vehicles</div>
+                            <Button
+                                label="Add Vehicle"
+                                className="input-buttons"
+                                icon="pi pi-plus"
+                                onClick={() => {
+                                    setVisible(true);
+                                    setActionPerformed("addVehicle");
+                                }}
+                                disabled={initialUserInfo.license == "" || initialUserInfo.license == null}
+                            />
+                        </div>
+                        {vehiclesList.map((vehicle) => {
+                            return <VehicleCard vehicle={vehicle} />;
+                        })}
                     </div>
-                    {vehiclesList.map((vehicle) => {
-                        return <VehicleCard vehicle={vehicle} />;
-                    })}
-                </div>
                 )
             }
             <CustomDialog

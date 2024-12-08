@@ -5,8 +5,8 @@ from app.database import Database
 import os
 import datetime
 from flask_jwt_extended import JWTManager
-from flask_mail import Mail
 from app.utils.send_email import SendMail
+from app.utils.gridfs import Gridfs
 blacklist = set()
 def create_app():
     app = Flask(__name__)
@@ -33,6 +33,7 @@ def create_app():
     Database.initialize(app)
     jwt = JWTManager(app)
     SendMail.initialize(app)
+    Gridfs.initialize(app)
 
     @jwt.token_in_blocklist_loader
     def check_if_token_in_blacklist(jwt_header, jwt_payload):

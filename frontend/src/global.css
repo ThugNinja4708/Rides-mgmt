@@ -109,6 +109,7 @@
 .input-buttons {
     width: fit-content;
     border-radius: 0.5rem;
+    height: auto;
 }
 
 .custom-dialog-header {
@@ -122,6 +123,7 @@
 
 .p-button {
     border-radius: 5px !important;
+    overflow: visible;
 }
 
 .search-container {

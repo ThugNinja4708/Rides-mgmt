@@ -11,14 +11,18 @@ class Driver:
         self,
         username,
         email,
-        phone_number = None,
+        city,
+        street,
+        ssn,
+        phone_number=None,
         password=None,
         _id=None,
         created_at=None,
-        updated_at = None,
+        updated_at=None,
         password_hash=None,
         vehicle_info=None,
-        license_number = None
+        license_number=None,
+        profile_image_id = None
     ):
         self._id = ObjectId(_id) if _id else ObjectId()
         self.username = username
@@ -26,6 +30,10 @@ class Driver:
         self.phone_number = phone_number
         self.vehicle_info = vehicle_info
         self.license_number = license_number
+        self.ssn = ssn
+        self.street = street
+        self.city = city
+        self.profile_image_id = profile_image_id
 
         # Handle password and password_hash initialization
         if password and not password_hash:
@@ -67,7 +75,11 @@ class Driver:
             password_hash=user_data["password_hash"],
             created_at=user_data["created_at"],
             updated_at=user_data["updated_at"],
-            license_number=user_data["license_number"]
+            license_number=user_data["license_number"],
+            city=user_data["city"],
+            ssn=user_data["ssn"],
+            street=user_data["street"],
+            profile_image_id=user_data["profile_image_id"]
         )
 
     def save(self):
@@ -79,9 +91,15 @@ class Driver:
             "created_at": self.created_at,
             "updated_at": datetime.now(timezone.utc),
             "phone_number": self.phone_number,
-            "license_number": self.license_number
+            "license_number": self.license_number,
+            "ssn": self.ssn,
+            "city": self.city,
+            "street": self.street,
+            "profile_image_id": self.profile_image_id
         }
-        driver_collection.update_one({"_id": self._id}, {"$set": user_data}, upsert=True)
+        driver_collection.update_one(
+            {"_id": self._id}, {"$set": user_data}, upsert=True
+        )
         return self
 
     def check_password(self, password):
@@ -98,87 +116,85 @@ class Driver:
             "created_at": self.created_at.isoformat(),
             "updated_at": self.updated_at.isoformat(),
             "license_number": self.license_number,
-            "role": "driver"
+            "role": "driver",
+            "city": self.city,
+            "street": self.street,
+            "ssn": self.ssn,
+            "profile_image_id": str(self.profile_image_id)
         }
-    
+
     @staticmethod
     def add_vehicle_info(user_id, vehicle_info_dict):
         filter_query = {"_id": ObjectId(user_id)}
         license_plate = vehicle_info_dict.get("license_plate")
         existing_driver = driver_collection.find_one(filter_query, {"vehicle_info": 1})
-        
+
         if existing_driver:
             for vehicle in existing_driver.get("vehicle_info", []):
                 if vehicle.get("license_plate") == license_plate:
                     raise Exception("Vehicle with this license plate already exists.")
-        
-        update_value = {"$push": {
-            "vehicle_info": {
-                "make": vehicle_info_dict.get("make"),
-                "model": vehicle_info_dict.get("model"),
-                "license_plate": vehicle_info_dict.get("license_plate"),
-                "capacity": vehicle_info_dict.get("capacity"),
+
+        update_value = {
+            "$push": {
+                "vehicle_info": {
+                    "make": vehicle_info_dict.get("make"),
+                    "model": vehicle_info_dict.get("model"),
+                    "license_plate": vehicle_info_dict.get("license_plate"),
+                    "capacity": vehicle_info_dict.get("capacity"),
+                }
             }
-        }}
+        }
         result = driver_collection.update_one(filter_query, update_value)
         if result.modified_count == 0:
             raise Exception("Vehicle not added")
         return True
-    
-    def get_all_vehicles(driver_id):
 
+    def get_all_vehicles(driver_id):
         query = {"_id": ObjectId(driver_id)}
         projection = {"vehicle_info": 1, "_id": 0}
-    
+
         result = driver_collection.find_one(query, projection)
         if result and "vehicle_info" in result:
             return result["vehicle_info"]
         else:
             return []
 
-    
-    def get_driver_and_vehicle_name(driver_id,vehicle_id):
-        query = {
-        "_id": driver_id,
-        "vehicle_info.id": vehicle_id
-    }
+    def get_driver_and_vehicle_name(driver_id, vehicle_id):
+        query = {"_id": driver_id, "vehicle_info.id": vehicle_id}
 
-    # Projection to fetch only the required fields
-        projection = {
-        "username": 1,
-        "vehicle_info.name": 1
-    }
+        # Projection to fetch only the required fields
+        projection = {"username": 1, "vehicle_info.name": 1}
 
-    # Find the matching document
+        # Find the matching document
         driver = driver_collection.find_one(query, projection)
 
         if driver:
             return {
-            "username": driver.get("username"),
-            "vehicle_name": driver.get("vehicle_info", {}).get("name")
-        }
+                "username": driver.get("username"),
+                "vehicle_name": driver.get("vehicle_info", {}).get("name"),
+            }
         else:
             return None
 
     def __repr__(self):
         return f"<Rider {self.username} ({self.email})>"
-    
+
     def update_details(self, data):
         update_data = {
             "username": data.get("username"),
             "email": data.get("email"),
             "phone_number": data.get("phone_number"),
             "license_number": data.get("license_number"),
-            "updated_at": datetime.now(timezone.utc)
+            "updated_at": datetime.now(timezone.utc),
         }
         if update_data:
-            result = driver_collection.update_one({"_id": self._id}, {"$set": update_data}, upsert=True)
+            result = driver_collection.update_one(
+                {"_id": self._id}, {"$set": update_data}, upsert=True
+            )
             if result.modified_count == 0:
                 raise Exception("Driver details not updated")
             return True
-        
 
-    
     def delete_vehicle(driver_id, license_plate):
         query = {"_id": ObjectId(driver_id)}
         update_value = {"$pull": {"vehicle_info": {"license_plate": license_plate}}}
@@ -188,7 +204,3 @@ class Driver:
         if result.modified_count == 0:
             raise Exception("Vehicle not found or could not be deleted")
         return True
-
-        
-
-

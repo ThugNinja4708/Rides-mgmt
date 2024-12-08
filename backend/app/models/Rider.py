@@ -11,17 +11,25 @@ class Rider:
         self,
         username,
         email,
+        city,
+        street,
+        ssn,
         phone_number = None,
         password=None,
         _id=None,
         created_at=None,
         updated_at = None,
-        password_hash=None
+        password_hash=None,
+        profile_image_id = None
     ):
         self._id = ObjectId(_id) if _id else ObjectId()
         self.username = username
         self.email = email
         self.phone_number = phone_number
+        self.ssn = ssn
+        self.street = street
+        self.city = city
+        self.profile_image_id = profile_image_id
 
         # Handle password and password_hash initialization
         if password and not password_hash:
@@ -62,7 +70,11 @@ class Rider:
             _id=user_data["_id"],
             password_hash=user_data["password_hash"],
             created_at=user_data["created_at"],
-            updated_at=user_data["updated_at"]
+            updated_at=user_data["updated_at"],
+            city=user_data["city"],
+            ssn = user_data["ssn"],
+            street=user_data["street"],
+            profile_image_id=user_data["profile_image_id"]
         )
 
     def save(self):
@@ -73,7 +85,11 @@ class Rider:
             "password_hash": self.password_hash,
             "created_at": self.created_at,
             "updated_at": datetime.now(timezone.utc),
-            "phone_number": self.phone_number
+            "phone_number": self.phone_number,
+            "ssn": self.ssn,
+            "city": self.city,
+            "street": self.street,
+            "profile_image_id": self.profile_image_id
         }
         rider_collection.update_one({"_id": self._id}, {"$set": user_data}, upsert=True)
         return self
@@ -91,12 +107,16 @@ class Rider:
             "phone_number": self.phone_number,
             "created_at": self.created_at.isoformat(),
             "updated_at": self.updated_at.isoformat(),
-            "role": "rider"
+            "role": "rider",
+            "city":self.city,
+            "street": self.street,
+            "ssn":self.ssn,
+            "profile_image_id": self.profile_image_id
         }
-    
+
     def __repr__(self):
         return f"<Rider {self.username} ({self.email})>"
-    
+
     def update_details(self, data):
         update_data = {
             "username": data.get("username"),

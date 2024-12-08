@@ -31,6 +31,7 @@ export const LoginTemplate = ({title, inputs, buttonLabel, loginPrompt, linkText
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     const usernameRegex = /^[a-zA-Z0-9- ]+$/;
     const phoneRegex = /^[1-9][0-9]{9}$/;
+    const ssnRegex = /^\d{3}-\d{2}-\d{4}$/;
 
     const handleInputChange = (e) => {
         setInputData({...inputData, [e.target.name]: e.target.value});
@@ -40,7 +41,17 @@ export const LoginTemplate = ({title, inputs, buttonLabel, loginPrompt, linkText
             setErrorMessage("Invalid username");
         } else if (e.target.name === "phone" && !phoneRegex.test(e.target.value)) {
             setErrorMessage("Phone number should contain 10 digits");
-        } else {
+        }
+        else if(e.target.name === "ssn" && !ssnRegex.test(e.target.value)){
+            setErrorMessage("Invalid SSN number");
+        }
+        else if(e.target.name === "city" && !e.target.value){
+            setErrorMessage("City iss required");
+        }
+        else if(e.target.name === "street" && !(e.target.value)){
+            setErrorMessage("Street is required");
+        }
+        else {
             setErrorMessage("");
     }
 }

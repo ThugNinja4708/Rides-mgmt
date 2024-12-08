@@ -1,11 +1,14 @@
-from flask import Blueprint, request, make_response
+from flask import Blueprint, request, send_file
 from flask_jwt_extended import get_jwt_identity
 from datetime import timedelta
 from app.utils.response import Response
 from app.utils.get_roles import get_user_collection_by_role
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt
 from app import blacklist
+from app.utils.gridfs import Gridfs
+from bson import ObjectId
 
+import io
 auth_bp = Blueprint("auth", __name__, url_prefix="/api/auth")
 
 
@@ -16,6 +19,9 @@ def signup():
         username = data["username"]
         password = data["password"]
         email = data["email"]
+        city = data["city"]
+        street = data["street"]
+        ssn = data["ssn"]
         role = data["role"]
         phone_number = data.get("phone_number", "")
 
@@ -33,7 +39,14 @@ def signup():
                 status=400, message="user with this email already exists"
             )
         user_obj = user(
-            username=username, email=email, password=password, phone_number=phone_number
+            username=username,
+            email=email,
+            password=password,
+            phone_number=phone_number,
+            ssn = ssn,
+            city = city,
+            street = street
+            
         )
         user_obj.save()
         return Response.generate(status=201, message="User created successfully")
@@ -122,3 +135,30 @@ def update_user():
         return Response.generate(status=200, message="User updated successfully")
     except Exception as error:
         return Response.generate(status=500, message=str(error))
+
+@auth_bp.route('/upload_profile_image', methods=['POST'])
+@jwt_required()
+def upload_image():
+    user_id = get_jwt_identity()
+    role = get_jwt()["role"]
+    if 'file' not in request.files:
+        return Response.generate(status=400, message="No, file uploaded")
+    fs = Gridfs.get_fs()
+
+    file = request.files['file']
+    file_id = fs.put(file, filename=file.filename)
+    user_obj = get_user_collection_by_role(role)
+    user_obj = user_obj.get_by_id(user_id)
+    user_obj.profile_image_id = file_id
+    user_obj.save()
+    return Response.generate(status=200, data={"file_id": str(file_id)})
+
+@auth_bp.route('/profile_image/<file_id>', methods=['GET'])
+@jwt_required()
+def get_image(file_id):
+    try:
+        fs = Gridfs.fs
+        file = fs.get(ObjectId(file_id))
+        return send_file(io.BytesIO(file.read()), mimetype=file.content_type)
+    except Exception as error:
+        return Response.generate(message=str(error))

@@ -5,28 +5,34 @@ import useError from "hooks/useError";
 export const SignUp = () => {
     const navigate = useNavigate();
     const inputs = [
-        {type: "text", name: "username", placeholder: "Username", required: true},
-        {type: "text", name: "email", placeholder: "Email", required: true},
-        {type: "password", name: "password", placeholder: "Password", required: true},
-        {type: "text", name: "phone", placeholder: "Phone Number", required: false},
-        {type: "dropdown", name: "role", placeholder: "Select a role", required: true, options: [
-            {label: "Driver", value: "driver"},
-            {label: "Rider", value: "rider"}
-        ]}
+
+        { type: "text", name: "ssn", placeholder: "SSN number", required: true },
+        { type: "text", name: "username", placeholder: "Username", required: true },
+        { type: "text", name: "city", placeholder: "City", required: true },
+        { type: "text", name: "street", placeholder: "Street", required: true },
+        { type: "text", name: "email", placeholder: "Email", required: true },
+        { type: "password", name: "password", placeholder: "Password", required: true },
+        { type: "text", name: "phone", placeholder: "Phone Number", required: false },
+        {
+            type: "dropdown", name: "role", placeholder: "Select a role", required: true, options: [
+                { label: "Driver", value: "driver" },
+                { label: "Rider", value: "rider" }
+            ]
+        }
     ];
-    const {setErrorRef} = useError();
+    const { setErrorRef } = useError();
 
     const handleSubmit = async (inputData) => {
         try {
             const response = await signUpAPI(inputData);
-            if(response.status === 201){
+            if (response.status === 201) {
                 navigate("/login")
             }
             console.log(response);
         } catch (error) {
             setErrorRef.current(error);
+        }
     }
-}
     return (
         <LoginTemplate
             title="Sign Up"
