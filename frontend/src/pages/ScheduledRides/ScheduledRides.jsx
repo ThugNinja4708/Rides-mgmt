@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { InputIcon } from "primereact/inputicon";
@@ -15,7 +15,7 @@ import { BookingsTable } from "common-components/BookingsTable/BookingsTable";
 import { getUsersCurrentLocation, searchRidesByInput } from "lib/utils";
 import Spinner from "common-components/Spinner/Spinner";
 import useError from "hooks/useError";
-import useDebounce from "hooks/useDebounce";
+import {  useJsApiLoader, StandaloneSearchBox } from "@react-google-maps/api";
 
 export const ScheduledRides = () => {
     const [scheduledRides, setScheduledRides] = useState([]);
@@ -35,11 +35,43 @@ export const ScheduledRides = () => {
         drop_location: "",
         vehicle_id: ""
     });
-    const {setErrorRef} = useError();
-    const [isLoading, setIsLoading] = useState({createRide:false, cancelRide: false, getVehicles: false, getPlaces: false, getAllScheduledRides: false});
+    const { setErrorRef } = useError();
+    const [isLoading, setIsLoading] = useState({
+        createRide: false,
+        cancelRide: false,
+        getVehicles: false,
+        getPlaces: false,
+        getAllScheduledRides: false
+    });
     let minDate = new Date();
-    const [locationSearch,setLocationSearch] = useState();
-    const debouncedFilterText = useDebounce(locationSearch, 350);
+    const pickupRef = useRef(null);
+    const dropRef = useRef(null);
+
+    const libraries = ["places"];
+    const { isLoaded } = useJsApiLoader({
+        id: "google-map-script",
+        googleMapsApiKey: "AIzaSyDJ6xZxVNPiNVWIGsE82M1tOGeqHfGX7dI",
+        libraries: libraries
+    });
+    console.log(isLoaded);
+    const handleOnPlacesChanged = (type) => {
+        const ref = type === "pickup" ? pickupRef : dropRef;
+        const place = ref.current.getPlaces?.()[0];
+        if (place) {
+            const location = {
+                name: place.formatted_address || place.name,
+                coordinates: {
+                    lat: place.geometry.location.lng(),
+                    lng: place.geometry.location.lat()
+                }
+            };
+            setInputs((prev) => ({
+                ...prev,
+                [type === "pickup" ? "pickup_location" : "drop_location"]: location
+            }));
+        }
+        
+    };
 
     const cardFooter = (ride) => (
         <div style={{ display: "flex", gap: "10px" }}>
@@ -67,14 +99,14 @@ export const ScheduledRides = () => {
 
     const getAllScheduledRides = async () => {
         try {
-            setIsLoading((prev)=>({...prev, getAllScheduledRides: true}));
+            setIsLoading((prev) => ({ ...prev, getAllScheduledRides: true }));
             const response = await axios.get("/driver/get_all_rides");
             setScheduledRides(response.data.data);
             setFilteredData(response.data.data);
         } catch (error) {
             setErrorRef.current(error);
         } finally {
-            setIsLoading((prev)=>({...prev, getAllScheduledRides: false}));
+            setIsLoading((prev) => ({ ...prev, getAllScheduledRides: false }));
         }
     };
 
@@ -85,36 +117,48 @@ export const ScheduledRides = () => {
     const renderBookingsTable = () => {
         return <BookingsTable ride={currentRide} />;
     };
-    const handleLocationSearch =(e)=>{
-        //# add debounce
-        setLocationSearch(e.filter);
-    }
 
     const createRideContent = () => {
         return isLoading.createRide || isLoading.getPlaces || isLoading.getVehicles ? (
             <Spinner />
         ) : (
             <div className="scheduled-rides-create-ride-container">
-                <Dropdown
-                    value={inputs.pickup_location}
-                    onChange={(e) => setInputs((prev) => ({ ...prev, pickup_location: e.value }))}
-                    options={places}
-                    placeholder="Select Pickup Location"
-                    className="input-fields"
-                    filter
-                    onFilter={handleLocationSearch}
-                    showClear
-                />
-                <Dropdown
-                    value={inputs.drop_location}
-                    onChange={(e) => setInputs((prev) => ({ ...prev, drop_location: e.value }))}
-                    options={places}
-                    placeholder="Select Drop Location"
-                    className="input-fields"
-                    filter
-                    onFilter={handleLocationSearch}
-                    showClear
-                />
+                <StandaloneSearchBox
+                    onLoad={(ref) => (pickupRef.current = ref)}
+                    onPlacesChanged={() => handleOnPlacesChanged("pickup")}
+                >
+                    <InputText
+                        type="text"
+                        placeholder="Pickup Location"
+                        className="input-fields"
+                        value={inputs.pickup_location?.name || ""}
+                        onChange={(e) =>
+                            setInputs((prev) => ({
+                                ...prev,
+                                pickup_location: { ...prev.pickup_location, name: e.target.value }
+                            }))
+                        }
+                    />
+                </StandaloneSearchBox>
+
+                <StandaloneSearchBox
+                    onLoad={(ref) => (dropRef.current = ref)}
+                    onPlacesChanged={() => handleOnPlacesChanged("drop")}
+                >
+                    <InputText
+                        type="text"
+                        placeholder="Drop Location"
+                        className="input-fields"
+                        value={inputs.drop_location?.name || ""}
+                        onChange={(e) =>
+                            setInputs((prev) => ({
+                                ...prev,
+                                drop_location: { ...prev.drop_location, name: e.target.value }
+                            }))
+                        }
+                    />
+                </StandaloneSearchBox>
+
                 <Dropdown
                     value={inputs.vehicle_id}
                     onChange={(e) => setInputs((prev) => ({ ...prev, vehicle_id: e.value }))}
@@ -173,7 +217,7 @@ export const ScheduledRides = () => {
 
     const getVehicles = async () => {
         try {
-            setIsLoading((prev)=>({...prev, getVehicles: true}));
+            setIsLoading((prev) => ({ ...prev, getVehicles: true }));
             const response = await axios.get("/driver/get_vehicles_list");
             const vehiclesList = response.data.data.map((vehicle) => ({
                 label: `${vehicle.make} ${vehicle.model}`,
@@ -183,18 +227,16 @@ export const ScheduledRides = () => {
         } catch (error) {
             setErrorRef.current(error);
         } finally {
-            setIsLoading((prev)=>({...prev, getVehicles: false}));
+            setIsLoading((prev) => ({ ...prev, getVehicles: false }));
         }
     };
-useEffect(()=>{
-    if(debouncedFilterText){
+
     const getPlaces = () => {
         try {
-            setIsLoading((prev)=>({...prev, getPlaces: true}));
+            setIsLoading((prev) => ({ ...prev, getPlaces: true }));
             getUsersCurrentLocation()
                 .then(async (location) => {
                     const response = await axios.post("/coordinates/get_places", {
-                        search_text : debouncedFilterText,
                         lat: location.lat,
                         lng: location.lng
                     });
@@ -209,20 +251,18 @@ useEffect(()=>{
                 })
                 .catch((error) => {
                     setErrorRef.current(error);
-                });;
+                });
         } catch (error) {
             setErrorRef.current(error);
-        }finally{
-            setIsLoading((prev)=>({...prev, getPlaces: false}));
+        } finally {
+            setIsLoading((prev) => ({ ...prev, getPlaces: false }));
         }
     };
-    getPlaces();
-}
-},[debouncedFilterText])
 
     useEffect(() => {
         if (actionPerformed === "createRide") {
             getVehicles();
+            getPlaces();
         }
     }, [actionPerformed]);
 
@@ -254,7 +294,7 @@ useEffect(()=>{
     const createRide = async () => {
         const start_time = inputs.start_time.toISOString().split(".")[0] + "Z";
         try {
-            setIsLoading((prev)=>({...prev, createRide: true}));
+            setIsLoading((prev) => ({ ...prev, createRide: true }));
             const response = await axios.post("/driver/create_ride", {
                 pickup_location: {
                     name: inputs.pickup_location.name,
@@ -271,25 +311,25 @@ useEffect(()=>{
             });
             if (response.data.status === HttpStatusCode.Ok) {
                 getAllScheduledRides();
-            } 
+            }
         } catch (error) {
-            setErrorRef.current(error); 
+            setErrorRef.current(error);
         } finally {
-            setIsLoading((prev)=>({...prev, createRide: false}));
+            setIsLoading((prev) => ({ ...prev, createRide: false }));
             onCancelDialog();
         }
     };
 
     const cancelRide = async () => {
         try {
-            setIsLoading((prev)=>({...prev, cancelRide: true}));
+            setIsLoading((prev) => ({ ...prev, cancelRide: true }));
             const response = await axios.post("/driver/cancel_ride", {
                 ride_id: currentRide._id
             });
         } catch (error) {
             setErrorRef.current(error);
         } finally {
-            setIsLoading((prev)=>({...prev, cancelRide: false}));
+            setIsLoading((prev) => ({ ...prev, cancelRide: false }));
             onCancelDialog();
             getAllScheduledRides();
         }
@@ -309,7 +349,7 @@ useEffect(()=>{
             disabled: inputsFilled,
             header: () => "Create Ride",
             submit: createRide,
-            className:"dialog-sm"
+            className: "dialog-sm"
         },
         showBookings: {
             header: () => (
@@ -332,7 +372,12 @@ useEffect(()=>{
                     {currentRide.drop_location.coordinates.location}
                 </>
             ),
-            content: () => isLoading.cancelRide?<Spinner/>:<span className="t14"> Are you sure you want to cancel this ride?</span>,
+            content: () =>
+                isLoading.cancelRide ? (
+                    <Spinner />
+                ) : (
+                    <span className="t14"> Are you sure you want to cancel this ride?</span>
+                ),
             footer: DialogFooter,
             submit: cancelRide,
             disabled: () => {

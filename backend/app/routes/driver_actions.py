@@ -11,7 +11,7 @@ from app.models.Refund import Refund
 from app.models.Rider import Rider
 from app.models.Payment import Payment
 from app.utils.send_email import SendMail
-from app.routes.cordinates import get_lag_and_lat
+
 driver_bp = Blueprint("driver", __name__, url_prefix="/api/driver")
 
 
@@ -107,8 +107,7 @@ def create_ride():
             return Response.generate(
                 status=403, message="You are not allowed to perform this action"
             )
-        pickup_location["coordinates"] = get_lag_and_lat(pickup_location["coordinates"])
-        pickup_location["coordinates"] = get_lag_and_lat(drop_location["coordinates"])
+
         rides_obj = Rides(
             pickup_location=pickup_location,
             drop_location=drop_location,
@@ -242,12 +241,14 @@ def get_bookings():
         list_of_bookings = []
         for booking in bookings:
             rider_name = Rider.get_by_id(user_id=str(booking.rider_id)).username
+            rider_contact =Rider.get_by_id(user_id=booking.rider_id).phone_number
             payment_details = Payment.get_by_id(payment_id=booking.payment_id).to_dict()
             list_of_bookings.append({
                 "rider_name": rider_name,
                 "payment_details": payment_details,
                 "rider_pickup_location": booking.rider_pickup_location,
-                "created_at": booking.created_at.strftime('%Y-%m-%d %H:%M:%S')
+                "created_at": booking.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+                "rider_contact": rider_contact
             })
 
         earnings = Booking.calculate_driver_earnings(driver_id=driver_id, ride_id=ride_id)

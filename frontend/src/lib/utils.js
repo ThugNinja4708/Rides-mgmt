@@ -1,24 +1,14 @@
-
 export const validateCreditCard = (number) => {
     const regex = new RegExp("^[0-9]{16}$");
-    if (!regex.test(number.replace(/\s+/g, ""))) return false;
-
-    let sum = 0;
-    for (let i = 0; i < number.length; i++) {
-        let intVal = parseInt(number.substr(i, 1));
-        if (i % 2 === 0) {
-            intVal *= 2;
-            if (intVal > 9) {
-                intVal = 1 + (intVal % 10);
-            }
-        }
-        sum += intVal;
+    if (!regex.test(number.replace(/\s+/g, ""))) {
+        return false;
+    } else {
+        return true;
     }
-    return (sum % 10) === 0;
 };
 
 export const validateExpiryDate = (expiryDate) => {
-    const regex = new RegExp("^(0[1-9]|1[0-2])\/?([0-9]{2})$");
+    const regex = new RegExp("^(0[1-9]|1[0-2])/?([0-9]{2})$");
     if (!regex.test(expiryDate)) return false;
 
     const [month, year] = expiryDate.split("/");
@@ -61,7 +51,7 @@ export const getUsersCurrentLocation = () => {
 export function searchRidesByInput(searchString, rides) {
     const input = searchString.toLowerCase();
     if (rides.length > 0) {
-        return rides.filter(ride => {
+        return rides.filter((ride) => {
             return (
                 ride.pickup_location?.coordinates?.location.toLowerCase().includes(input) ||
                 ride.drop_location?.coordinates?.location.toLowerCase().includes(input) ||

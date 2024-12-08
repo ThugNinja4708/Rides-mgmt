@@ -18,7 +18,7 @@ def create_app():
     app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(hours=1)
     app.config['JWT_REFRESH_TOKEN_EXPIRES'] = datetime.timedelta(days=30)
     app.config["DB_NAME"] = "rides_mgmt"
-    app.config["MONGO_URI"] = "mongodb+srv://rithvik:FcHMhwUQMnuoT70a@ridesmgmt.yjcqq.mongodb.net/?retryWrites=true&w=majority&appName=ridesmgmt"
+    app.config["MONGO_URI"] = "mongodb+srv://niharika:12345@ridesmgmt.yjcqq.mongodb.net/?retryWrites=true&w=majority&appName=ridesmgmt"
     app.config["GOOGLE_API_KEY"] = "AIzaSyDJ6xZxVNPiNVWIGsE82M1tOGeqHfGX7dI"
     app.config['MAIL_SERVER']="smtp-relay.brevo.com"
     app.config['MAIL_PORT'] = 587

@@ -27,6 +27,11 @@ export const BookingsTable = ({ ride }) => {
             field: "rider_pickup_location.name"
         },
         {
+
+            headerName: "Rider Contact",
+            field: "rider_contact"
+        },
+        {
             headerName: "Payment Status",
             field: "payment_details.payment_status",
             valueFormatter: (params) => params.value.charAt(0).toUpperCase() + params.value.slice(1),
@@ -60,6 +65,8 @@ export const BookingsTable = ({ ride }) => {
             const response = await axios.post("/driver/get_bookings", {
                 ride_id: ride._id
             });
+            console.log(response);
+            
             setRowData(response.data.data.bookings);
             setEarnings(response.data.data.earnings);
         } catch (error) {

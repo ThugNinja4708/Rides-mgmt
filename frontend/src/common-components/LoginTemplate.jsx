@@ -30,7 +30,7 @@ export const LoginTemplate = ({title, inputs, buttonLabel, loginPrompt, linkText
 
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     const usernameRegex = /^[a-zA-Z0-9- ]+$/;
-    const phoneRegex = /^\(\d{3}\)\d{3}-\d{4}$/;
+    const phoneRegex = /^[1-9][0-9]{9}$/;
 
     const handleInputChange = (e) => {
         setInputData({...inputData, [e.target.name]: e.target.value});
@@ -39,7 +39,7 @@ export const LoginTemplate = ({title, inputs, buttonLabel, loginPrompt, linkText
         } else if (e.target.name === "username" && !usernameRegex.test(e.target.value)) {
             setErrorMessage("Invalid username");
         } else if (e.target.name === "phone" && !phoneRegex.test(e.target.value)) {
-            setErrorMessage("Phone number should be of format (123)456-7890");
+            setErrorMessage("Phone number should contain 10 digits");
         } else {
             setErrorMessage("");
     }

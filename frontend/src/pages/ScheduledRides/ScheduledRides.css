@@ -31,3 +31,7 @@
     gap: 20px;
     align-items: center;
 }
+
+.pac-container {
+    z-index: 4000 !important; /* Higher than the dialog z-index */
+}

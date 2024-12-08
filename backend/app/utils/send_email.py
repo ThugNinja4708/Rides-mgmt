@@ -17,7 +17,7 @@ class SendMail:
         driver_name = "{Driver naem}"
         rider_name = "{Rider Name}"
         message.html = f"""
-        <h2>Dear {rider_name},</h2>
+        <h2>Dear rider,</h2>
         <h3>Your ride FROM: {pick_up_location} TO: {drop_location} has been cancelled.</h3>
         <p>This ride was scheduled to start on: {ride.start_time}.</p>
         <p>The driver {driver_name} has cancelled this ride.
