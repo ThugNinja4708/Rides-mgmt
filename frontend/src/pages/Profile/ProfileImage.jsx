@@ -2,8 +2,10 @@ import { axios } from "lib/axios";
 import { useEffect, useState } from "react";
 import "./profileImage.css";
 import useAuth from "hooks/useAuth";
+import useError from "hooks/useError";
 import { CustomDialog } from "common-components/CustomDialog/CustomDialog";
 import { Button } from "primereact/button";
+import Spinner from "common-components/Spinner/Spinner";
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif'];
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
@@ -13,17 +15,19 @@ export const ProfileImage = () => {
     const [visible, setVisible] = useState(false);
     const [actionPerformed, setActionPerformed] = useState("");
     const { user } = useAuth();
+    const { setErrorRef } = useError();
+    const [isLoading, setIsLoading] = useState();
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
-        setPreview(file);
-        setPreview(URL.createObjectURL(file)); // Local preview for new upload
+        setPreview(file); // Local preview for new upload
     };
 
     const handleUpload = async () => {
-        if (!image) return;
+        setIsLoading(true);
+        if (!preview) return;
         const formData = new FormData();
-        formData.append("file", image);
+        formData.append("file", preview);
 
         try {
             const response = await axios.post("/auth/upload_profile_image", formData, {
@@ -31,9 +35,12 @@ export const ProfileImage = () => {
                     "Content-Type": "multipart/form-data",
                 },
             });
-            alert("Image uploaded successfully!");
         } catch (error) {
-            console.error("Error uploading image:", error);
+            setErrorRef.current(error);
+        } finally {
+            onCancelDialog();
+            window.location.reload();
+            setIsLoading(false);
         }
     };
 
@@ -72,9 +79,11 @@ export const ProfileImage = () => {
     const actions = {
         uploadImage: {
             header: () => "Profile Picture",
-            content: () => (<div style={{ display: "flex", justifyContent: "center" }}>
-                {(image|| preview) && <img src={preview?preview:image} alt="Profile" style={{ width: "300px", height: "200px" }} />}
-            </div>),
+            content: () => (
+                isLoading ? <Spinner /> :
+                    <div style={{ display: "flex", justifyContent: "center" }}>
+                        {(image || preview) && <img src={preview ? URL.createObjectURL(preview) : image} alt="Profile" style={{ width: "300px", height: "200px" }} />}
+                    </div>),
             footer: () => (
                 <div>
                     <input
@@ -82,7 +91,7 @@ export const ProfileImage = () => {
                         onChange={handleFileChange}
                         accept={ALLOWED_TYPES.join(',')}
                     />
-                    <Button label="Upload" onClick={handleUpload}/>
+                    <Button label="Upload" onClick={handleUpload} disabled={!preview} />
                 </div>
             )
         }
