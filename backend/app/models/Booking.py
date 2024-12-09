@@ -108,7 +108,7 @@ class Booking:
         return booking
 
     def calculate_driver_earnings(driver_id, ride_id=None):
-        match_stage = {}
+        match_stage = {"driver_id": ObjectId(driver_id)}
 
         # Add ride ID to the match stage if provided
         if ride_id:

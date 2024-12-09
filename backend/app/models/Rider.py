@@ -71,9 +71,9 @@ class Rider:
             password_hash=user_data["password_hash"],
             created_at=user_data["created_at"],
             updated_at=user_data["updated_at"],
-            city=user_data["city"],
-            ssn = user_data["ssn"],
-            street=user_data["street"],
+            city=user_data.get("city"),
+            ssn = user_data.get("ssn"),
+            street=user_data.get("street"),
             profile_image_id=user_data.get("profile_image_id")
         )
 
