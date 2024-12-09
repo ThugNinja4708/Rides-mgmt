@@ -75,7 +75,6 @@ def book_ride():
 
         if role != "rider":
             return Response.generate(status=403, message="you can not perform this action")
-        rider_pickup_location["coordinates"] = get_lag_and_lat(rider_pickup_location["coordinates"])
         ride_obj = Rides.get_ride_by_id(ride_id)
 
 
@@ -96,7 +95,7 @@ def book_ride():
                 ride_id=ride_obj._id,
                 payment_id=payment_id,
                 rider_id=rider_id,
-                rider_pickup_location=rider_pickup_location
+                rider_pickup_location=rider_pickup_location["name"]
             )
             new_booking.add_booking(ride_obj.price_per_seat)
             return Response.generate(

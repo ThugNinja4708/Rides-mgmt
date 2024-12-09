@@ -202,9 +202,8 @@ def cancel_ride():
 @driver_bp.route("/driver_earning", methods=["POST"])
 @jwt_required()
 def get_my_earning():
-    ride_id = request.args.get("ride_id")
     driver_id = get_jwt_identity()
-    result = Booking.calculate_driver_earnings(driver_id=driver_id, ride_id=ride_id)
+    result = Booking.calculate_driver_earnings(driver_id=driver_id)
     return Response.generate(
         status=200, data=result, message="driver earnings fetched successfully"
     )
@@ -235,7 +234,7 @@ def get_bookings():
     try:
         data = request.get_json()
         ride_id = data["ride_id"]
-        driver_id = get_jwt_identity()
+
 
         bookings = Booking.get_all_bookings_by_ride_id(ride_id=ride_id)
         list_of_bookings = []
@@ -251,7 +250,7 @@ def get_bookings():
                 "rider_contact": rider_contact
             })
 
-        earnings = Booking.calculate_driver_earnings(driver_id=driver_id, ride_id=ride_id)
+        earnings = Booking.calculate_driver_earnings_for_a_ride(ride_id=ride_id)
         result = {
             "bookings": list_of_bookings,
             "earnings": earnings

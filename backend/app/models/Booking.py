@@ -107,14 +107,31 @@ class Booking:
         booking = Booking.from_db(booking_cursor)
         return booking
 
-    def calculate_driver_earnings(driver_id, ride_id=None):
-        match_stage = {"driver_id": ObjectId(driver_id)}
+    def calculate_driver_earnings_for_a_ride(ride_id):
+        match_stage = {}
 
         # Add ride ID to the match stage if provided
         if ride_id:
             match_stage["ride_id"] = ObjectId(ride_id)
 
         # Aggregation pipeline
+        pipeline = [
+            {"$match": match_stage},  # Filter documents
+            {"$group": {
+                "_id": None,  # Group all matching documents
+                "total_earnings": {"$sum": "$driver_earning"}  # Sum driver earnings
+            }}
+        ]
+
+        result = booking_collection.aggregate(pipeline)
+        total = next(result, {"total_earnings": 0})[
+            "total_earnings"
+        ]  # Get sum or default to 0
+        return total
+
+    def calculate_driver_earnings( driver_id=None):
+        match_stage = {"driver_id": ObjectId(driver_id)}
+
         pipeline = [
             {"$match": match_stage},  # Filter documents
             {"$group": {
