@@ -74,7 +74,7 @@ class Rider:
             city=user_data["city"],
             ssn = user_data["ssn"],
             street=user_data["street"],
-            profile_image_id=user_data["profile_image_id"]
+            profile_image_id=user_data.get("profile_image_id")
         )
 
     def save(self):

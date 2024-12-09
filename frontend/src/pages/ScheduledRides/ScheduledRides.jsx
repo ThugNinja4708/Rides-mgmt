@@ -72,6 +72,17 @@ export const ScheduledRides = () => {
         }
         
     };
+    const getCancelRideDiable=(ride)=>{
+        if(!(ride.status !== "cancelled")){
+            return true;
+        }else{
+            const currentDateTime = new Date();
+            const futureDateTime = new Date(currentDateTime);
+            futureDateTime.setHours(futureDateTime.getHours() + 5)
+            return new Date(ride.start_time) < futureDateTime
+        }
+
+    }
 
     const cardFooter = (ride) => (
         <div style={{ display: "flex", gap: "10px" }}>
@@ -91,11 +102,12 @@ export const ScheduledRides = () => {
                     setVisible(true);
                     setCurrentRide(ride);
                 }}
-                disabled={!(ride.status !== "cancelled")}
+                disabled={getCancelRideDiable(ride)}
             />
         </div>
         // to be implemented
     );
+    
 
     const getAllScheduledRides = async () => {
         try {
@@ -179,7 +191,7 @@ export const ScheduledRides = () => {
                     value={inputs.start_time}
                     onChange={(e) => setInputs((prev) => ({ ...prev, start_time: e.value }))}
                     showTime
-                    hourFormat="24"
+                    hourFormat="12"
                     className="input-fields"
                     placeholder="Select Start Date Time"
                     showIcon={true}
@@ -380,9 +392,7 @@ export const ScheduledRides = () => {
                 ),
             footer: DialogFooter,
             submit: cancelRide,
-            disabled: () => {
-                return true;
-            },
+            disabled: () => {},
             buttonLabel: "Cancel Ride"
         }
     };
