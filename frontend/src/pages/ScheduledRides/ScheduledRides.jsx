@@ -392,7 +392,7 @@ export const ScheduledRides = () => {
                 ),
             footer: DialogFooter,
             submit: cancelRide,
-            disabled: () => {},
+            disabled: () => {return true},
             buttonLabel: "Cancel Ride"
         }
     };

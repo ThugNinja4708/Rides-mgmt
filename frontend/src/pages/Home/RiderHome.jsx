@@ -412,18 +412,12 @@ export const RiderHome = () => {
                         <Button
                             label="Book"
                             onClick={() => {
-                                console.log("ride details",ride);
-                                
                                 setCurrentRide(ride);
-                                if(currentRide){
-                                    console.log(currentRide);
-                                    
-                                }
-                                
                                 setActionPerformed("bookRide");
                                 setVisible(true);
                             }}
                         />
+                        
                     </div>
                 </div>
             );

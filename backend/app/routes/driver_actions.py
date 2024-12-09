@@ -10,6 +10,7 @@ from app.models.Booking import Booking
 from app.models.Refund import Refund
 from app.models.Rider import Rider
 from app.models.Payment import Payment
+from app.models.Ride_riders import Rides_rider
 from app.utils.send_email import SendMail
 
 driver_bp = Blueprint("driver", __name__, url_prefix="/api/driver")
@@ -185,6 +186,10 @@ def cancel_ride():
         recipients= []
         for rider in ride.list_of_riders:
             recipients.append(Rider.get_by_id(rider).email)
+        obj = Rides_rider.get_by_ride_id(ride_id)
+        if obj is not None:
+            obj.status = RideStatus.CANCELLED.value
+            obj.save()
         if len(recipients) !=0:
             SendMail.send_email(recipients=recipients, ride=ride )
     except KeyError as e:
