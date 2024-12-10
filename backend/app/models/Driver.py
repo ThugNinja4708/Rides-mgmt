@@ -1,8 +1,9 @@
+
 from datetime import datetime, timezone
 from bson import ObjectId
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.database import Database
-
+from app.utils.constants import DriverStatus
 driver_collection = Database.get_db().driver
 
 
@@ -22,7 +23,8 @@ class Driver:
         password_hash=None,
         vehicle_info=None,
         license_number=None,
-        profile_image_id = None
+        profile_image_id = None,
+        status = DriverStatus.PENDING.value
     ):
         self._id = ObjectId(_id) if _id else ObjectId()
         self.username = username
@@ -34,6 +36,7 @@ class Driver:
         self.street = street
         self.city = city
         self.profile_image_id = profile_image_id
+        self.status = status
 
         # Handle password and password_hash initialization
         if password and not password_hash:
@@ -79,7 +82,8 @@ class Driver:
             city=user_data.get("city"),
             ssn=user_data.get("ssn"),
             street=user_data.get("street"),
-            profile_image_id=user_data.get("profile_image_id")
+            profile_image_id=user_data.get("profile_image_id"),
+            status=user_data.get("status")
         )
 
     def save(self):
@@ -95,7 +99,8 @@ class Driver:
             "ssn": self.ssn,
             "city": self.city,
             "street": self.street,
-            "profile_image_id": self.profile_image_id
+            "profile_image_id": self.profile_image_id,
+            "status": self.status
         }
         driver_collection.update_one(
             {"_id": self._id}, {"$set": user_data}, upsert=True
@@ -120,7 +125,8 @@ class Driver:
             "city": self.city,
             "street": self.street,
             "ssn": self.ssn,
-            "profile_image_id": str(self.profile_image_id)
+            "profile_image_id": str(self.profile_image_id),
+            "status": self.status
         }
 
     @staticmethod
@@ -204,3 +210,11 @@ class Driver:
         if result.modified_count == 0:
             raise Exception("Vehicle not found or could not be deleted")
         return True
+    
+    @staticmethod
+    def get_pending_drivers():
+        query = {"status": DriverStatus.PENDING.value}
+        cursor = driver_collection.find(query)
+        pending_drivers = [Driver.from_db(driver).to_dict() for driver in cursor]
+
+        return pending_drivers

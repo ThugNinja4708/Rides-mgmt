@@ -26,6 +26,14 @@
     padding: 0 16px 0 0;
     color: #3c3c3c;
 }
+.header-status{
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    padding: 0 16px 0 0;
+    color: #3c3c3c;
+    font-weight: bold;
+}
 .header-link:hover {
     text-decoration: underline;
     text-underline-offset: 3px;

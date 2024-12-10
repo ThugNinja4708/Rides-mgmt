@@ -11,6 +11,7 @@ import { History } from "pages/History/History.jsx";
 import { Profile } from "pages/Profile/Profile.jsx";
 import { ErrorProvider } from "context/errorContext/errorContextProvider";
 import { ErrorDialog } from "common-components/ErrorDialog/ErrorDialog.jsx";
+import Requests from "pages/Requests/Requests.jsx"
 function App() {
     return (
         <ErrorProvider>
@@ -31,6 +32,9 @@ function App() {
                             </Route>
                             <Route path="/history" element={<ProtectedRoute  requiredRole={"rider"}/>}>
                                 <Route path="/history" element={<History/>} />
+                            </Route>
+                            <Route path="/requests" element={<ProtectedRoute  requiredRole={"admin"}/>}>
+                                <Route path="/requests" element={<Requests/>} />
                             </Route>
                             <Route  element={<ProtectedRoute/>}>
                                 <Route path="/profile" element={<Profile/>} />

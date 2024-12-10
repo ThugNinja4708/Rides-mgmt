@@ -12,6 +12,7 @@ from app.models.Rider import Rider
 from app.models.Payment import Payment
 from app.models.Ride_riders import Rides_rider
 from app.utils.send_email import SendMail
+from app.utils.require_approval_driver import require_approval
 
 driver_bp = Blueprint("driver", __name__, url_prefix="/api/driver")
 
@@ -62,6 +63,7 @@ def get_license_number():
 
 @driver_bp.route("/add_vehicle", methods=["POST"])
 @jwt_required()
+@require_approval
 def add_vehicle():
     try:
         data = request.get_json()
@@ -90,6 +92,7 @@ def add_vehicle():
 
 @driver_bp.route("/create_ride", methods=["POST"])
 @jwt_required()
+@require_approval
 def create_ride():
     try:
         data = request.get_json()
@@ -151,6 +154,7 @@ def get_all_rides_driver():
 
 @driver_bp.route("/cancel_ride", methods=["POST"])
 @jwt_required()
+@require_approval
 def cancel_ride():
     try:
         user_id = get_jwt_identity()
@@ -235,6 +239,7 @@ def get_vehicles_list():
 
 @driver_bp.route("get_bookings", methods={"POST"})
 @jwt_required()
+@require_approval
 def get_bookings():
     try:
         data = request.get_json()
@@ -269,6 +274,7 @@ def get_bookings():
     
 @driver_bp.route("/delete_vehicle", methods=["POST"])
 @jwt_required()
+@require_approval
 def delete_vehicle():
     try:
         data = request.get_json()
@@ -286,5 +292,3 @@ def delete_vehicle():
         )
     except Exception as e:
         return Response.generate(status=500, message=str(e))
-    
-

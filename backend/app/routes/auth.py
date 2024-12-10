@@ -46,7 +46,6 @@ def signup():
             ssn = ssn,
             city = city,
             street = street
-            
         )
         user_obj.save()
         return Response.generate(status=201, message="User created successfully")

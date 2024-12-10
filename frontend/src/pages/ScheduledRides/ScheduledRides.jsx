@@ -16,6 +16,7 @@ import { getUsersCurrentLocation, searchRidesByInput } from "lib/utils";
 import Spinner from "common-components/Spinner/Spinner";
 import useError from "hooks/useError";
 import {  useJsApiLoader, StandaloneSearchBox } from "@react-google-maps/api";
+import useAuth from "hooks/useAuth";
 
 export const ScheduledRides = () => {
     const [scheduledRides, setScheduledRides] = useState([]);
@@ -46,14 +47,14 @@ export const ScheduledRides = () => {
     let minDate = new Date();
     const pickupRef = useRef(null);
     const dropRef = useRef(null);
-
+    const { user } = useAuth();
     const libraries = ["places"];
     const { isLoaded } = useJsApiLoader({
         id: "google-map-script",
         googleMapsApiKey: "AIzaSyDJ6xZxVNPiNVWIGsE82M1tOGeqHfGX7dI",
         libraries: libraries
     });
-    console.log(isLoaded);
+
     const handleOnPlacesChanged = (type) => {
         const ref = type === "pickup" ? pickupRef : dropRef;
         const place = ref.current.getPlaces?.()[0];
@@ -418,6 +419,7 @@ export const ScheduledRides = () => {
                         setVisible(true);
                         setActionPerformed("createRide");
                     }}
+                    disabled={user.status === "pending"}
                 />
             </div>
             {isLoading.getAllScheduledRides ? (

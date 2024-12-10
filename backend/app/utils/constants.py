@@ -9,3 +9,8 @@ class RideStatus(enum.Enum):
 class PaymentStatus(enum.Enum):
     REFUNDED = "refunded"
     SUCCESS = "successfull"
+
+class DriverStatus(enum.Enum):
+    PENDING = "pending"
+    APPROVED = "approved"
+    REJECTED = "rejecte3d"

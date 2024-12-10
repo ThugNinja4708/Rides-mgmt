@@ -1,10 +1,11 @@
-from flask import Blueprint
-from flask_jwt_extended import jwt_required,get_jwt_identity, get_jwt
+from flask import Blueprint, request
+from flask_jwt_extended import jwt_required, get_jwt
 from app.models.Booking import Booking
 from app.utils.response import Response
 from app.models.Rides import Rides
 from app.models.Rider import Rider
 from app.models.Driver import Driver
+from app.utils.constants import DriverStatus
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/api/admin")
 
@@ -49,3 +50,38 @@ def get_all_rides():
     except Exception as error:
         return Response.generate(status=500, message=str(error))
 
+@admin_bp.route("/get_requests",methods={"GET"})
+@jwt_required()
+def get_requests():
+    try:
+        role = get_jwt()["role"]
+        if role !="admin":
+            return Response.generate(status=401, message="You are not allowed to perform this action")
+        list_of_pending_drivers = Driver.get_pending_drivers()
+        return Response.generate(status=200, data=list_of_pending_drivers)
+
+        pass
+    except Exception as error:
+        return Response.generate(status=500, message=str(error))
+
+@admin_bp.route("/approve_driver", methods=["POST"])
+@jwt_required()
+def approve_driver():
+    try:
+        data = request.get_json()
+        driver_id = data["driver_id"]
+        action = data["action"]
+        driver = Driver.get_by_id(driver_id)
+        if action == "approve":
+            driver.status = DriverStatus.APPROVED.value
+            driver.save()
+            return Response.generate(status=200,  message="Driver approved.")
+        if action == "reject":
+            driver.status = DriverStatus.REJECTED.value
+            driver.save()
+            return Response.generate(status=200,  message="Driver approved.")
+        else:
+            return Response.generate(status=400, message="Invalid Action")
+
+    except Exception as error:
+        return Response.generate(status=500, message=str(error))

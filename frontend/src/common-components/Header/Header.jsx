@@ -10,7 +10,7 @@ const Header = () => {
     const navigate = useNavigate();
     const [userMenuVisible, setUserMenuVisible] = useState();
     const userMenuRef = useRef();
-    const {setErrorRef} = useError();
+    const { setErrorRef } = useError();
     const { user, setIsLoggedIn, setUser } = useAuth();
 
     const handleLogout = async () => {
@@ -54,13 +54,19 @@ const Header = () => {
         <header className="header-container">
             <div className="header-left-container h18">Rides Management</div>
             <div className="header-right-container h14">
+                {user.role === "driver" && user.status === "pending" ?
+                    <span className="header-status">Status: Pending</span> : null}
                 <Link to="/" className="header-link">
                     Home
                 </Link>
                 {user?.role === "rider" ?
-                <Link to="/history" className="header-link">
-                    History
-                </Link> : null}
+                    <Link to="/history" className="header-link">
+                        History
+                    </Link> : null}
+                {user?.role === "admin" ?
+                    <Link to="/requests" className="header-link">
+                        Requests
+                    </Link> : null}
                 <div
                     id="header-usermenu-container"
                     className="header-user-menu-container cyb-pt-16"
