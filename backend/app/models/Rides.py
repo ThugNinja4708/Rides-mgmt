@@ -174,7 +174,9 @@ class Rides:
     def cancel_ride_by_rider(ride_id,rider_id):
         result = rides_collection.update_one(
         {"_id": ObjectId(ride_id)},  # Match the ride by its ID
-        {"$pull": {"list_of_riders": ObjectId(rider_id)}}  # Remove the rider from the array
+         {"$pull": {"list_of_riders": ObjectId(rider_id)},
+         "$inc": {"available_seats": 1}
+         }
         )
         return result.modified_count
 
