@@ -23,7 +23,10 @@ export const Profile = () => {
         username: "",
         email: "",
         phone: "",
-        license: ""
+        license: "",
+        city: "",
+        state: "",
+        ssn: "",
     });
     const [initialUserInfo, setInitialUserInfo] = useState({
         username: "",
@@ -31,14 +34,17 @@ export const Profile = () => {
         phone: "",
         license: "",
         city: "",
-        street: "",
+        state: "",
         ssn: "",
     });
     const [userInfoValidations, setUserInfoValidations] = useState({
         username: { valid: true, message: "" },
         email: { valid: true, message: "" },
         phone: { valid: true, message: "" },
-        license: { valid: true, message: "" }
+        license: { valid: true, message: "" },
+        city: { valid: true, message: "" },
+        state: { valid: true, message: "" },
+        ssn: { valid: true, message: "" },
     });
     const [vehicleInputsValidations, setVehicleInputsValidations] = useState({
         make: { valid: false, message: "" },
@@ -81,7 +87,7 @@ export const Profile = () => {
             license: user?.license_number,
             ssn: user?.ssn,
             city: user?.city,
-            street: user?.street
+            state: user?.state
         });
         if (user?.role === "driver") {
             Promise.all([getVehicles(), getEarnings()]);
@@ -94,7 +100,10 @@ export const Profile = () => {
                 username: userInfo.username,
                 email: userInfo.email,
                 phone_number: userInfo.phone,
-                license_number: userInfo.license
+                license_number: userInfo.license,
+                city: userInfo.city,
+                state: userInfo.state,
+                ssn: userInfo.ssn
             });
             if (response.status === 200) {
                 setInitialUserInfo(userInfo);
@@ -148,6 +157,7 @@ export const Profile = () => {
     const licensePlateRegex = /^[A-Z0-9- ]{6,10}$/; // change this if it doesn't work with most of the states
     const phoneRegex = /^\(\d{3}\)\d{3}-\d{4}$/;
     const nameRegex = /^[a-zA-Z ]+$/;
+    const ssnRegex = /^\d{3}-\d{2}-\d{4}$/;
 
     const validateUserName = (value) => {
         setUserInfo((prev) => ({ ...prev, username: value }));
@@ -209,6 +219,66 @@ export const Profile = () => {
         }
     };
 
+    const validateCity = (value) => {
+        if (!value) {
+            setUserInfoValidations((prev) => ({
+                ...prev,
+                city: { valid: false, message: "City is required" }
+            }));
+        } else if (!nameRegex.test(value)) {
+            setUserInfoValidations((prev) => ({
+                ...prev,
+                city: {
+                    valid: false,
+                    message:
+                        "City must only contain alphabets"
+                }
+            }));
+        } else {
+            setUserInfoValidations((prev) => ({ ...prev, city: { valid: true, message: "" } }));
+        }
+    };
+
+    const validateState = (value) => {
+        if (!value) {
+            setUserInfoValidations((prev) => ({
+                ...prev,
+                state: { valid: false, message: "State is required" }
+            }));
+        } else if (!nameRegex.test(value)) {
+            setUserInfoValidations((prev) => ({
+                ...prev,
+                state: {
+                    valid: false,
+                    message:
+                        "State must only contain alphabets"
+                }
+            }));
+        } else {
+            setUserInfoValidations((prev) => ({ ...prev, state: { valid: true, message: "" } }));
+        }
+    };
+
+    const validateSSN = (value) => {
+        if (!value) {
+            setUserInfoValidations((prev) => ({
+                ...prev,
+                ssn: { valid: false, message: "SSN is required" }
+            }));
+        } else if (!ssnRegex.test(value)) {
+            setUserInfoValidations((prev) => ({
+                ...prev,
+                ssn: {
+                    valid: false,
+                    message:
+                        "SSN should be of format 123-45-6789"
+                }
+            }));
+        } else {
+            setUserInfoValidations((prev) => ({ ...prev, ssn: { valid: true, message: "" } }));
+        }
+    };
+
     const validateLicensePlate = (value) => {
         setVehicleInputs((prev) => ({ ...prev, license_plate: value }));
         if (!value) {
@@ -219,7 +289,7 @@ export const Profile = () => {
         } else if (!licensePlateRegex.test(value)) {
             setVehicleInputsValidations((prev) => ({
                 ...prev,
-                license_plate: { valid: false, message: "License plate can only have uppercase letters, digits, hyphens and spaces " }
+                license_plate: { valid: false, message: "License plate can only have uppercase letters, digits, hyphens and spaces and minimum 6 characters " }
             }));
         } else {
             setVehicleInputsValidations((prev) => ({ ...prev, license_plate: { valid: true, message: "" } }));
@@ -282,13 +352,17 @@ export const Profile = () => {
             userInfo.username !== initialUserInfo.username ||
             userInfo.email !== initialUserInfo.email ||
             userInfo.phone !== initialUserInfo.phone ||
-            userInfo.license !== initialUserInfo.license;
+            userInfo.license !== initialUserInfo.license ||
+            userInfo.city !== initialUserInfo.city ||
+            userInfo.state !== initialUserInfo.state ||
+            userInfo.ssn !== initialUserInfo.ssn;
 
         const isValidInfo =
             userInfoValidations.username.valid &&
             userInfoValidations.email.valid &&
             userInfoValidations.phone.valid &&
-            (user?.role === "driver" ? userInfoValidations.license.valid : true);
+            (user?.role === "driver" ? userInfoValidations.license.valid : true) &&
+            (user?.role === "admin" ? true : userInfoValidations.city.valid && userInfoValidations.state.valid && userInfoValidations.ssn.valid);
 
         return isUserInfoChanged && isValidInfo;
     };
@@ -314,24 +388,30 @@ export const Profile = () => {
                     </label>
                     <div className="read-only-input-fields t14-sb">{initialUserInfo.phone}</div>
                 </div>
-                <div className="profile-info-input-container">
-                    <label htmlFor="ssn" className="t14">
-                        SSN
-                    </label>
-                    <div className="read-only-input-fields t14-sb">{initialUserInfo.ssn}</div>
-                </div>
-                <div className="profile-info-input-container">
-                    <label htmlFor="city" className="t14">
-                        City
-                    </label>
-                    <div className="read-only-input-fields t14-sb">{initialUserInfo.city}</div>
-                </div>
-                <div className="profile-info-input-container">
-                    <label htmlFor="phone" className="t14">
-                        street
-                    </label>
-                    <div className="read-only-input-fields t14-sb">{initialUserInfo.street}</div>
-                </div>
+                {user?.role !== "admin" && (
+                    <div className="profile-info-input-container">
+                        <label htmlFor="ssn" className="t14">
+                            SSN
+                        </label>
+                        <div className="read-only-input-fields t14-sb">{initialUserInfo.ssn}</div>
+                    </div>
+                )}
+                {user?.role !== "admin" && (
+                    <div className="profile-info-input-container">
+                        <label htmlFor="city" className="t14">
+                            City
+                        </label>
+                        <div className="read-only-input-fields t14-sb">{initialUserInfo.city}</div>
+                    </div>
+                )}
+                {user?.role !== "admin" && (
+                    <div className="profile-info-input-container">
+                        <label htmlFor="phone" className="t14">
+                            State
+                        </label>
+                        <div className="read-only-input-fields t14-sb">{initialUserInfo.state}</div>
+                    </div>
+                )}
                 {user?.role === "driver" && (
                     <div className="profile-info-input-container">
                         <label htmlFor="license" className="t14">
@@ -451,7 +531,7 @@ export const Profile = () => {
     );
 
     const editUserInfoDialogContent = (
-        <div className="profile-info-conatiner">
+        <div className="edit-info-conatiner">
             <div className="profile-info-input-container">
                 <label htmlFor="username" className="t14">
                     Username
@@ -497,6 +577,55 @@ export const Profile = () => {
                 />
                 <ErrorMessage message={userInfoValidations.phone.message} />
             </div>
+            {user?.role !== "admin" && (
+                <div className="profile-info-input-container">
+                    <label htmlFor="city" className="t14">
+                        City
+                    </label>
+                    <InputText
+                        id="city"
+                        value={userInfo.city}
+                        className="input-fields t14"
+                        onChange={(e) => {
+                            setUserInfo((prev) => ({ ...prev, city: e.target.value }));
+                            validateCity(e.target.value);
+                        }}
+                    />
+                    <ErrorMessage message={userInfoValidations.city.message} />
+                </div>
+            )}
+            {user?.role !== "admin" && (
+                <div className="profile-info-input-container">
+                    <label htmlFor="state" className="t14">
+                        State
+                    </label>
+                    <InputText
+                        id="state"
+                        value={userInfo.state}
+                        className="input-fields t14"
+                        onChange={(e) => {
+                            setUserInfo((prev) => ({ ...prev, state: e.target.value }));
+                            validateState(e.target.value);
+                        }}
+                    />
+                    <ErrorMessage message={userInfoValidations.state.message} />
+                </div>
+            )}
+            <div className="profile-info-input-container">
+                <label htmlFor="phone" className="t14">
+                    Phone Number
+                </label>
+                <InputText
+                    id="phone"
+                    value={userInfo.phone}
+                    className="input-fields t14"
+                    onChange={(e) => {
+                        setUserInfo((prev) => ({ ...prev, phone: e.target.value }));
+                        validatePhone(e.target.value);
+                    }}
+                />
+                <ErrorMessage message={userInfoValidations.phone.message} />
+            </div>
             {user?.role === "driver" && (
                 <div className="profile-info-input-container">
                     <label htmlFor="license" className="t14">
@@ -512,6 +641,23 @@ export const Profile = () => {
                         }}
                     />
                     <ErrorMessage message={userInfoValidations.license.message} />
+                </div>
+            )}
+            {user?.role !== "admin" && (
+                <div className="profile-info-input-container">
+                    <label htmlFor="ssn" className="t14">
+                        SSN
+                    </label>
+                    <InputText
+                        id="ssn"
+                        value={userInfo.ssn}
+                        className="input-fields t14"
+                        onChange={(e) => {
+                            setUserInfo((prev) => ({ ...prev, ssn: e.target.value }));
+                            validateSSN(e.target.value);
+                        }}
+                    />
+                    <ErrorMessage message={userInfoValidations.ssn.message} />
                 </div>
             )}
         </div>
@@ -578,10 +724,10 @@ export const Profile = () => {
             disable: () => true
         },
         editUserInfo: {
-            header: "Edit User Info",
+            header: "Edit Profile",
             content: editUserInfoDialogContent,
             action: updateUserInfo,
-            buttonLabel: "Edit User Info",
+            buttonLabel: "Edit Profile",
             disable: validateUserInfoChange
         }
     };
@@ -630,6 +776,7 @@ export const Profile = () => {
                 visible={visible}
                 footer={<DialogFooter />}
                 onHide={onCancelDialog}
+                className={actionPerformed === "editUserInfo" ? "dialog-md" : ""}
             >
                 {actions[actionPerformed]?.content}
             </CustomDialog>

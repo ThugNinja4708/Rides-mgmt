@@ -275,7 +275,6 @@ export const ScheduledRides = () => {
     useEffect(() => {
         if (actionPerformed === "createRide") {
             getVehicles();
-            getPlaces();
         }
     }, [actionPerformed]);
 

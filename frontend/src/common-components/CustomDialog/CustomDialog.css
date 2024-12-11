@@ -72,6 +72,10 @@
     width: 71.4285714286rem;
 }
 
+.p-dialog.dialog-md {
+    width: 42.8571428571rem;
+}
+
 .p-dialog {
     background-color: #fff;
     border-radius: 4px;

@@ -13,7 +13,7 @@ class Driver:
         username,
         email,
         city,
-        street,
+        state,
         ssn,
         phone_number=None,
         password=None,
@@ -33,7 +33,7 @@ class Driver:
         self.vehicle_info = vehicle_info
         self.license_number = license_number
         self.ssn = ssn
-        self.street = street
+        self.state = state
         self.city = city
         self.profile_image_id = profile_image_id
         self.status = status
@@ -81,7 +81,7 @@ class Driver:
             license_number=user_data["license_number"],
             city=user_data.get("city"),
             ssn=user_data.get("ssn"),
-            street=user_data.get("street"),
+            state=user_data.get("state"),
             profile_image_id=user_data.get("profile_image_id"),
             status=user_data.get("status")
         )
@@ -98,7 +98,7 @@ class Driver:
             "license_number": self.license_number,
             "ssn": self.ssn,
             "city": self.city,
-            "street": self.street,
+            "state": self.state,
             "profile_image_id": self.profile_image_id,
             "status": self.status
         }
@@ -123,7 +123,7 @@ class Driver:
             "license_number": self.license_number,
             "role": "driver",
             "city": self.city,
-            "street": self.street,
+            "state": self.state,
             "ssn": self.ssn,
             "profile_image_id": str(self.profile_image_id),
             "status": self.status
@@ -192,6 +192,9 @@ class Driver:
             "phone_number": data.get("phone_number"),
             "license_number": data.get("license_number"),
             "updated_at": datetime.now(timezone.utc),
+            "city": data.get("city"),
+            "state": data.get("state"),
+            "ssn": data.get("ssn"),
         }
         if update_data:
             result = driver_collection.update_one(

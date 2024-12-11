@@ -10,8 +10,8 @@
     grid-template-columns: 1.5fr 1fr;
     grid-template-rows: 1fr;
     align-items: center;
-    width: 1000px;
-    height: 600px;
+    width: 1200px;
+    height: 750px;
     background-color: #90c9f5;
     border-radius: 10px;
 }
@@ -44,17 +44,17 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 15px;
+    gap: 10px;
 }
 
 .login-template-inputs {
     overflow-y: auto;
-    gap: 2px;
+    gap: 10px;
     width: 100%;
 }
 
 .inputs, .p-password-input {
-    width: 250px;
+    width: 300px !important;
     border-radius: 5px;
 }
 
@@ -64,4 +64,9 @@
     font-size: 14px;
 }
 
+.login-prompt {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
