@@ -106,7 +106,7 @@ def book_ride():
             )
     except Exception as e:
         return Response.generate(message=str(e))
-    
+
 @rider_bp.route("/cancel_ride", methods=["POST"])
 @jwt_required()
 def cancel_ride():

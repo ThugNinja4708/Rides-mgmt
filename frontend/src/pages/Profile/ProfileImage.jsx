@@ -105,7 +105,7 @@ export const ProfileImage = () => {
                 setActionPerformed("uploadImage");
             }}>
                 {image ? <img src={image} alt="Profile" style={{ width: "50px", height: "50px" }} /> : (
-                    <span>Upload</span>
+                    <i className="pi pi-camera" style={{ fontSize: "40px" }}></i>
                 )}
             </div>
             <CustomDialog
