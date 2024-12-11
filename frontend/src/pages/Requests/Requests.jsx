@@ -12,7 +12,7 @@ import { CustomDialog } from "common-components/CustomDialog/CustomDialog";
 const Requests = () => {
 
     const [rowData, setRowData] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState({ fetchRequests: false, approveOrReject: false });
     const [searchString, setSearchString] = useState();
     const [gridApi, setGridApi] = useState();
     const [currentRequest, setCurrentRequest] = useState();
@@ -51,7 +51,7 @@ const Requests = () => {
     }, []);
 
     const fetchRequests = useCallback(async () => {
-        setIsLoading(true);
+        setIsLoading((prev) => ({ ...prev, fetchRequests: true }));
         try {
             const response = await axios.get("/admin/get_requests");
             console.log(response);
@@ -60,11 +60,12 @@ const Requests = () => {
         } catch (error) {
             setErrorRef.current(error);
         } finally {
-            setIsLoading(false);
+            setIsLoading((prev) => ({ ...prev, fetchRequests: false }));
         }
     }, []);
     const approveOrReject = useCallback(async (action) => {
         try {
+            setIsLoading((prev) => ({ ...prev, approveOrReject: true }))
             const response = await axios.post("/admin/approve_driver", {
                 action: action,
                 driver_id: currentRequest.id
@@ -73,10 +74,11 @@ const Requests = () => {
         } catch (error) {
             setErrorRef.current(error);
         } finally {
-            setIsLoading(false);
+            setIsLoading((prev) => ({ ...prev, approveOrReject: false }))
+            onCancelDialog();
         }
 
-    }, [])
+    }, [currentRequest])
 
     const onGridReady = (params) => {
         setGridApi(params.api);
@@ -115,11 +117,11 @@ const Requests = () => {
         return (<>
             <Button
                 label="Reject"
-                onClick={()=>approveOrReject("reject")}
+                onClick={() => approveOrReject("reject")}
             />
             <Button
                 label="approve"
-                onClick={()=>approveOrReject("approve")}
+                onClick={() => approveOrReject("approve")}
             />
 
         </>)
@@ -128,9 +130,10 @@ const Requests = () => {
     const actions = {
         showRequest: {
             header: () => (
-                <>
-                    Approve or Reject this user
-                </>
+                isLoading.approveOrReject ? <Spinner /> :
+                    <>
+                        Approve or Reject this user
+                    </>
             ),
             content: renderRequest,
             footer: () => renderFooter,
