@@ -24,7 +24,7 @@ export const BookingsTable = ({ ride }) => {
         },
         {
             headerName: "Rider Pickup Location",
-            field: "rider_pickup_location.name"
+            field: "rider_pickup_location"
         },
         {
 

@@ -20,7 +20,7 @@ def signup():
         password = data["password"]
         email = data["email"]
         city = data["city"]
-        street = data["street"]
+        state = data["state"]
         ssn = data["ssn"]
         role = data["role"]
         phone_number = data.get("phone_number", "")
@@ -45,7 +45,7 @@ def signup():
             phone_number=phone_number,
             ssn = ssn,
             city = city,
-            street = street
+            state = state
         )
         user_obj.save()
         return Response.generate(status=201, message="User created successfully")

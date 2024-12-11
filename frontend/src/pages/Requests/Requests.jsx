@@ -39,8 +39,8 @@ const Requests = () => {
             headerName: "City",
             field: "city",
         }, {
-            headerName: "street",
-            field: "street",
+            headerName: "state",
+            field: "state",
         }
 
     ];

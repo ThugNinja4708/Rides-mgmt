@@ -4,7 +4,7 @@ export const signUpAPI = async (data) => {
         "ssn": data.ssn,
         "username": data.username,
         "city": data.city,
-        "street": data.street,
+        "state": data.state,
         "email": data.email,
         "password": data.password,
         "phone_number": data.phone,

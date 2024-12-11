@@ -12,7 +12,7 @@ class Rider:
         username,
         email,
         city,
-        street,
+        state,
         ssn,
         phone_number = None,
         password=None,
@@ -27,7 +27,7 @@ class Rider:
         self.email = email
         self.phone_number = phone_number
         self.ssn = ssn
-        self.street = street
+        self.state = state
         self.city = city
         self.profile_image_id = profile_image_id
 
@@ -73,7 +73,7 @@ class Rider:
             updated_at=user_data["updated_at"],
             city=user_data.get("city"),
             ssn = user_data.get("ssn"),
-            street=user_data.get("street"),
+            state=user_data.get("state"),
             profile_image_id=user_data.get("profile_image_id")
         )
 
@@ -88,7 +88,7 @@ class Rider:
             "phone_number": self.phone_number,
             "ssn": self.ssn,
             "city": self.city,
-            "street": self.street,
+            "state": self.state,
             "profile_image_id": self.profile_image_id
         }
         rider_collection.update_one({"_id": self._id}, {"$set": user_data}, upsert=True)
@@ -109,7 +109,7 @@ class Rider:
             "updated_at": self.updated_at.isoformat(),
             "role": "rider",
             "city":self.city,
-            "street": self.street,
+            "state": self.state,
             "ssn":self.ssn,
             "profile_image_id": self.profile_image_id
         }
@@ -122,7 +122,10 @@ class Rider:
             "username": data.get("username"),
             "email": data.get("email"),
             "phone_number": data.get("phone_number"),
-            "updated_at": datetime.now(timezone.utc)
+            "updated_at": datetime.now(timezone.utc),
+            "city": data.get("city"),
+            "state": data.get("state"),
+            "ssn": data.get("ssn"),
         }
         if update_data:
             result = rider_collection.update_one({"_id": self._id}, {"$set": update_data}, upsert=True)

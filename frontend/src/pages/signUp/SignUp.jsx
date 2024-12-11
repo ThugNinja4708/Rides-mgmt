@@ -6,13 +6,14 @@ export const SignUp = () => {
     const navigate = useNavigate();
     const inputs = [
 
-        { type: "text", name: "ssn", placeholder: "SSN number", required: true },
         { type: "text", name: "username", placeholder: "Username", required: true },
-        { type: "text", name: "city", placeholder: "City", required: true },
-        { type: "text", name: "street", placeholder: "Street", required: true },
         { type: "text", name: "email", placeholder: "Email", required: true },
-        { type: "password", name: "password", placeholder: "Password", required: true },
+        { type: "text", name: "city", placeholder: "City", required: true },
+        { type: "text", name: "state", placeholder: "State", required: true },
         { type: "text", name: "phone", placeholder: "Phone Number", required: false },
+        { type: "text", name: "ssn", placeholder: "SSN number", required: true },
+        { type: "password", name: "password", placeholder: "Password", required: true },
+        
         {
             type: "dropdown", name: "role", placeholder: "Select a role", required: true, options: [
                 { label: "Driver", value: "driver" },

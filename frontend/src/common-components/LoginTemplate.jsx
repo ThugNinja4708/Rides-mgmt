@@ -43,13 +43,13 @@ export const LoginTemplate = ({title, inputs, buttonLabel, loginPrompt, linkText
             setErrorMessage("Phone number should contain 10 digits");
         }
         else if(e.target.name === "ssn" && !ssnRegex.test(e.target.value)){
-            setErrorMessage("Invalid SSN number");
+            setErrorMessage("SSN number should be in the format 123-45-6789");
         }
         else if(e.target.name === "city" && !e.target.value){
-            setErrorMessage("City iss required");
+            setErrorMessage("City is required");
         }
-        else if(e.target.name === "street" && !(e.target.value)){
-            setErrorMessage("Street is required");
+        else if(e.target.name === "state" && !(e.target.value)){
+            setErrorMessage("State is required");
         }
         else {
             setErrorMessage("");
@@ -87,7 +87,7 @@ export const LoginTemplate = ({title, inputs, buttonLabel, loginPrompt, linkText
                     <div className="login-template-button-container">
                     <ErrorMessage message={errorMessage} className="login-template-error"/>
                     <Button label={buttonLabel} className="inputs" onClick={handleSubmit} disabled={!isFormValid}/>
-                    <div>{loginPrompt} <Button text onClick={()=>{navigate(linkHref)}} label={linkText}/></div>
+                    <div className="login-prompt">{loginPrompt} <Button text onClick={()=>{navigate(linkHref)}} label={linkText}/></div>
                     </div>
             </div>
             </div>
