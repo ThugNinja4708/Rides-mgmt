@@ -15,7 +15,6 @@ class SendMail:
         drop_location = ride.drop_location["location"]
         # TODO: change this
         driver_name = "{Driver naem}"
-        rider_name = "{Rider Name}"
         message.html = f"""
         <h2>Dear rider,</h2>
         <h3>Your ride FROM: {pick_up_location} TO: {drop_location} has been cancelled.</h3>
@@ -25,3 +24,13 @@ class SendMail:
         <p>Thank you for your understanding.</p>
         """
         SendMail.mail.send(message)
+
+    @staticmethod
+    def send_reset_password_mail(email, reset_link):
+        message = Message(sender="rithvikkantha3771@gmail.com", subject="Password reset", recipients=[email])
+        message.html = f'''
+            <h2>Dear rider,</h2>
+            <p> Click here to reset your password: {reset_link}</p>
+        '''
+        SendMail.mail.send(message)
+        pass

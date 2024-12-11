@@ -1,12 +1,16 @@
 from flask import Blueprint, request, send_file
 from flask_jwt_extended import get_jwt_identity
-from datetime import timedelta
+from datetime import timedelta, datetime, timezone
 from app.utils.response import Response
 from app.utils.get_roles import get_user_collection_by_role
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt
 from app import blacklist
 from app.utils.gridfs import Gridfs
 from bson import ObjectId
+from app.models.reset_password import Reset_password
+from werkzeug.security import generate_password_hash
+import secrets
+from app.utils.send_email import SendMail
 
 import io
 auth_bp = Blueprint("auth", __name__, url_prefix="/api/auth")
@@ -154,6 +158,7 @@ def upload_image():
     return Response.generate(status=200, data={"file_id": str(file_id)})
 
 @auth_bp.route("/get_profile_image/<profile_image_id>", methods=["GET"])
+@jwt_required()
 def get_profile_image(profile_image_id):
     try:
         fs = Gridfs.fs
@@ -163,5 +168,53 @@ def get_profile_image(profile_image_id):
             mimetype=file.content_type,
             download_name="profile_image"
         )
+    except Exception as error:
+        return Response.generate(status=404, message=str(error))
+
+@auth_bp.route("/forgot_password", methods=["POST"])
+def forgot_password():
+    data = request.get_json()
+    email = data["email"]
+    role = data["role"]
+    user_obj = get_user_collection_by_role(role)
+    user = user_obj.get_by_email(email)
+    if not user:
+        return Response.generate(status=404, message="Email not found")
+
+    # Generate reset token
+    reset_token = secrets.token_urlsafe(32)
+    reset_password = Reset_password(
+        role = role,
+        email = email,
+        token = reset_token,
+        token_expiry = datetime.now(timezone.utc) + timedelta(hours=1)
+    )
+    reset_password.save()
+
+    # TODO: Simulate sending email
+    reset_link = f"http://localhost:3000/reset_password?token={reset_token}"
+    SendMail.send_reset_password_mail(email=email, reset_link=reset_link)
+    return Response.generate(status=200, message="Password reset Link sent to email")
+
+@auth_bp.route("/reset_password", methods=["POST"])
+def reset_password():
+    try:
+
+        token = request.json.get("token")
+        new_password = request.json.get("password")
+        response = Reset_password.find_token(token)
+
+        if not response:
+            return Response.generate(message="Invalid or expired token", status=400)
+
+        # Update password
+        user_obj = get_user_collection_by_role(response.role)
+        user = user_obj.get_by_email(response.email[0][0])
+        user.password_hash = generate_password_hash(new_password)
+        user.save()
+        response.token = None
+        response.token_expiry = None
+        response.save()
+        return Response.generate(status=200, message="Password has been reset successfully.")
     except Exception as error:
         return Response.generate(status=404, message=str(error))

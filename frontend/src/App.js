@@ -12,6 +12,7 @@ import { Profile } from "pages/Profile/Profile.jsx";
 import { ErrorProvider } from "context/errorContext/errorContextProvider";
 import { ErrorDialog } from "common-components/ErrorDialog/ErrorDialog.jsx";
 import Requests from "pages/Requests/Requests.jsx"
+import ResetPassword from "pages/reset_password/resetPassword.jsx";
 function App() {
     return (
         <ErrorProvider>
@@ -24,6 +25,7 @@ function App() {
                         <Route path="/signUp" element={<SignUp />} />
                         <Route path="*" element={<div>404 Not Found</div>} />
                         <Route exact path="/notAuthorized" element={<NotAuthorized />} />
+                        <Route exact path="/reset_password" element={<ResetPassword/>}/>
 
                         {/* Protected routes */}
                         <Route element={<Layout />}>
