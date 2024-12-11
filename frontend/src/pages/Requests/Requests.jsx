@@ -145,7 +145,7 @@ const Requests = () => {
         setActionPerformed(null);
     }
 
-    return isLoading ? (
+    return isLoading.fetchRequests ? (
         <Spinner />
     ) : (
         <div>

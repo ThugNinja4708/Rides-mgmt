@@ -15,10 +15,8 @@ export const History = () => {
     const [activeIndex, setActiveIndex] = useState(0);
     const [isLoading, setIsLoading] = useState({ cancelRide: false, fetchRides: false });
     const [listOfRides, setListOfRides] = useState([]);
-    const [completedRides, setCompletedRides] = useState([]);
     const [searchString, setSearchString] = useState();
     const [filteredData, setFilteredData] = useState([]);
-    const [filteredData1, setFilteredData1] = useState([]);
     const statusMapping = useMemo(() => ["scheduled", "completed", "cancelled"], []);
     const { setErrorRef } = useError();
     const [currentRide, setCurrentRide] = useState();
@@ -31,9 +29,7 @@ export const History = () => {
                 status,
             });
             setListOfRides(response.data.data);
-            setCompletedRides(response.data.data);
             setFilteredData(response.data.data);
-            setFilteredData1(response.data.data);
         } catch (error) {
             setErrorRef.current(error);
         }
