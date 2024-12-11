@@ -239,7 +239,6 @@ def get_vehicles_list():
 
 @driver_bp.route("get_bookings", methods={"POST"})
 @jwt_required()
-@require_approval
 def get_bookings():
     try:
         data = request.get_json()
